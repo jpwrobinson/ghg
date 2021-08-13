@@ -1,4 +1,3 @@
-
 pacman::p_load(tidyverse, readxl, janitor)
 theme_set(theme_bw())
 
@@ -16,6 +15,7 @@ value_tot<-land  %>% group_by(species, name)  %>%
 			ungroup()  %>% 
 			arrange(desc(value))  %>% 
 			mutate(tc = sum(value), t80 = cumsum(value), pos = t80/tc, top80 = ifelse(pos <= 0.8, TRUE, FALSE))
+
 
 ## most species groups have a dominant gear (>90% of catch)
 
@@ -48,13 +48,13 @@ save(land, land_tot, value_tot, file = 'uk_landings.rds')
 ## need to check how CF should be used
 imp<-read_excel('UK_seafood_imports_2019.xlsx')  %>% clean_names()  %>% 
 			group_by(species, species_group, presentation)  %>% 
-			summarise(w = sum(kg), value_gbp = sum(value))  %>% 
+			summarise(w = sum(kg)/1e3, value_gbp = sum(value))  %>% 
 			group_by(species)  %>% 
 			mutate(w_sp = sum(w), value_gbp_sp = sum(value_gbp)) 
 
 imp_post<-read_excel('UK_seafood_imports_2019.xlsx')  %>% clean_names()  %>% 
 			group_by(species)  %>% 
-			summarise(w = sum(kg), value_gbp = sum(value))  %>% 
+			summarise(w = sum(kg)/1e3, value_gbp = sum(value))  %>% 
 			ungroup()  %>% 
 			arrange(desc(w))  %>% 
 			mutate(tc = sum(w), t80 = cumsum(w), pos = t80/tc, top80 = ifelse(pos <= 0.8, TRUE, FALSE))
@@ -62,15 +62,77 @@ imp_post<-read_excel('UK_seafood_imports_2019.xlsx')  %>% clean_names()  %>%
 imp_plot<-left_join(imp, imp_post %>% select(species, top80))
 
 
-g1<-ggplot(imp_plot, aes(fct_reorder(species, w_sp), w/1e3)) +
+g1<-ggplot(imp_plot, aes(fct_reorder(species, w_sp), w)) +
 		geom_bar(stat = 'identity', aes(fill =presentation)) +
 		geom_text(data = imp_post  %>% filter(top80 == TRUE), 
-			aes(species, w/1e3, label = paste0(round(pos,2)*100, '%')), hjust=-.3, size=2.5) +
+			aes(species, w, label = paste0(round(pos,2)*100, '%')), hjust=-.3, size=2.5) +
 		coord_flip() +
 		labs(y = 'Imported live weight (tonnes)', x = '', caption = 'Total UK imports 2019, summed by species.\nTop 80% of catch annotated.') +
 		scale_y_continuous(labels=scales::comma,expand=c(0.1, 0.1)) +
 		theme(legend.position = c(0.6, 0.4)) 
 
-pdf(file = 'UK_imported_weight_by_species.pdf', height=8, width=5)
+pdf(file = 'UK_imported_weight_by_species.pdf', height=10, width=5)
 g1
+dev.off()
+
+
+save(imp, file = 'uk_imports.rds')
+
+
+### now total available seafood
+
+## need to change some species names. priority = make landed species match up with imported
+land_19<-read_excel('UK_landings_2015_2019.xlsx')  %>% clean_names()  %>% 
+		rename_with(~ str_replace_all(.x, 'x', ''), starts_with('x')) %>% 
+		filter(!is.na(`2019_landings_tonnes`)) %>% 
+		group_by(species, name)  %>% 	
+		summarise(catch = sum(`2019_landings_tonnes`))  %>%  
+		mutate(species = name) %>% 
+		mutate(species = recode(species,  
+					'Nephrops (Norway Lobster)' = 'Lobster, Norway',
+					"Crabs (C.P.Mixed Sexes)" = 'Crab',
+					'Scallops' = 'Scallop',
+					"Monks or Anglers" = 'Monk',
+					'Plaice' = 'Plaice, European',
+					'Saithe' = 'Saithe (=Coalfish)',
+					'Horse Mackerel' = 'Horse mackerel, Atlantic',
+					'Queen Scallops' = 'Scallop',
+					'Sprats' = 'Sprat (=Brisling)',
+					'Lobsters' = 'Lobster Homarus spp',
+					'Patagonian squid' = 'Squid',
+					'Sole' = 'Sole, common',
+					"Crabs - Velvet (Swim)" = 'Crab',
+					'Lesser Spotted Dog' = 'Dogfish',
+					'Thornback Ray' = 'Ray',
+					'Blonde Ray' = 'Ray',
+					'Bass' = 'Seabass, European',
+					'Catfish' = 'Freshwater catfish'))  %>% 
+				group_by(species)  %>% 
+				summarise(catch = sum(catch))
+
+## join imports and landings
+tot<-full_join(land_19  %>%  select(species, catch),
+				imp_post  %>%  select(species, w))  %>% 
+	rename(imported = w, landed = catch)  %>% 
+	pivot_longer(-species, values_to = 'catch', names_to = 'source')  %>% 
+	group_by(species) %>% 
+	mutate(catch = ifelse(is.na(catch), 0, catch), tot = sum(catch, na.rm = TRUE))  
+
+## get the species cumulative landings - summed across imports + landings
+tot_post<- tot %>% 
+	group_by(species)  %>% 
+	summarise(tot = sum(catch)) %>% 
+	arrange(desc(tot))  %>% 
+	mutate(all = sum(tot), t80 = cumsum(tot), pos = t80/all, top80 = ifelse(pos <= 0.80, TRUE, FALSE))
+
+tot_plot<-left_join(tot, tot_post %>% select(species, top80))
+
+g1<-ggplot(tot_plot  %>% filter(top80 == TRUE), aes(fct_reorder(species, tot), catch, fill=source)) + geom_bar(stat='identity') +
+		coord_flip() +
+		labs(y = 'Total available live weight (tonnes)', x = '', caption = 'Total seafood available in UK, summed by species.\nTop 80% species only') +
+		scale_y_continuous(labels=scales::comma,expand=c(0.1, 0.1)) +
+		theme(legend.position = c(0.6, 0.4)) 
+
+pdf(file = 'UK_available_seafood_top80percent_species.pdf', height=10, width=5)
+print(g1)
 dev.off()
