@@ -114,14 +114,17 @@ land_19<-read_excel('data/uk/UK_landings_2015_2019.xlsx')  %>% clean_names()  %>
 tot<-full_join(land_19  %>%  select(species, catch),
 				imp_post  %>%  select(species, w))  %>% 
 	rename(imported = w, landed = catch)  %>% 
-	pivot_longer(-species, values_to = 'catch', names_to = 'source')  %>% 
+  mutate(imported = ifelse(is.na(imported), 0, imported),
+         landed = ifelse(is.na(landed), 0, landed),
+         prop_imported = imported / (imported + landed)) %>% 
+	pivot_longer(-c(species,prop_imported), values_to = 'catch', names_to = 'source')  %>% 
 	group_by(species) %>% 
-	mutate(catch = ifelse(is.na(catch), 0, catch), tot = sum(catch, na.rm = TRUE))  
+	mutate(tot = sum(catch))  
 
 ## get the species cumulative landings - summed across imports + landings
 tot_post<- tot %>% 
 	group_by(species)  %>% 
-	summarise(tot = sum(catch)) %>% 
+	summarise(tot = sum(catch), prop_imported  = unique(prop_imported)) %>% 
 	arrange(desc(tot))  %>% 
 	mutate(all = sum(tot), t80 = cumsum(tot), pos = t80/all, top80 = ifelse(pos <= 0.80, TRUE, FALSE))
 
