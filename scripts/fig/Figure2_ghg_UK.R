@@ -6,7 +6,7 @@ nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
   filter(top80 == TRUE & !species %in% drops & !is.na(mid))
 
 g0<-ggplot(nut, aes(mid,portion_adq, col=farmed_wild)) +  
-      ggrepel::geom_label_repel(aes(label = species), seed=43, size=2.5) +
+      ggrepel::geom_label_repel(aes(label = species), seed=4, size=2.5) +
       geom_errorbarh(aes(xmin = low, xmax=max)) +
       theme(legend.position = c(0.8, 0.8), legend.title = element_blank()) +
       labs(x = 'C02 emmissions equivalent per kg fish', y = 'Portion for 40% nutrient adequacy, g') +

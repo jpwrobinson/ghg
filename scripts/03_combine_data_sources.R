@@ -53,7 +53,7 @@ warmies<-c('Fenneropenaeus merguiensis', 'Penaeus esculentus', 'Macrobrachium ro
 cold<-c('Pleoticus muelleri', 'Pandalus borealis')
 
 shrimp_warm<-all %>% filter(scientific_name %in% warmies) %>% 
-    group_by(farmed_wild) %>% summarise_at(vars(low:Vitamin_A_mu), mean) %>%
+    group_by(farmed_wild) %>% summarise_at(vars(low:vitamin_a), mean) %>%
   mutate(uk_name = 'Shrimp, warmwater',
          common_name = 'Shrimp, warmwater',
          scientific_name = 'Shrimp, warmwater')
@@ -70,9 +70,8 @@ all_uk<-left_join(tot_post %>% mutate(uk_name = species), by = 'uk_name', all) %
 		filter(!is.na(tot))
 write.csv(all_uk, file = 'data/UK_GHG_nutrient_catch.csv', row.names=FALSE)
 
-## Missing nutrients n = 3
-all_uk  %>% filter(is.na(Selenium_mu) & top80 == TRUE)  %>% distinct(common_name)
-## shrimps + lobster + scallop
+## Missing nutrients n = 0
+all_uk  %>% filter(is.na(selenium) & top80 == TRUE)  %>% distinct(common_name)
 
 ## Missing GHG n = 7
 all_uk  %>% filter(is.na(mid) & top80 == TRUE)  %>% distinct(species)
