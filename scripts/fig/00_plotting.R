@@ -16,3 +16,4 @@ th<-theme(axis.text.y=element_text(size=11.5, colour='black'),
 
 colcol<-c('#377eb8', '#4daf4a')
 colcol2<-c('Farmed' = '#4daf4a', 'Wild' ='#377eb8')
+colcol3<-c('farmed' = '#4daf4a', 'landed' ='#377eb8', 'imported' = 'grey')

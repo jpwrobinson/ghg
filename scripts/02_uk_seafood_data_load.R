@@ -81,9 +81,8 @@ save(imp, file = 'data/uk_imports.rds')
 
 ## now aquaculture
 aq<-read.csv('data/uk/aquaculture_production_weight_2015_2018.csv') %>% clean_names() %>% 
-        mutate(production_weight_total = production_weight_total / 1000, # convert from kg to tonnes
-               mean_annual_production_tonnes = production_weight_total / 4) %>% 
         rename(species = species_name) %>% 
+        select(species, average_tonnes) %>% 
         mutate(species = recode(species,
                                 'Salmonids nei' = 'Other salmonids',
                                 'Atlantic salmon' = 'Salmon',
@@ -102,7 +101,7 @@ aq<-read.csv('data/uk/aquaculture_production_weight_2015_2018.csv') %>% clean_na
                                 'Northern quahog(=Hard clam)' = "Clam",
                                 'Marine crustaceans nei' = 'Other crustaceans',
                                 'European seabass' = 'Seabass, European')) %>% 
-          group_by(species) %>% summarise(mean_annual_production_tonnes = sum(mean_annual_production_tonnes))
+          group_by(species) %>% summarise(average_tonnes = sum(average_tonnes))
 
 ### now total available seafood
 
@@ -148,8 +147,8 @@ imp_post<-imp_post %>% mutate(species = case_when(
 tot<-full_join(
         full_join(land_19  %>% select(species, catch),
 				imp_post %>% select(species, w)),
-				aq %>% select(species, mean_annual_production_tonnes))  %>% 
-	rename(imported = w, landed = catch, farmed = mean_annual_production_tonnes)  %>% 
+				aq %>% select(species, average_tonnes))  %>% 
+	rename(imported = w, landed = catch, farmed = average_tonnes)  %>% 
   mutate(imported = ifelse(is.na(imported), 0, imported),
          landed = ifelse(is.na(landed), 0, landed),
          farmed = ifelse(is.na(farmed), 0, farmed),

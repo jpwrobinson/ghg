@@ -17,7 +17,7 @@ g0<-ggplot(all, aes(mid, portion_adq)) +
   # geom_label(aes(label=common_name), alpha=0.5,size=2.5) +
   labs(x = 'CO2 emission equivalent per kg of fish', y = 'Portion of fish for 40% nutrient adequacy, g') +
   theme(legend.position = c(0.8, 0.9), legend.title=element_blank()) +
-  guides(point = 'legend', text='none') +
+    # guides(point = 'legend', text='none') +
   scale_fill_manual(values = colcol2)
 
 # inset: fish vs invert and farmed vs wild

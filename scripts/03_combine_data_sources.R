@@ -7,8 +7,8 @@ load('data/nutrient_ghg_species.rds')
 
 
 unique(all$common_name)
+head(all)
 
-sp<-tot_post$species[tot_post$top80 == 'TRUE']
 sp
 
 ## need species info on
@@ -39,11 +39,14 @@ all<-all  %>%  mutate(uk_name = common_name)  %>%
 			str_detect(uk_name, 'Norway lobster') ~ 'Lobster, Norway',
 			str_detect(uk_name, 'Queen scallop') ~ 'Scallop',
 			str_detect(uk_name, 'Atlantic salmon') ~ 'Salmon',
+			str_detect(uk_name, 'Sea trout') ~ 'Trout',
+			str_detect(uk_name, 'Rainbow trout') ~ 'Trout',
 			str_detect(uk_name, 'Saithe') ~ 'Saithe',
+			str_detect(uk_name, 'Blue mussel') ~ 'Sea mussels',
 			TRUE ~ uk_name)) 
 
 # create a new 'shrimp misc.' category for GHG based on all available GHG estimates for shrimps
-shrimp<-all %>% filter(str_detect(common_name, 'shrimp|prawn')) %>% group_by(farmed_wild) %>% summarise_at(vars(low:Vitamin_A_mu), mean) %>% 
+shrimp<-all %>% filter(str_detect(common_name, 'shrimp|prawn')) %>% group_by(farmed_wild) %>% summarise_at(vars(low:nut_score), mean) %>% 
         mutate(uk_name = 'Shrimp, miscellaneous',
                common_name = 'Shrimp, miscellaneous',
                scientific_name = 'Shrimp, miscellaneous')
@@ -53,7 +56,7 @@ warmies<-c('Fenneropenaeus merguiensis', 'Penaeus esculentus', 'Macrobrachium ro
 cold<-c('Pleoticus muelleri', 'Pandalus borealis')
 
 shrimp_warm<-all %>% filter(scientific_name %in% warmies) %>% 
-    group_by(farmed_wild) %>% summarise_at(vars(low:vitamin_a), mean) %>%
+    group_by(farmed_wild) %>% summarise_at(vars(low:nut_score), mean) %>%
   mutate(uk_name = 'Shrimp, warmwater',
          common_name = 'Shrimp, warmwater',
          scientific_name = 'Shrimp, warmwater')
@@ -71,10 +74,10 @@ all_uk<-left_join(tot_post %>% mutate(uk_name = species), by = 'uk_name', all) %
 write.csv(all_uk, file = 'data/UK_GHG_nutrient_catch.csv', row.names=FALSE)
 
 ## Missing nutrients n = 0
-all_uk  %>% filter(is.na(selenium) & top80 == TRUE)  %>% distinct(common_name)
+all_uk  %>% filter(is.na(selenium) & top90 == TRUE)  %>% distinct(common_name)
 
 ## Missing GHG n = 7
-all_uk  %>% filter(is.na(mid) & top80 == TRUE)  %>% distinct(species)
+all_uk  %>% filter(is.na(mid) & top90 == TRUE)  %>% distinct(species)
 ## Squid data for tropical South America catch
 ## Whelk missing
 ## Blue whiting missing, but can this be approximated by a pelagic fishery?

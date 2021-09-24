@@ -1,31 +1,31 @@
-﻿Species Name,Production Weight Total
-Atlantic salmon,9379529512
-Rainbow trout,512514764
-Sea mussels nei,321426200
-Common edible cockle,87976104
-Pacific cupped oyster,75692810
-Salmonids nei,24566880
-Sea trout,24108122
-Common carp,18568430
-Cyprinids nei,7457186
-Marine fishes nei,4848162
-Atlantic halibut,4113530
-Freshwater fishes nei,2439398
-European flat oyster,1524268
-Freshwater bream,849556
-Arctic char,756634
-Great Atlantic scallop,720438
-Tench,597960
-Japanese carpet shell,543822
-Roach,339996
-Crucian carp,194144
-Queen scallop,172140
-Barbel,148882
-Nile tilapia,129714
-Chub,85650
-Rudd,69920
-Northern quahog(=Hard clam),34988
-Lumpfish,32040
-Ballan wrasse,14000
-Marine crustaceans nei,2800
-European seabass,0
+﻿Species Name,2015,2016,2017,2018,average_tonnes
+Arctic char,11340,16720,14880,6080,12.255
+Atlantic halibut,56000,67000,,,61.5
+Atlantic salmon,172146260,163134520,189707000,156025000,170253.195
+Ballan wrasse,3000,4000,,,3.5
+Barbel,160,1510,,,0.835
+Chub,280,1220,,,0.75
+Common carp,174015,171080,,135730,160.275
+Common edible cockle,3044600,1350,5223428,4440260,3177.4095
+Crucian carp,610,2810,,,1.71
+Cyprinids nei,,20500,185570,,103.035
+European flat oyster,23965,23000,23000,18500,22.11625
+European seabass,0,,,,0
+Freshwater bream,4270,13000,,,8.635
+Freshwater fishes nei,,,11170,41280,26.225
+Great Atlantic scallop,4000,4000,6000,4000,4.5
+Japanese carpet shell,5800,3200,19500,11060,9.89
+Lumpfish(=Lumpsucker),6000,10020,,,8.01
+Marine crustaceans nei,,1400,,,1.4
+Marine fishes nei,,,77000,85000,81
+Nile tilapia,3880,6220,1050,,3.716666667
+Northern quahog(=Hard clam),1890,,1300,,1.595
+Pacific cupped oyster,1821536,2165680,2248820,2220250,2114.0715
+Queen scallop,1000,6000,11000,1000,4.75
+Rainbow trout,14838610,13851056,13041358,11859174,13397.5495
+Roach,2340,5400,,,3.87
+Rudd,500,1000,,,0.75
+Salmonids nei,,5900,623100,607890,412.2966667
+Sea mussels nei,19254300,14685260,16178260,14247000,16091.205
+Sea trout,349477,299370,270008,219128,284.49575
+Tench,2120,5640,,,3.88
