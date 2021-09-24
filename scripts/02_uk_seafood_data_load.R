@@ -79,6 +79,31 @@ dev.off()
 save(imp, file = 'data/uk_imports.rds')
 
 
+## now aquaculture
+aq<-read.csv('data/uk/aquaculture_production_weight_2015_2018.csv') %>% clean_names() %>% 
+        mutate(production_weight_total = production_weight_total / 1000, # convert from kg to tonnes
+               mean_annual_production_tonnes = production_weight_total / 4) %>% 
+        rename(species = species_name) %>% 
+        mutate(species = recode(species,
+                                'Salmonids nei' = 'Other salmonids',
+                                'Atlantic salmon' = 'Salmon',
+                                'Common carp' = 'Carp',
+                                'Cyprinids nei' = 'Carp',
+                                'Crucian carp' = 'Carp',
+                                'Sea trout' = 'Trout',
+                                'Rainbow trout' = 'Trout',
+                                'Atlantic halibut' = 'Halibut, Atlantic',
+                                "European flat oyster" = 'Oyster',
+                                'Freshwater bream' = 'Bream',
+                                'Sea mussels nei' = 'Sea mussels',
+                                'Great Atlantic scallop' = 'Scallop',
+                                'Queen scallop' = 'Scallop',
+                                'Nile tilapia' = 'Tilapia',
+                                'Northern quahog(=Hard clam)' = "Clam",
+                                'Marine crustaceans nei' = 'Other crustaceans',
+                                'European seabass' = 'Seabass, European')) %>% 
+          group_by(species) %>% summarise(mean_annual_production_tonnes = sum(mean_annual_production_tonnes))
+
 ### now total available seafood
 
 ## need to change some species names. priority = make landed species match up with imported
@@ -110,13 +135,25 @@ land_19<-read_excel('data/uk/UK_landings_2015_2019.xlsx')  %>% clean_names()  %>
 				group_by(species)  %>% 
 				summarise(catch = sum(catch))
 
-## join imports and landings
-tot<-full_join(land_19  %>%  select(species, catch),
-				imp_post  %>%  select(species, w))  %>% 
-	rename(imported = w, landed = catch)  %>% 
+## change import names
+imp_post<-imp_post %>% mutate(species = case_when(
+  str_detect(species, 'ussel') ~ 'Sea mussels',
+  str_detect(species, 'eam') ~ 'Bream',
+  TRUE ~ species)) %>% 
+  group_by(species)  %>% 
+  summarise(w = sum(w))
+
+
+## join imports and landings and aquaculture
+tot<-full_join(
+        full_join(land_19  %>% select(species, catch),
+				imp_post %>% select(species, w)),
+				aq %>% select(species, mean_annual_production_tonnes))  %>% 
+	rename(imported = w, landed = catch, farmed = mean_annual_production_tonnes)  %>% 
   mutate(imported = ifelse(is.na(imported), 0, imported),
          landed = ifelse(is.na(landed), 0, landed),
-         prop_imported = imported / (imported + landed)) %>% 
+         farmed = ifelse(is.na(farmed), 0, farmed),
+         prop_imported = imported / (imported + landed + farmed)) %>% 
 	pivot_longer(-c(species,prop_imported), values_to = 'catch', names_to = 'source')  %>% 
 	group_by(species) %>% 
 	mutate(tot = sum(catch))  
@@ -126,18 +163,19 @@ tot_post<- tot %>%
 	group_by(species)  %>% 
 	summarise(tot = sum(catch), prop_imported  = unique(prop_imported)) %>% 
 	arrange(desc(tot))  %>% 
-	mutate(all = sum(tot), t80 = cumsum(tot), pos = t80/all, top80 = ifelse(pos <= 0.80, TRUE, FALSE))
+	mutate(all = sum(tot), t80 = cumsum(tot), pos = t80/all, top90 = ifelse(pos <= 0.90, TRUE, FALSE))
 
 save(tot, tot_post, file = 'data/uk_seafood.rds')
 
-tot_plot<-left_join(tot, tot_post %>% select(species, top80))
+tot_plot<-left_join(tot, tot_post %>% select(species, top90))
 
-g1<-ggplot(tot_plot  %>% filter(top80 == TRUE), aes(fct_reorder(species, tot), catch, fill=source)) + geom_bar(stat='identity') +
+g1<-ggplot(tot_plot  %>% filter(top90 == TRUE), aes(fct_reorder(species, tot), catch, fill=source)) + geom_bar(stat='identity') +
 		coord_flip() +
-		labs(y = 'Total available live weight (tonnes)', x = '', caption = 'Total seafood available in UK, summed by species.\nTop 80% species only') +
+		labs(y = 'Total available live weight (tonnes)', x = '', 
+		     caption = 'Total seafood available in UK, summed by species.\nTop 90% species only') +
 		scale_y_continuous(labels=scales::comma,expand=c(0.1, 0.1)) +
 		theme(legend.position = c(0.6, 0.4)) 
 
-pdf(file = 'fig/uk/UK_available_seafood_top80percent_species.pdf', height=10, width=5)
+pdf(file = 'fig/uk/UK_available_seafood_top90percent_species.pdf', height=10, width=5)
 print(g1)
 dev.off()
