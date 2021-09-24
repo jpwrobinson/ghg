@@ -17,7 +17,35 @@ nut_inv<-read.csv('data/nut/invertebrate_SaU_species_nutrient_list_withCI.csv') 
                Omega_3_mu = omega3.g) %>% 
         mutate(Vitamin_A_mu = NA, tax = 'Invertebrate') 
 
-nut<-rbind(nut, nut_inv %>% select(names(nut)))
+## read species level invert nutrients
+nut_inv_high<-read.csv('data/nut/biocomp_hicks_03032020.csv') %>% filter(BiblioID != 'fi165')
+cn<-colnames(nut_inv_high)
+cn<-str_replace_all(cn, '\\(', '_')
+cn<-str_replace_all(cn, '\\)', '')
+colnames(nut_inv_high)<-cn
+
+## nutrients of interest, raw meat and wild caught
+nut_inv_high <- nut_inv_high %>% filter(Subgroup %in% c('Crustacean', 'Molluscs'),
+                             Processing == 'r' & Type == 'W') %>%
+  filter(!Scientific.name == '') %>%
+  select(Scientific.name, PROTCNT.g., CA.mg., FE.mg., SE.mcg., 
+         ZN.mg., VITA_RAE.mcg., FAPUN3.g.) %>% 
+  gather(nutrient, value, PROTCNT.g.:FAPUN3.g.) %>%
+  filter(!value %in% c('', 'tr', 'nd'))
+
+nut_inv_high$value<-str_replace_all(nut_inv_high$value, '\\[', '')
+nut_inv_high$value<-str_replace_all(nut_inv_high$value, '\\]', '')
+nut_inv_high$value<-as.numeric(nut_inv_high$value)
+nut_inv_high<-nut_inv_high %>% 
+  group_by(Scientific.name, nutrient) %>% 
+  summarise(value = mean(value, na.rm=TRUE)) %>% 
+  pivot_wider(names_from = nutrient, values_from = value) %>% 
+  rename(scientific_name = Scientific.name,
+         Calcium_mu = CA.mg., Iron_mu = FE.mg., Selenium_mu = SE.mcg., Zinc_mu = ZN.mg., Omega_3_mu = FAPUN3.g.) %>% 
+  mutate(Vitamin_A_mu = NA, tax = 'Invertebrate')
+
+nut<-rbind(nut, nut_inv_high %>% select(names(nut)))
+nut_coarse<-rbind(nut, nut_inv %>% select(names(nut)))
 
 #### GHG data
 farm<-read.csv('data/ghg/Specie_List_07_05_2021_Farmed.csv') %>%
@@ -51,6 +79,23 @@ ghg<-ghg %>% group_by(common_name, scientific_name, farmed_wild) %>%
 
 ## join nutrients
 all<-ghg %>% left_join(nut)
+
+## check missing species (no species-level nut data for inverts), add class data and rebind
+missing<-all %>% filter(is.na(tax))
+class_level_nut<-left_join(missing %>% select(common_name:mid), nut_coarse) %>% mutate(nutrient_source = 'Class-level')
+all<-rbind(all %>% filter(!is.na(tax)) %>% mutate(nutrient_source = 'Species-level'), class_level_nut)
+
+## still some nutrients missing for species-level nut inverts
+all %>% filter(nutrient_source=='Species-level' & tax =='Invertebrate') %>% 
+      filter_at(vars(Selenium_mu:Vitamin_A_mu), any_vars(is.na(.)))
+
+## fill in NAs by each nutrient
+all$Selenium_mu[is.na(all$Selenium_mu)]<-nut_inv$Selenium_mu[match(all$scientific_name[is.na(all$Selenium_mu)], nut_inv$scientific_name)]
+all$Zinc_mu[is.na(all$Zinc_mu)]<-nut_inv$Zinc_mu[match(all$scientific_name[is.na(all$Zinc_mu)], nut_inv$scientific_name)]
+all$Omega_3_mu[is.na(all$Omega_3_mu)]<-nut_inv$Omega_3_mu[match(all$scientific_name[is.na(all$Omega_3_mu)], nut_inv$scientific_name)]
+all$Calcium_mu[is.na(all$Calcium_mu)]<-nut_inv$Calcium_mu[match(all$scientific_name[is.na(all$Calcium_mu)], nut_inv$scientific_name)]
+all$Iron_mu[is.na(all$Iron_mu)]<-nut_inv$Iron_mu[match(all$scientific_name[is.na(all$Iron_mu)], nut_inv$scientific_name)]
+
 
 ## export species without nutrient estimates (mostly inverts)
 write.csv(
@@ -90,9 +135,9 @@ all$om_rda[all$om_rda>100]<-100
 all <- all %>% rowwise() %>%
   mutate(nut_adq = mean(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda)),
          portion_adq = 40 / nut_adq * 100,
-    nut_score = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda))) %>%
-  filter(!is.na(nut_score)) %>% 
-  filter(!is.na(mid))
+    nut_score = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda))) #%>%
+  # filter(!is.na(nut_score)) %>% 
+  # filter(!is.na(mid))
 
 ## export species with nutrient estimates
 save(all, file = 'data/nutrient_ghg_species.rds')

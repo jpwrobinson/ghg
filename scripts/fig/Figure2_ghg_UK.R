@@ -50,7 +50,7 @@ g3<-ggplot(nut, aes(tot, fct_reorder(species, mid), fill=farmed_wild)) +
 
 
 
-pdf(file = 'fig/final/Figure2_UK_profiles.pdf', height=2, width=10)
+pdf(file = 'fig/final/Figure2_UK_profiles.pdf', height=3, width=10)
 plot_grid(g1, g2, g3, nrow = 1, align = 'h', rel_widths=c(1, 0.6, 0.6), labels=c('A', 'B', 'C'))
 dev.off()
 
