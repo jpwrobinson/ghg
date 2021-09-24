@@ -41,7 +41,7 @@ pdf(file = 'fig/ghg/ghg_all_species.pdf', height=8, width=8)
 ggplot(ghg, aes(common_name, ymin = ghg_low, ymax = ghg_high, col=farmed_wild)) + 
 			geom_errorbar() +
 			coord_flip() + 
-			facet_grid(~data_certainty)
+			facet_grid(~data_certainty)w
 dev.off()
 
 ## get midpoint of GHG range for each species, separate farm + wild
