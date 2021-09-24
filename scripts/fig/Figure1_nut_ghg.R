@@ -16,7 +16,7 @@ g0<-ggplot(all, aes(mid, portion_adq)) +
   geom_point(aes(fill=farmed_wild), size=2.5, alpha=0.9, pch=21, col='black') +
   # geom_label(aes(label=common_name), alpha=0.5,size=2.5) +
   labs(x = 'CO2 emission equivalent per kg of fish', y = 'Portion of fish for 40% nutrient adequacy, g') +
-  theme(legend.position = 'none') +
+  theme(legend.position = c(0.8, 0.9), legend.title=element_blank()) +
   guides(point = 'legend', text='none') +
   scale_fill_manual(values = colcol2)
 
@@ -51,7 +51,7 @@ g2<-ggplot(all, aes(mid, nut_score, col=farmed_wild)) +
 
 
 pdf(file = 'fig/final/Figure1_nutrient_ghg.pdf', height=4, width=9)
-plot_grid(g0, g_inset, nrow=1, rel_widths=c(1, 1))
+plot_grid(g0, g_inset, nrow=1, rel_widths=c(1, 1), labels=c('A', 'B'))
 dev.off()
 
 pdf(file = 'fig/final/FigureS1_nutrient_ghg.pdf', height=5, width=12)
