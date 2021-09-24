@@ -14,13 +14,13 @@ g0<-ggplot(nut, aes(mid,portion_adq, col=farmed_wild)) +
       geom_errorbarh(aes(xmin = low, xmax=max)) +
       geom_point() +
       theme(legend.position = c(0.8, 0.8), legend.title = element_blank()) +
-      labs(x = 'C02 emmissions equivalent per kg fish', y = 'Portion for 40% nutrient adequacy, g') +
+      labs(x = 'C02 emmissions equivalent per kg seafood', y = 'Portion for 40% nutrient adequacy, g') +
       scale_colour_manual(values = colcol2)
 
 g1<-ggplot(nut, aes(mid, fct_reorder(species, mid), col=farmed_wild)) + 
   geom_segment(aes(x = low, xend = max, y =  fct_reorder(species, mid), yend= fct_reorder(species, mid))) +
   geom_point(aes(x = mid, y =  fct_reorder(species, mid))) +
-  labs(x = 'C02 emissions equivalent per kg fish', y ='') +
+  labs(x = 'C02 emissions equivalent per kg seafood', y ='') +
   scale_colour_manual(values = colcol2) +
   theme(legend.position = c(0.8, 0.3), legend.title=element_blank())
 
@@ -57,6 +57,7 @@ dev.off()
 pdf(file = 'fig/final/FigureS2_UK_density_CO2.pdf', height=5, width=10)
 print(g0)
 dev.off()
+
 
 
 
