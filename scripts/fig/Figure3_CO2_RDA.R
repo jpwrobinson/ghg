@@ -11,16 +11,19 @@ all<-all %>% rowwise() %>%
 all$common_name<-factor(all$common_name, levels = levels(fct_reorder(all$common_name, all$nt_co2)))
 
 gl<-ggplot(all, aes(common_name, nt_co2)) + 
-      geom_point(data = all %>% filter(farmed_wild == 'Wild'), aes(fill = n_targets),size=2, col='black', pch=21) +
-      geom_point(data = all %>% filter(farmed_wild != 'Wild'), aes(col = n_targets),size=2, pch=19) +
+      geom_segment(aes(xend = common_name, y = -Inf, yend = nt_co2), col='grey') +
+      geom_point(data = all %>% filter(farmed_wild == 'Wild'), aes(fill = n_targets),size=2.5, col='black', pch=21) +
+      geom_point(data = all %>% filter(farmed_wild != 'Wild'), aes(col = n_targets),size=2.5, pch=19) +
       coord_flip() +
       scale_x_discrete(limits=levels(all$common_name)) +
+      scale_y_continuous(expand=c(0.01,0)) +
       labs(x = '', y = 'CO2 equivalent per RDA target', fill='Number of RDA targets') +
       # scale_shape_manual(values = c(21, 19)) +
       scale_fill_distiller(palette='RdYlGn',direction=1) +
       scale_color_distiller(palette='RdYlGn',direction=1) +
       guides(color='none') +
-      theme(legend.position = c(0.8, 0.4))
+      th +
+      theme(legend.position = c(0.8, 0.4), axis.text.y = element_text(size=9))
 
 ## now UK only
 drops<-c('Other marine fish')
@@ -45,10 +48,13 @@ gr<-ggplot(nut, aes(log10(tot), nt_co2)) +
   scale_fill_distiller(palette='RdYlGn',direction=1) +
   scale_color_distiller(palette='RdYlGn',direction=1) +
   guides(color='none') +
+  th +
   theme(legend.position = 'none',
         plot.margin = unit(c(4, 0.5, 4, 0.5), 'cm'))
 
 
-pdf(file = 'fig/final/Figure3.pdf', height=10, width=15)
-plot_grid(gl, gr, nrow=1, labels=c('A', 'B'))
+pdf(file = 'fig/final/Figure3.pdf', height=12, width=15)
+print(
+  plot_grid(gl, gr, nrow=1, labels=c('A', 'B'))
+)
 dev.off()

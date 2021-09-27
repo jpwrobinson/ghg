@@ -9,8 +9,6 @@ load('data/nutrient_ghg_species.rds')
 unique(all$common_name)
 head(all)
 
-sp
-
 ## need species info on
 # 1) shrimp (warm vs cold)
 # 2) crab

@@ -51,9 +51,13 @@ g2<-ggplot(all, aes(mid, nut_score, col=farmed_wild)) +
 
 
 pdf(file = 'fig/final/Figure1_nutrient_ghg.pdf', height=4, width=9)
-plot_grid(g0, g_inset, nrow=1, rel_widths=c(1, 1), labels=c('A', 'B'))
+print(
+  plot_grid(g0, g_inset, nrow=1, rel_widths=c(1, 1), labels=c('A', 'B'))
+)
 dev.off()
 
 pdf(file = 'fig/final/FigureS1_nutrient_ghg.pdf', height=5, width=12)
-plot_grid(g1, g2, nrow=2)
+print(
+  plot_grid(g1, g2, nrow=2)
+)
 dev.off()

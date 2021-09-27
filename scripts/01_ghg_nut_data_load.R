@@ -6,13 +6,18 @@ source('scripts/rda_reader.R')
 
 #### Nutrient data
 nut<-read.csv('data/nut/Species_Nutrient_Predictions.csv') %>%
-			select(species, ends_with('mu')) %>%
+      left_join(read.csv('data/nut/all_traits_active.csv') %>% clean_names()) %>% 
+			select(species, family, ends_with('mu')) %>%
 			rename(scientific_name = species) %>%
 			select(-Protein_mu) %>% 
+      mutate(tax = 'Fish') 
+
+nut_fam<-nut %>% group_by(family) %>% 
+      summarise_at(vars(Selenium_mu:Vitamin_A_mu), mean) %>% 
       mutate(tax = 'Fish')
 
 nut_inv<-read.csv('data/nut/invertebrate_SaU_species_nutrient_list_withCI.csv') %>% 
-        select(scientific_name, common_name, ends_with('g'), -protein.g) %>% 
+        select(scientific_name, common_name, family, ends_with('g'), -protein.g) %>% 
         rename(Selenium_mu = selenium.mcg, Zinc_mu = zinc.mg, Iron_mu = iron.mg, Calcium_mu = calcium.mg,
                Omega_3_mu = omega3.g) %>% 
         mutate(Vitamin_A_mu = NA, tax = 'Invertebrate') 
@@ -25,6 +30,7 @@ cn<-str_replace_all(cn, '\\)', '')
 colnames(nut_inv_high)<-cn
 
 ## nutrients of interest, raw meat and wild caught
+## matching species-level estimates
 nut_inv_high <- nut_inv_high %>% filter(Subgroup %in% c('Crustacean', 'Molluscs'),
                              Processing == 'r' & Type == 'W') %>%
   filter(!Scientific.name == '') %>%
@@ -36,16 +42,27 @@ nut_inv_high <- nut_inv_high %>% filter(Subgroup %in% c('Crustacean', 'Molluscs'
 nut_inv_high$value<-str_replace_all(nut_inv_high$value, '\\[', '')
 nut_inv_high$value<-str_replace_all(nut_inv_high$value, '\\]', '')
 nut_inv_high$value<-as.numeric(nut_inv_high$value)
+
+## estimate species mean
 nut_inv_high<-nut_inv_high %>% 
   group_by(Scientific.name, nutrient) %>% 
   summarise(value = mean(value, na.rm=TRUE)) %>% 
   pivot_wider(names_from = nutrient, values_from = value) %>% 
   rename(scientific_name = Scientific.name,
          Calcium_mu = CA.mg., Iron_mu = FE.mg., Selenium_mu = SE.mcg., Zinc_mu = ZN.mg., Omega_3_mu = FAPUN3.g.) %>% 
-  mutate(Vitamin_A_mu = NA, tax = 'Invertebrate')
+  mutate(Vitamin_A_mu = NA, tax = 'Invertebrate', family=NA)
+
+#estimate family mean
+nut_inv_fam<-nut_inv %>%
+      group_by(family) %>% summarise_at(vars(Iron_mu:Vitamin_A_mu), mean) %>% 
+      mutate(Vitamin_A_mu = NA, tax = 'Invertebrate')
+
+# add family to species-level nut inv
+nut_inv_high$family<-nut_inv$family[match(nut_inv_high$scientific_name, nut_inv$scientific_name)]
 
 nut<-rbind(nut, nut_inv_high %>% select(names(nut)))
 nut_coarse<-rbind(nut, nut_inv %>% select(names(nut)))
+nut_fam<-rbind(nut_fam, nut_inv_fam %>% select(names(nut_fam)))
 
 #### GHG data
 farm<-read.csv('data/ghg/Specie_List_07_05_2021_Farmed.csv') %>%
@@ -63,13 +80,14 @@ ghg<-rbind(farm %>% select(names(wild)), wild)
 ghg <- ghg %>% mutate(scientific_name = recode(scientific_name, 
                                 'Theragra chalcogramma' = 'Gadus chalcogrammus',
 																'Seriola quinqueriadata' = 'Seriola quinqueradiata',
-																'Psetta maxima' = 'Scophthalmus maximus'))
+																'Psetta maxima' = 'Scophthalmus maximus', 
+																'Pampus' = 'Pampus argenteus'))
 
 pdf(file = 'fig/ghg/ghg_all_species.pdf', height=8, width=8)
 ggplot(ghg, aes(common_name, ymin = ghg_low, ymax = ghg_high, col=farmed_wild)) + 
 			geom_errorbar() +
 			coord_flip() + 
-			facet_grid(~data_certainty)w
+			facet_grid(~data_certainty)
 dev.off()
 
 ## get midpoint of GHG range for each species, separate farm + wild
@@ -77,13 +95,30 @@ ghg<-ghg %>% group_by(common_name, scientific_name, farmed_wild) %>%
 			summarise(low = min(ghg_low), max = max(ghg_high)) %>%
 			mutate(mid = low + ((max - low)/2))
 
-## join nutrients
+## join nutrients (species-level)
 all<-ghg %>% left_join(nut)
 
-## check missing species (no species-level nut data for inverts), add class data and rebind
-missing<-all %>% filter(is.na(tax))
-class_level_nut<-left_join(missing %>% select(common_name:mid), nut_coarse) %>% mutate(nutrient_source = 'Class-level')
-all<-rbind(all %>% filter(!is.na(tax)) %>% mutate(nutrient_source = 'Species-level'), class_level_nut)
+## add some family info
+all<-all %>% 
+  mutate(family = case_when(
+    str_detect(scientific_name, 'Portunus') ~ 'Portunidae',
+    str_detect(scientific_name, 'Penaeus') ~ 'Penaeidae',
+    str_detect(scientific_name, 'Macrobrachium rosenbergii') ~ 'Palaemonidae',
+    str_detect(scientific_name, 'Lutjanus') ~ 'Lutjanidae', 
+    str_detect(scientific_name, 'Nemipterus') ~ 'Nemipteridae',
+    TRUE ~ family))
+
+## check missing species (no species-level nut data for inverts)
+missing<-all %>% filter(is.na(tax)) 
+
+## add family data, rebind
+fam_level_nut<-left_join(missing %>% select(common_name:family), nut_fam, by='family') %>% mutate(nutrient_source = 'Family-level')
+all<-rbind(all %>% filter(!is.na(tax)) %>% mutate(nutrient_source = 'Species-level'), fam_level_nut)
+
+# add class data and rebind
+# missing<-all %>% filter(is.na(nutrient_source)) 
+# class_level_nut<-left_join(missing %>% select(common_name:mid), nut_coarse) %>% mutate(nutrient_source = 'Class-level')
+# all<-rbind(all %>% filter(!is.na(tax)), class_level_nut)
 
 ## still some nutrients missing for species-level nut inverts
 all %>% filter(nutrient_source=='Species-level' & tax =='Invertebrate') %>% 
@@ -96,8 +131,9 @@ all$Omega_3_mu[is.na(all$Omega_3_mu)]<-nut_inv$Omega_3_mu[match(all$scientific_n
 all$Calcium_mu[is.na(all$Calcium_mu)]<-nut_inv$Calcium_mu[match(all$scientific_name[is.na(all$Calcium_mu)], nut_inv$scientific_name)]
 all$Iron_mu[is.na(all$Iron_mu)]<-nut_inv$Iron_mu[match(all$scientific_name[is.na(all$Iron_mu)], nut_inv$scientific_name)]
 
+all %>% filter(is.na(Selenium_mu))
 
-## export species without nutrient estimates (mostly inverts)
+## export species without nutrient estimates (should be zero)
 write.csv(
   all %>% filter(is.na(Selenium_mu)) %>% ungroup() %>% distinct(common_name, scientific_name) %>% data.frame(),
   file = 'data/nut/missing_nutrient_species.csv', row.names=FALSE)
