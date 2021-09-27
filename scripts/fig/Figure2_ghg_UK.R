@@ -20,7 +20,7 @@ g0<-ggplot(nut, aes(mid,portion_adq, col=farmed_wild)) +
 g1<-ggplot(nut, aes(mid, fct_reorder(species, mid), col=farmed_wild)) + 
   geom_segment(aes(x = low, xend = max, y =  fct_reorder(species, mid), yend= fct_reorder(species, mid))) +
   geom_point(aes(x = mid, y =  fct_reorder(species, mid))) +
-  labs(x = 'C02 emissions equivalent per kg seafood', y ='') +
+  labs(x = 'CO2 emissions equivalent per kg seafood', y ='') +
   scale_colour_manual(values = colcol2) +
   theme(legend.position = c(0.8, 0.3), legend.title=element_blank())
 
