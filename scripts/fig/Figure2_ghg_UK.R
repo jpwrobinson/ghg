@@ -7,7 +7,7 @@ nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
   select(-tax) %>% 
   group_by(species, farmed_wild, tot) %>% 
   summarise_at(vars(low:nut_score), mean) %>% 
-  mutate(species=factor(species))
+  mutate(species=factor(species), id = paste0(species, ' (', farmed_wild, ')'))
 
 g0<-ggplot(nut, aes(mid,portion_adq, col=farmed_wild)) +  
       ggrepel::geom_label_repel(aes(label = species), seed=4, size=2.5) +
@@ -18,18 +18,20 @@ g0<-ggplot(nut, aes(mid,portion_adq, col=farmed_wild)) +
       labs(x = 'C02 emmissions equivalent per kg seafood', y = 'Portion for 40% nutrient adequacy, g') +
       scale_colour_manual(values = colcol2)
 
-g1<-ggplot(nut, aes(mid, fct_reorder(species, mid), col=farmed_wild)) + 
-  geom_segment(aes(x = low, xend = max, y =  fct_reorder(species, mid), yend= fct_reorder(species, mid))) +
-  geom_point(aes(x = mid, y =  fct_reorder(species, mid)), size=3) +
+g1<-ggplot(nut, aes(mid, fct_reorder(id, mid), col=farmed_wild)) + 
+  geom_segment(aes(x = low, xend = max, y =  fct_reorder(id, mid), yend= fct_reorder(id, mid))) +
+  geom_point(aes(x = mid, y =  fct_reorder(id, mid)), size=3) +
   labs(x = 'CO2 emissions equivalent\nper kg seafood', y ='') +
   scale_colour_manual(values = colcol2) +
+  scale_y_discrete(labels=nut$species[as.factor(levels(fct_reorder(nut$id, nut$mid)))]) +
   th+ 
   theme(legend.position = c(0.8, 0.3), legend.title=element_blank())
 
-nut2<-nut %>% ungroup() %>%  distinct(nut_score, species)
-nut2$species<-factor(nut2$species, levels=levels(fct_reorder(nut$species, nut$mid)[!duplicated(fct_reorder(nut$species, nut$mid, min))]))
+nut2<-nut %>% ungroup() %>%  distinct(nut_score, species, id, mid) 
+# nut2$species<-factor(nut2$species, levels=levels(fct_reorder(nut$species, nut$mid)[!duplicated(fct_reorder(nut$species, nut$mid, min))]))
+# nut2$id<-factor(nut2$id, levels=levels(fct_reorder(nut$id, nut$mid)[!duplicated(fct_reorder(nut$id, nut$mid, min))]))
 
-g2<-ggplot(nut2, aes(nut_score,species)) + 
+g2<-ggplot(nut2, aes(nut_score,fct_reorder(id, mid))) + 
   geom_bar(stat='identity') +
   labs(x = 'Nutrient density, %', y ='') +
   scale_fill_manual(values = colcol2) +
@@ -41,7 +43,7 @@ g2<-ggplot(nut2, aes(nut_score,species)) +
 
 # labs <- levels(nut2$species)
 # levels(nut$species)<-levels(fct_reorder(nut$species, nut$mid))
-g3<-ggplot(nut, aes(tot, fct_reorder(species, mid), fill=farmed_wild)) +
+g3<-ggplot(nut, aes(tot, fct_reorder(id, mid), fill=farmed_wild)) +
       geom_bar(stat = 'identity') +
       labs(x = 'Seafood produced, t', y = '') +
       scale_fill_manual(values = colcol2) +
@@ -54,7 +56,7 @@ g3<-ggplot(nut, aes(tot, fct_reorder(species, mid), fill=farmed_wild)) +
 
 
 
-pdf(file = 'fig/final/Figure2_UK_profiles.pdf', height=3, width=10)
+pdf(file = 'fig/final/Figure2_UK_profiles.pdf', height=4, width=10)
 print(
   plot_grid(g1, g2, g3, nrow = 1, align = 'h', rel_widths=c(1, 0.6, 0.6), labels=c('A', 'B', 'C'))
 )
