@@ -31,12 +31,13 @@ g1<-ggplot(nut, aes(mid, fct_reorder(id, mid), col=farmed_wild)) +
 
 nut2<-nut %>% ungroup() %>%  distinct(nut_score, species, id, mid, class) 
 nut3<-nut %>% ungroup() %>% select(species, farmed_wild, class, mid, id, ca_rda:om_rda) %>%   
-    pivot_longer(ca_rda:om_rda, names_to = 'nutrient', values_to = 'rda') %>% 
-    group_by(id) %>% 
-    mutate(label_ypos=cumsum(rda) - 0.5*rda)
+    pivot_longer(ca_rda:om_rda, names_to = 'nutrient', values_to = 'rda') 
 
-nut3$nutrient<-factor(nut3$nutrient, levels = rev(unique(nut3$nutrient)))
-nut3$lab<-nut3$nutrient; levels(nut3$lab) <-rev(c('Calcium', 'Iron', 'Selenium', 'Zinc', 'Vitamin A', 'Omega-3')) 
+nut3$nutrient<-factor(nut3$nutrient, levels = rev(unique(nut3$nutrient)[c(3,6,2,4,1,5)]))
+nut3$lab<-nut3$nutrient; levels(nut3$lab) <-rev(c('Selenium','Omega-3', 'Iron', 'Zinc','Calcium', 'Vitamin A')) 
+
+nut3<-nut3 %>% group_by(id) %>% 
+  mutate(label_ypos=cumsum(rda) - 0.5*rda)
 
 ## density simple version
 # g2<-ggplot(nut2, aes(nut_score,fct_reorder(id, mid))) + 
@@ -53,7 +54,7 @@ nut3$lab<-nut3$nutrient; levels(nut3$lab) <-rev(c('Calcium', 'Iron', 'Selenium',
 ## density fill version
 g2<-ggplot(nut3, aes(rda, fct_reorder(id, mid), fill=lab)) + 
   geom_bar(stat='identity') +
-  geom_text(data = nut3 %>% filter(rda >= 10),
+  geom_text(data = nut3 %>% filter(rda >= 15),
             aes(x = label_ypos, label= paste0(round(rda, 0), '%')),  color="white", size=2) +
   labs(x = 'Nutrient density, %', y ='') +
   facet_grid(rows = vars(class), scales='free_y', space = 'free_y') + 
