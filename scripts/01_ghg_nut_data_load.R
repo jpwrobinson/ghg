@@ -79,6 +79,7 @@ ghg<-rbind(farm %>% select(names(wild)), wild)
 ## fix some species names
 ghg <- ghg %>% mutate(scientific_name = recode(scientific_name, 
                                 'Theragra chalcogramma' = 'Gadus chalcogrammus',
+                                'Fenneropenaeus merguiensis' = 'Penaeus merguiensis',
 																'Seriola quinqueriadata' = 'Seriola quinqueradiata',
 																'Psetta maxima' = 'Scophthalmus maximus', 
 																'Pampus' = 'Pampus argenteus'))
@@ -175,7 +176,25 @@ all <- all %>% rowwise() %>%
   # filter(!is.na(nut_score)) %>% 
   # filter(!is.na(mid))
 
+## add FAO grouping information
+asfis<-readxl::read_excel('data/ASFIS_sp_2021.xlsx') %>% clean_names() %>% mutate(isscaap_code = as.numeric(isscaap))
+iscaap<-read.csv('data/isscaap-groups.csv')
+codes<-left_join(asfis, iscaap, by = 'isscaap_code') %>% 
+  mutate(scientific_name = recode(scientific_name, 'Ctenopharyngodon idellus' = 'Ctenopharyngodon idella',
+                                  'Clupea pallasii' = 'Clupea pallasii pallasii',
+                                  'Crassostrea spp' = 'Crassostrea gigas',
+                                  'Portunus spp' = 'Portunus armatus',
+                                  'Penaeus aztecus' = 'Farfantepenaeus aztecus',
+                                  'Penaeus notialis' = 'Farfantepenaeus notialis',
+                                  'Epinephelus spp' = 'Epinephelus',
+                                  'Lutjanus spp' = 'Lutjanus',
+                                  'Nemipterus spp' = 'Nemipterus',
+                                  'Penaeus setiferus' = 'Litopenaeus setiferus'
+                                  ))
+all$group<-codes$isscaap_group_en[match(all$scientific_name, codes$scientific_name)]
+
 ## export species with nutrient estimates
+
 save(all, file = 'data/nutrient_ghg_species.rds')
 
 # ------- END OF DATA CLEAN AND EXPORT ------------ #

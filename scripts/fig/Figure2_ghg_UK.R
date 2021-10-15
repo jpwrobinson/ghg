@@ -37,6 +37,7 @@ nut3$nutrient<-factor(nut3$nutrient, levels = rev(unique(nut3$nutrient)[c(3,6,2,
 nut3$lab<-nut3$nutrient; levels(nut3$lab) <-rev(c('Selenium','Omega-3', 'Iron', 'Zinc','Calcium', 'Vitamin A')) 
 
 nut3<-nut3 %>% group_by(id) %>% 
+  arrange(factor(nutrient, levels = rev(levels(nutrient))), .by_group=TRUE) %>% 
   mutate(label_ypos=cumsum(rda) - 0.5*rda)
 
 ## density simple version
