@@ -8,7 +8,7 @@ load('data/nutrient_ghg_species.rds')
 cats<-data.frame(isscaap = unique(all$group))
 cats$group<-c('Whitefish', 'Tuna', 'Pelagic (large)', 'Bivalve', 'Pelagic (small)', 'Freshwater fish', 'Salmonidae', NA,
                 'Crustacean', 'Bivalve', 'Freshwater fish', 'Cephalopod', 'Whitefish', NA, 'Tilapia', 'Crustacean', 'Crustacean', 
-              'Bivalve', 'Sturgeon', 'Bivalve', 'Crustacean','Crustacean')
+              'Bivalve', NA, 'Bivalve', 'Crustacean','Crustacean')
 
 all$group2<-cats$group[match(all$group, cats$isscaap)]
 
@@ -19,37 +19,46 @@ wild_f<-all %>% group_by(farmed_wild, tax) %>%
         mutate(lower_nut = mean - 2*se, upper_nut = mean + 2*se, x = paste0(farmed_wild,'\n', tolower(tax)))
 
 groups<-all %>% group_by(group2) %>% 
-  summarise(se = se(nut_score), mean = mean(nut_score),
+  summarise(lower_nut = min(nut_score),upper_nut=max(nut_score), mean = mean(nut_score),
             lower = min(low), upper = max(max), mid = mean(mid)) %>% 
-  mutate(lower_nut = mean - 2*se, upper_nut = mean + 2*se, x = group2)
+  mutate(x = group2) %>% 
+  filter(!is.na(group2))
+
+## read other foods
+food<-read.csv('data/ghg_nutrient_other_foods.csv')
 
 # main panel: nutrient adequacy vs CO2 by species
 g0<-ggplot(data=groups, aes(x = mid, y =mean)) + 
   # geom_linerange(data=groups, aes(x = mid, y =mean, xmin = lower, xmax = upper)) +
   # geom_pointrange(data=groups, aes(x = mid, y =mean, ymin = lower_nut, ymax = upper_nut), pch=21, col='black', fatten=10) +
-  geom_point(col='black', size=3) +
-  geom_text_repel(data=groups, aes(x = mid, y =mean, label=x),size=3, force=1) +
+  geom_point(col='#d73027', size=3) +
+  geom_point(data =food, aes(x = median, y = nut_score), col='black', size=3) +
+  geom_text_repel(data=groups, aes(x = mid, y =mean, label=x),size=3, force=1.5, point.padding=0.1) +
+  geom_text_repel(data=food, aes(x = median, y =nut_score, label=food_lab),size=3, force=1.5, point.padding=0.1) +
   # geom_label(aes(label=common_name), alpha=0.5,size=2.5) +
-  labs(x = 'CO2 emission equivalent per kg of seafood', y = 'Nutrient density, %') +
-  theme(legend.position = c(0.8, 0.9), legend.title=element_blank()) +
+  labs(x = 'CO2 emission equivalent per kg food', y = 'Nutrient density, %') +
+  th + theme(
+    legend.position = c(0.8, 0.9), legend.title=element_blank(),
+    plot.margin=unit(c(0.1, 1, 0.1, 0.1), 'cm')) +
     # guides(point = 'legend', text='none') +
   scale_fill_manual(values = colcol2)
 
 g0B<-ggplot(all, aes(mid, nut_score)) + 
-  geom_point(aes(fill=farmed_wild), size=2.5, alpha=0.8, pch=21, col='black') +
+  geom_point(aes(fill=farmed_wild), size=2, alpha=0.8, pch=21, col='black') +
   # geom_label(aes(label=common_name), alpha=0.5,size=2.5) +
   labs(x = 'CO2 emission equivalent per kg of seafood', y = 'Nutrient density, %') +
-  theme(legend.position = c(0.8, 0.9), legend.title=element_blank()) +
+  th + theme(legend.position = c(0.8, 0.9), legend.title=element_blank()) +
   # guides(point = 'legend', text='none') +
   scale_fill_manual(values = colcol2)
 
 # inset: fish vs invert and farmed vs wild
 g_inset<-ggplot(wild_f, aes(x = mid, y =mean, fill=farmed_wild)) +
-      geom_linerange(aes(xmin = lower, xmax = upper)) +
-      geom_pointrange(aes(ymin = lower_nut, ymax = upper_nut), pch=21, col='black', fatten=10) +
-      geom_text_repel(aes(label=x),size=3, force=1) +
+      geom_linerange(aes(xmin = lower, xmax = upper), col='grey') +
+      geom_linerange(aes(ymin = lower_nut, ymax = upper_nut), col='grey') +
+      geom_point(pch=21, col='black', size=4) +
+      geom_text_repel(aes(label=x),size=2.5, force=3, point.padding = 0.2) +
       scale_fill_manual(values = colcol2) +
-      theme(legend.position = 'none') +
+      th + theme(legend.position = 'none') +
       labs(x = 'CO2 emission equivalent per kg of seafood', y = 'Nutrient density, %') 
 
   
@@ -59,7 +68,7 @@ g1<-ggplot(all, aes(mid, portion_adq, col=farmed_wild)) +
     geom_point(size=0) +
     geom_label(aes(label=common_name), alpha=0.5,size=2.5) +
     labs(x = 'CO2 emission equivalent per kg of seafood', y = 'Portion of seafood\nfor 40% nutrient adequacy, g') +
-    theme(legend.position = c(0.8, 0.8), legend.title = element_blank()) +
+    th + theme(legend.position = c(0.8, 0.8), legend.title = element_blank()) +
     guides(point = 'legend', text='none') +
     scale_colour_manual(values = colcol2)
 
@@ -68,15 +77,15 @@ g2<-ggplot(all, aes(mid, nut_score, col=farmed_wild)) +
   geom_point(size=0) +
   geom_label(aes(label=common_name), alpha=0.5,size=2.5) +
   labs(x = 'CO2 emission equivalent per kg of seafood', y = 'Nutrient density, %') +
-  theme(legend.position = c(0.8, 0.8), legend.title = element_blank()) +
+  th + theme(legend.position = c(0.8, 0.8), legend.title = element_blank()) +
   guides(point = 'legend', text='none') +
   scale_colour_manual(values = colcol2)
 
 
-pdf(file = 'fig/final/Figure1_nutrient_ghg.pdf', height=4, width=9)
-bot<-plot_grid(g0B, g_inset, nrow=1, rel_widths=c(1, 1), labels=c('B', 'C'))
+pdf(file = 'fig/final/Figure1_nutrient_ghg.pdf', height=5, width=11)
+bot<-plot_grid(g0B, g_inset, nrow=2, rel_widths=c(1, 1), labels=c('B', 'C'))
 print(
-  plot_grid(g0, bot, nrow=2, labels=c('A',''))
+  plot_grid(g0, bot, nrow=1, labels=c('A',''), rel_widths=c(1,0.65))
 )
 dev.off()
 
@@ -85,4 +94,5 @@ print(
   plot_grid(g1, g2, nrow=2)
 )
 dev.off()
+
 

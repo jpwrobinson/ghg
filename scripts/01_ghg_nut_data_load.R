@@ -84,6 +84,8 @@ ghg <- ghg %>% mutate(scientific_name = recode(scientific_name,
 																'Psetta maxima' = 'Scophthalmus maximus', 
 																'Pampus' = 'Pampus argenteus'))
 
+save(ghg, file = 'data/ghg_all_dal_data.rds')
+
 pdf(file = 'fig/ghg/ghg_all_species.pdf', height=8, width=8)
 ggplot(ghg, aes(common_name, ymin = ghg_low, ymax = ghg_high, col=farmed_wild)) + 
 			geom_errorbar() +
@@ -156,7 +158,6 @@ all$ca_rda<-all$calcium/rda$rni_women[rda$nutrient=='calcium']*100
 all$fe_rda<-all$iron/rda$rni_women[rda$nutrient=='iron']*100
 all$se_rda<-all$selenium/rda$rni_women[rda$nutrient=='selenium']*100
 all$zn_rda<-all$zinc/rda$rni_women[rda$nutrient=='zinc']*100
-all$vita_rda<-all$vitamin_a/rda$rni_women[rda$nutrient=='vitamin_a']*100
 all$om_rda<-all$omega_3/rda$rni_women[rda$nutrient=='omega_3']*100
 
 ## now cap nutrient RDA at 100% (i.e. a species either meets (100%) or doesn't meet (<100%) the RDA)
@@ -165,7 +166,6 @@ all$ca_rda[all$ca_rda>100]<-100
 all$fe_rda[all$fe_rda>100]<-100
 all$se_rda[all$se_rda>100]<-100
 all$zn_rda[all$zn_rda>100]<-100
-all$vita_rda[all$vita_rda>100]<-100
 all$om_rda[all$om_rda>100]<-100
 
 ## now add prob nutrient adequacy (mean rda), and price to reach 40% nutrient adequacy
