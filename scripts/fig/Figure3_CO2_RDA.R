@@ -65,7 +65,7 @@ gmain<-ggplot(fig_dat, aes(product, nt_co2, fill = n_targets)) +
   coord_flip() +
   scale_x_discrete(limits=levels(fig_dat$product)) +
   scale_y_continuous(expand=c(0.03,0)) +
-  labs(x = '', y = 'kg CO2 per NT', fill='# RDA targets (NT)', subtitle = 'Global seafood') +
+  labs(x = '', y = 'kg CO2 per NT', fill='# nutrient targets (NT)', subtitle = 'Global') +
   # scale_shape_manual(values = c(21, 19)) +
   scale_fill_distiller(palette='RdYlGn',direction=1) +
   scale_color_distiller(palette='RdYlGn',direction=1) +
@@ -82,7 +82,7 @@ guk<-ggplot(fig_dat_uk, aes(product, nt_co2, fill = n_targets)) +
   coord_flip() +
   scale_x_discrete(limits=levels(fig_dat_uk$product)) +
   scale_y_continuous(expand=c(0.03,0)) +
-  labs(x = '', y = 'kg CO2 per NT per 100 g', fill='# RDA targets (NT)', subtitle='UK seafood') +
+  labs(x = '', y = 'kg CO2 per nutrient target per 100 g', fill='# nutrient targets (NT)', subtitle='UK') +
   # scale_shape_manual(values = c(21, 19)) +
   scale_fill_distiller(palette='RdYlGn',direction=1) +
   scale_color_distiller(palette='RdYlGn',direction=1) +
@@ -102,7 +102,7 @@ gl<-ggplot(all, aes(common_name, nt_co2)) +
   coord_flip() +
   scale_x_discrete(limits=levels(all$common_name)) +
   scale_y_continuous(expand=c(0.01,0)) +
-  labs(x = '', y = 'CO2 equivalent per nutrient RDA target (NT)', fill='# RDA targets') +
+  labs(x = '', y = 'CO2 equivalent per nutrient target', fill='# RDA targets') +
   # scale_shape_manual(values = c(21, 19)) +
   scale_fill_distiller(palette='RdYlGn',direction=1) +
   scale_color_distiller(palette='RdYlGn',direction=1) +

@@ -1,5 +1,0 @@
-- ~~Add animal and  plant foods to figures 1 and 3. How does seafood nutrients and emissions compare to other foods?~~ ~~Consider grouping species by industry.~~ 
-- ~~Figure update - breakdown story  into high and low production sectors.~~  
-- Leverage points - focus on few case studies (salmon, mussels) to understand if  methodology or production accounts for range in emissions, then identify opportunities for decarbonising / reducing emissions. Loop in Robert  Parker and Peter Tyedmers, who developed the Dal GHG database.
-- Finalise figures and write up executive summary to share with Seafish + coauthors. Aiming early November 2021.
-- **Angus** to look into price data - supermarket £ per kg, both the range and mean  price for each seafood product. Attached is the list of top 90% seafood  to help with that.
