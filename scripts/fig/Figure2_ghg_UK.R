@@ -33,8 +33,8 @@ nut2<-nut %>% ungroup() %>%  distinct(nut_score, species, id, mid, class)
 nut3<-nut %>% ungroup() %>% select(species, farmed_wild, class, mid, id, ca_rda:om_rda) %>%   
     pivot_longer(ca_rda:om_rda, names_to = 'nutrient', values_to = 'rda') 
 
-nut3$nutrient<-factor(nut3$nutrient, levels = rev(unique(nut3$nutrient)[c(3,6,2,4,1,5)]))
-nut3$lab<-nut3$nutrient; levels(nut3$lab) <-rev(c('Selenium','Omega-3', 'Iron', 'Zinc','Calcium', 'Vitamin A')) 
+nut3$nutrient<-factor(nut3$nutrient, levels = rev(unique(nut3$nutrient)[c(3,5,2,4,1)]))
+nut3$lab<-nut3$nutrient; levels(nut3$lab) <-rev(c('Selenium','Omega-3', 'Iron', 'Zinc','Calcium')) 
 
 nut3<-nut3 %>% group_by(id) %>% 
   arrange(factor(nutrient, levels = rev(levels(nutrient))), .by_group=TRUE) %>% 

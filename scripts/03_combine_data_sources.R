@@ -18,6 +18,7 @@ head(all)
 # 1) Squid
 # 2) Whelks
 # 3) Monk
+# 4) Sardine
 
 ## missing nutrient info on
 # 1) Squid
@@ -27,7 +28,7 @@ head(all)
 # 5) Mussel
 # 6) Norway Lobster
 
-all<-all  %>%  mutate(uk_name = common_name)  %>% 
+all<-all  %>%  ungroup()  %>%  mutate(uk_name = common_name)  %>% 
 		mutate(uk_name = case_when(
 			# str_detect(uk_name, 'shrimp|prawn') ~ 'Shrimp, miscellaneous',
 			str_detect(uk_name, 'Atlantic mackerel') ~ 'Mackerel',
@@ -47,17 +48,19 @@ all<-all  %>%  mutate(uk_name = common_name)  %>%
 shrimp<-all %>% filter(str_detect(common_name, 'shrimp|prawn')) %>% group_by(farmed_wild) %>% summarise_at(vars(low:nut_score), mean) %>% 
         mutate(uk_name = 'Shrimp, miscellaneous',
                common_name = 'Shrimp, miscellaneous',
-               scientific_name = 'Shrimp, miscellaneous')
+               scientific_name = 'Shrimp, miscellaneous',
+               group = 'Shrimps, prawns')
 
 warmies<-c('Fenneropenaeus merguiensis', 'Penaeus esculentus', 'Macrobrachium rosenbergii', 
            'Penaeus monodon', 'Farfantepenaeus aztecus', 'Litopenaeus setiferus', 'Farfantepenaeus notialis', 'Penaeus vannamei')
 cold<-c('Pleoticus muelleri', 'Pandalus borealis')
 
 shrimp_warm<-all %>% filter(scientific_name %in% warmies) %>% 
-    group_by(farmed_wild) %>% summarise_at(vars(low:nut_score), mean) %>%
+    group_by(group, farmed_wild) %>% summarise_at(vars(low:nut_score), mean) %>%
   mutate(uk_name = 'Shrimp, warmwater',
          common_name = 'Shrimp, warmwater',
-         scientific_name = 'Shrimp, warmwater')
+         scientific_name = 'Shrimp, warmwater',
+         group = 'Shrimps, prawns')
 
 ## replace shrimp in all with new averaged values
 all<-all %>% filter(!str_detect(common_name, 'shrimp'))
@@ -75,7 +78,7 @@ write.csv(all_uk, file = 'data/UK_GHG_nutrient_catch.csv', row.names=FALSE)
 ## Missing nutrients n = 0
 all_uk  %>% filter(is.na(selenium) & top90 == TRUE)  %>% distinct(common_name)
 
-## Missing GHG n = 7
+## Missing GHG n = 14
 all_uk  %>% filter(is.na(mid) & top90 == TRUE)  %>% distinct(species)
 ## Squid data for tropical South America catch
 ## Whelk missing
