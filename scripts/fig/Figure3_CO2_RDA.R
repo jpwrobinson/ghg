@@ -9,6 +9,8 @@ all<-all %>% rowwise() %>%
       ungroup() %>% droplevels() %>% 
       mutate(common_name = factor(common_name, levels = levels(fct_reorder(common_name, nt_co2))))
 
+
+
 ## setup fish groups of interest
 cats<-data.frame(isscaap = unique(all$group))
 cats$group<-c('Whitefish', 'Tuna', 'Pelagic (large)', 'Bivalve', 'Pelagic (small)', 'Freshwater fish', 'Salmonidae', NA,
@@ -60,55 +62,60 @@ fig_dat_uk<-rbind(groups_uk %>% select(product, nt_co2, n_targets),
 
 
 gmain<-ggplot(fig_dat, aes(product, nt_co2, fill = n_targets)) + 
-  geom_segment(aes(xend = product, y = -Inf, yend = nt_co2), col='grey') +
+  geom_segment(aes(xend = product, y = -Inf, yend = nt_co2), col='#636363') +
   geom_point(size=3.5, col='black', pch=21) +
   coord_flip() +
   scale_x_discrete(limits=levels(fig_dat$product)) +
   scale_y_continuous(expand=c(0.03,0)) +
-  labs(x = '', y = 'kg CO2 per NT', fill='# nutrient targets (NT)', subtitle = 'Global') +
+  labs(x = '', y = 'CO2 equivalent per nutrient target', fill='# nutrient targets (NT)', subtitle = 'Global') +
   # scale_shape_manual(values = c(21, 19)) +
-  scale_fill_distiller(palette='RdYlGn',direction=1) +
-  scale_color_distiller(palette='RdYlGn',direction=1) +
+  scale_fill_distiller(limits=c(1, 3.5),breaks=c(1,2,3), palette='RdYlGn',direction=1) +
+  scale_color_distiller(limits=c(1, 3.5),breaks=c(1,2,3), palette='RdYlGn',direction=1) +
   guides(color='none') +
   th +
   theme(legend.position = c(0.8, 0.4), axis.text.y = element_text(size=11), 
         legend.title=element_text(size=10, colour='black'),
-        plot.subtitle = element_text(size =11, colour='black'))
+        plot.subtitle = element_text(size =11, colour='black'),
+        panel.grid.major.x=element_line(size=0.2, colour='grey'))
 
 
 guk<-ggplot(fig_dat_uk, aes(product, nt_co2, fill = n_targets)) + 
-  geom_segment(aes(xend = product, y = -Inf, yend = nt_co2), col='grey') +
+  geom_segment(aes(xend = product, y = -Inf, yend = nt_co2), col='#636363') +
   geom_point(size=3.5, col='black', pch=21) +
   coord_flip() +
   scale_x_discrete(limits=levels(fig_dat_uk$product)) +
   scale_y_continuous(expand=c(0.03,0)) +
-  labs(x = '', y = 'kg CO2 per nutrient target per 100 g', fill='# nutrient targets (NT)', subtitle='UK') +
+  labs(x = '', y = 'CO2 equivalent per nutrient target', fill='# nutrient targets (NT)', subtitle='UK') +
   # scale_shape_manual(values = c(21, 19)) +
-  scale_fill_distiller(palette='RdYlGn',direction=1) +
-  scale_color_distiller(palette='RdYlGn',direction=1) +
+  scale_fill_distiller(limits=c(1, 3.5),breaks=c(1,2,3), palette='RdYlGn',direction=1) +
+  scale_color_distiller(limits=c(1, 3.5),breaks=c(1,2,3), palette='RdYlGn',direction=1) +
   guides(color='none') +
   th +
-  theme(legend.position = c(0.8, 0.4), axis.text.y = element_text(size=11),
+  theme(legend.position = 'none', axis.text.y = element_text(size=11),
         legend.title=element_text(size=10, colour='black'),
-        plot.subtitle = element_text(size =11, colour='black'))
+        plot.subtitle = element_text(size =11, colour='black'),
+        panel.grid.major.x=element_line(size=0.2, colour='grey'))
 
 
 
 ## supp figure - all species in the Dal database
 gl<-ggplot(all, aes(common_name, nt_co2)) + 
-  geom_segment(aes(xend = common_name, y = -Inf, yend = nt_co2), col='grey') +
-  geom_point(data = all %>% filter(farmed_wild == 'Wild'), aes(fill = n_targets),size=2.5, col='black', pch=21) +
-  geom_point(data = all %>% filter(farmed_wild != 'Wild'), aes(col = n_targets),size=2.5, pch=19) +
+  # geom_segment(aes(xend = common_name, y = -Inf, yend = nt_co2), col='#636363') +
+  geom_point(data = all %>% filter(farmed_wild == 'Wild'), aes(fill = n_targets),size=3, col='black', pch=21) +
+  geom_point(data = all %>% filter(farmed_wild != 'Wild'), aes(col = n_targets),size=3, pch=19) +
   coord_flip() +
   scale_x_discrete(limits=levels(all$common_name)) +
   scale_y_continuous(expand=c(0.01,0)) +
   labs(x = '', y = 'CO2 equivalent per nutrient target', fill='# RDA targets') +
   # scale_shape_manual(values = c(21, 19)) +
-  scale_fill_distiller(palette='RdYlGn',direction=1) +
-  scale_color_distiller(palette='RdYlGn',direction=1) +
+  scale_fill_distiller(limits=c(1, 3.5),breaks=c(1,2,3), palette='RdYlGn',direction=1) +
+  scale_color_distiller(limits=c(1, 3.5),breaks=c(1,2,3), palette='RdYlGn',direction=1) +
   guides(color='none') +
   th +
-  theme(legend.position = c(0.8, 0.4), axis.text.y = element_text(size=9), legend.title=element_text(size=10))
+  theme(legend.position = c(0.8, 0.4), 
+    panel.grid.major=element_line(size=0.2, colour='grey'),
+    panel.grid.minor.x=element_line(size=0.1, colour='grey'),
+      axis.text.y = element_text(size=9), legend.title=element_text(size=10))
 
 
 

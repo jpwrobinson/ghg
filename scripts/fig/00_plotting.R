@@ -11,6 +11,7 @@ th<-theme(axis.text.y=element_text(size=11.5, colour='black'),
           panel.border = element_blank(),
           strip.text = element_text(face="bold", colour='black', size=10),
           legend.position ='none',
+          legend.background=element_rect(fill='white'),
           legend.title=element_blank(),
           axis.ticks=element_blank())
 

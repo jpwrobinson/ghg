@@ -63,36 +63,35 @@ g_inset<-ggplot(wild_f, aes(x = mid, y =mean, fill=farmed_wild)) +
 
   
 ## sup figures showing names and nutrient scores
-g1<-ggplot(all, aes(mid, portion_adq, col=farmed_wild)) + 
-    # geom_text(aes(label=common_name))
-    geom_point(size=0) +
-    geom_label(aes(label=common_name), alpha=0.5,size=2.5) +
-    labs(x = 'CO2 emission equivalent per kg of seafood', y = 'Portion of seafood\nfor 40% nutrient adequacy, g') +
-    th + theme(legend.position = c(0.8, 0.8), legend.title = element_blank()) +
-    guides(point = 'legend', text='none') +
-    scale_colour_manual(values = colcol2)
+# g1<-ggplot(all, aes(mid, portion_adq, col=farmed_wild)) + 
+#     # geom_text(aes(label=common_name))
+#     geom_point(size=0) +
+#     geom_label(aes(label=common_name), alpha=0.5,size=2.5) +
+#     labs(x = 'CO2 emission equivalent per kg of seafood', y = 'Portion of seafood\nfor 40% nutrient adequacy, g') +
+#     th + theme(legend.position = c(0.8, 0.8), legend.title = element_blank()) +
+#     guides(point = 'legend', text='none') +
+#     scale_colour_manual(values = colcol2)
 
-g2<-ggplot(all, aes(mid, nut_score, col=farmed_wild)) + 
+g2<-ggplot(all, aes(mid, nut_score, fill=farmed_wild)) + 
   # geom_text(aes(label=common_name))
-  geom_point(size=0) +
-  geom_label(aes(label=common_name), alpha=0.5,size=2.5) +
+  geom_point(size=2, pch=21, col='black') +
+  geom_text_repel(aes(col=farmed_wild, label=common_name),size=2) +
   labs(x = 'CO2 emission equivalent per kg of seafood', y = 'Nutrient density, %') +
   th + theme(legend.position = c(0.8, 0.8), legend.title = element_blank()) +
-  guides(point = 'legend', text='none') +
-  scale_colour_manual(values = colcol2)
+  guides(fill='legend', point = 'none', text='none') +
+  scale_colour_manual(values = colcol2) +
+  scale_fill_manual(values = colcol2)
 
 
-pdf(file = 'fig/final/Figure1_nutrient_ghg.pdf', height=5, width=11)
+pdf(file = 'fig/final/Figure1_nutrient_ghg.pdf', height=5, width=10)
 bot<-plot_grid(g0B, g_inset, nrow=2, rel_widths=c(1, 1), labels=c('B', 'C'))
 print(
-  plot_grid(g0, bot, nrow=1, labels=c('A',''), rel_widths=c(1,0.65))
+  plot_grid(g0, bot, nrow=1, labels=c('A',''), rel_widths=c(1,0.75))
 )
 dev.off()
 
-pdf(file = 'fig/final/FigureS1_nutrient_ghg.pdf', height=8, width=10)
-print(
-  plot_grid(g1, g2, nrow=2)
-)
+pdf(file = 'fig/final/FigureS1_nutrient_ghg.pdf', height=5, width=8)
+print(g2)
 dev.off()
 
 

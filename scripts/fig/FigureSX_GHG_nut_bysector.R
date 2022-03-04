@@ -53,7 +53,7 @@ nutS$source<-factor(nutS$source, levels=unique(nutS$source)[c(2,1,3)])
 #         legend.position = 'none', axis.text.y = element_blank(), axis.title.y = element_blank(), strip.text.y = element_blank())
 
 ## 3. production 
-g3<-ggplot(nutS, aes(catch, fct_reorder(id, mid), fill=farmed_wild)) +
+g3<-ggplot(nutS, aes(catch, fct_reorder(id, tot), fill=farmed_wild)) +
       geom_bar(stat = 'identity') +
       labs(x = 'Seafood produced, t', y = '') +
       facet_grid(cols = vars(source), scales='free_y', space = 'free_y') + 
@@ -62,14 +62,14 @@ g3<-ggplot(nutS, aes(catch, fct_reorder(id, mid), fill=farmed_wild)) +
       th+ 
       theme(plot.margin=unit(c(0.1, 0.5, 0.1, 0.5), 'cm'), 
             axis.ticks = element_blank(), 
-            legend.position = 'none', 
+            legend.position = c(0.95,0.2), 
             panel.grid.major.x = element_line(colour ='grey'),
             # axis.text.y = element_blank(), 
             axis.title.y = element_blank(), strip.text.x = element_text(colour='black',angle=360))
 
 
 
-pdf(file = 'fig/final/FigureSX_UK_profiles_bysector.pdf', height=4, width=12)
+pdf(file = 'fig/final/FigureS2_UK_profiles_bysector.pdf', height=4, width=12)
 # print(
 #   plot_grid(g1, g2, g3, nrow = 1, align = 'h', rel_widths=c(1, 0.6, 0.8), labels=c('A', 'B', 'C'))
 # )

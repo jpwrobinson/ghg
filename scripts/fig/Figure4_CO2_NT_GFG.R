@@ -26,7 +26,6 @@ nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
   mutate(id = paste(farmed_wild, scientific_name, sep='_')) %>% 
   left_join(gfg %>% select(-farmed_wild, -common_name, -scientific_name), by = 'id')
       
-
 gg<-ggplot(nut, aes(nt_co2, total_score, col=farmed_wild)) + 
         geom_point(size=3) + 
         geom_label_repel(aes(label = common_name), force=2,show.legend = FALSE) +
