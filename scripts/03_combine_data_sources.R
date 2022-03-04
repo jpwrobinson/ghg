@@ -73,7 +73,10 @@ all<-rbind(all, shrimp %>% select(names(all)), shrimp_warm %>% select(names(all)
 all_uk<-left_join(tot_post %>% mutate(uk_name = species), by = 'uk_name', all) %>% 
 		filter(!is.na(tot))
 
+all_uk_bysector<-left_join(tot %>% mutate(uk_name = species), by = 'uk_name', all) 
+
 write.csv(all_uk, file = 'data/UK_GHG_nutrient_catch.csv', row.names=FALSE)
+write.csv(all_uk_bysector, file = 'data/UK_GHG_nutrient_catch_bysector.csv', row.names=FALSE)
 
 ## Missing nutrients n = 0
 all_uk  %>% filter(is.na(selenium) & top90 == TRUE)  %>% distinct(common_name)

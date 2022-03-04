@@ -10,6 +10,7 @@ nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
   summarise_at(vars(low:nut_score), mean) %>% 
   mutate(species=factor(species), id = paste0(species, ' (', farmed_wild, ')'))
 
+
 g0<-ggplot(nut, aes(mid,portion_adq, col=farmed_wild)) +  
       ggrepel::geom_label_repel(aes(label = species), seed=4, size=2.5) +
       geom_errorbarh(aes(xmin = low, xmax=max)) +
@@ -19,6 +20,7 @@ g0<-ggplot(nut, aes(mid,portion_adq, col=farmed_wild)) +
       labs(x = 'C02 emmissions equivalent per kg seafood', y = 'Portion for 40% nutrient adequacy, g') +
       scale_colour_manual(values = colcol2)
 
+## 1. GHG
 g1<-ggplot(nut, aes(mid, fct_reorder(id, mid), col=farmed_wild)) + 
   geom_segment(aes(x = low, xend = max, y =  fct_reorder(id, mid), yend= fct_reorder(id, mid))) +
   geom_point(aes(x = mid, y =  fct_reorder(id, mid)), size=3) +
@@ -40,19 +42,8 @@ nut3<-nut3 %>% group_by(id) %>%
   arrange(factor(nutrient, levels = rev(levels(nutrient))), .by_group=TRUE) %>% 
   mutate(label_ypos=cumsum(rda) - 0.5*rda)
 
-## density simple version
-# g2<-ggplot(nut2, aes(nut_score,fct_reorder(id, mid))) + 
-#   geom_bar(stat='identity') +
-#   labs(x = 'Nutrient density, %', y ='') +
-#   facet_grid(rows = vars(class), scales='free_y', space = 'free_y') + 
-#   scale_fill_manual(values = colcol2) +
-#   scale_x_continuous(labels=scales::comma, expand=c(0, 0.06)) +
-#   th+ 
-#   theme(plot.margin=unit(c(0.1, 0.5, 0.1, 0.5), 'cm'), 
-#         axis.ticks = element_blank(), 
-#         legend.position = 'none', axis.text.y = element_blank(), axis.title.y = element_blank(), strip.text.y = element_blank())
 
-## density fill version
+## 2. nutrient density
 g2<-ggplot(nut3, aes(rda, fct_reorder(id, mid), fill=lab)) + 
   geom_bar(stat='identity') +
   geom_text(data = nut3 %>% filter(rda >= 15),
@@ -66,9 +57,7 @@ g2<-ggplot(nut3, aes(rda, fct_reorder(id, mid), fill=lab)) +
         axis.ticks = element_blank(), 
         legend.position = 'none', axis.text.y = element_blank(), axis.title.y = element_blank(), strip.text.y = element_blank())
 
-
-# labs <- levels(nut2$species)
-# levels(nut$species)<-levels(fct_reorder(nut$species, nut$mid))
+## 3. production 
 g3<-ggplot(nut, aes(tot, fct_reorder(id, mid), fill=farmed_wild)) +
       geom_bar(stat = 'identity') +
       labs(x = 'Seafood produced, t', y = '') +
