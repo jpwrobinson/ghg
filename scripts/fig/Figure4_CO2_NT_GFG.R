@@ -87,7 +87,7 @@ g3<-ggplot(stock %>% filter(SpeciesName %in% nut$scientific_name & group!='Salmo
     theme(legend.position = 'top')
 
 
-pdf(file = 'fig/final/Figure4.pdf', height = 7, width=8)
+pdf(file = 'fig/final/FigureSX_GFGscore.pdf', height = 7, width=8)
 print(gg)
 dev.off()
 

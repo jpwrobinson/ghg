@@ -58,23 +58,25 @@ g2<-ggplot(nut3, aes(rda, fct_reorder(id, mid), fill=lab)) +
         legend.position = 'none', axis.text.y = element_blank(), axis.title.y = element_blank(), strip.text.y = element_blank())
 
 ## 3. production 
-g3<-ggplot(nut, aes(tot, fct_reorder(id, mid), fill=farmed_wild)) +
-      geom_bar(stat = 'identity') +
-      labs(x = 'Seafood produced, t', y = '') +
-      facet_grid(rows = vars(class), scales='free_y', space = 'free_y') + 
-      scale_fill_manual(values = colcol2) +
-      scale_x_continuous(labels=scales::comma, expand=c(0, 0.06)) +
-      th+ 
-      theme(plot.margin=unit(c(0.1, 0.5, 0.1, 0.5), 'cm'), 
-            axis.ticks = element_blank(), 
-            legend.position = 'none', 
-            axis.text.y = element_blank(), axis.title.y = element_blank(), strip.text.y = element_text(colour='black',angle=360))
+# g3<-ggplot(nut, aes(tot, fct_reorder(id, mid), fill=farmed_wild)) +
+#       geom_bar(stat = 'identity') +
+#       labs(x = 'Seafood produced, t', y = '') +
+#       facet_grid(rows = vars(class), scales='free_y', space = 'free_y') + 
+#       scale_fill_manual(values = colcol2) +
+#       scale_x_continuous(labels=scales::comma, expand=c(0, 0.06)) +
+#       th+ 
+#       theme(plot.margin=unit(c(0.1, 0.5, 0.1, 0.5), 'cm'), 
+#             axis.ticks = element_blank(), 
+#             legend.position = 'none', 
+#             axis.text.y = element_blank(), axis.title.y = element_blank(), strip.text.y = element_text(colour='black',angle=360))
+
+source('scripts/fig/FigureSX_GHG_nut_bysector.R')
 
 
-
-pdf(file = 'fig/final/Figure2_UK_profiles.pdf', height=4, width=12)
+pdf(file = 'fig/final/Figure2_UK_profiles.pdf', height=7, width=9)
+top<-plot_grid(g1, g2, nrow = 1, align = 'h', rel_widths=c(1, 0.6), labels=c('A', 'B'))
 print(
-  plot_grid(g1, g2, g3, nrow = 1, align = 'h', rel_widths=c(1, 0.6, 0.8), labels=c('A', 'B', 'C'))
+  plot_grid(top, g3, nrow =2, labels=c('', 'C'), rel_heights=c(1, 0.7))
 )
 dev.off()
 

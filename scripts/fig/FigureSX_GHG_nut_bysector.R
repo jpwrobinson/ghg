@@ -1,5 +1,16 @@
 
-source('scripts/fig/Figure2_ghg_UK.R')
+# source('scripts/fig/Figure2_ghg_UK.R')
+source('scripts/fig/00_plotting.R')
+
+drops<-c('Other marine fish')
+nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>% 
+  mutate(prop_tot = tot / all * 100, class = ifelse(prop_tot >= 5, 'High production', 'Low production')) %>% 
+  filter(top90 == TRUE & !species %in% drops & !is.na(mid)) %>%
+  select(-tax) %>% 
+  group_by(species, farmed_wild, tot, class) %>% 
+  summarise_at(vars(low:nut_score), mean) %>% 
+  mutate(species=factor(species), id = paste0(species, ' (', farmed_wild, ')'))
+
 
 
 nutS<-read.csv('data/UK_GHG_nutrient_catch_bysector.csv') %>% 
@@ -9,11 +20,11 @@ nutS<-read.csv('data/UK_GHG_nutrient_catch_bysector.csv') %>%
   summarise_at(vars(low:nut_score), mean) %>% 
   mutate(species=factor(species), id = paste0(species, ' (', farmed_wild, ')')) %>% 
   mutate(source = case_when(
-			str_detect(source, 'farmed') ~ 'UK aquaculture',
-  			str_detect(source, 'landed') ~ 'UK landings',
+			str_detect(source, 'farmed') ~ 'UK',
+  			str_detect(source, 'wild') ~ 'UK',
   			str_detect(source, 'imported') ~ 'Imported'))
 
-nutS$source<-factor(nutS$source, levels=unique(nutS$source)[c(2,1,3)])
+nutS$source<-factor(nutS$source, levels=unique(nutS$source)[c(1,2)])
 
 # ## 1. GHG
 # g1<-ggplot(nutS, aes(mid, fct_reorder(id, mid), col=farmed_wild)) + 
@@ -53,7 +64,7 @@ nutS$source<-factor(nutS$source, levels=unique(nutS$source)[c(2,1,3)])
 #         legend.position = 'none', axis.text.y = element_blank(), axis.title.y = element_blank(), strip.text.y = element_blank())
 
 ## 3. production 
-g3<-ggplot(nutS, aes(catch, fct_reorder(id, tot), fill=farmed_wild)) +
+g3<-ggplot(nutS, aes(catch, fct_reorder(species, tot), fill=farmed_wild)) +
       geom_bar(stat = 'identity') +
       labs(x = 'Seafood produced, t', y = '') +
       facet_grid(cols = vars(source), scales='free_y', space = 'free_y') + 

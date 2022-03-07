@@ -81,7 +81,7 @@ save(imp, file = 'data/uk_imports.rds')
 
 ## now aquaculture
 aq<-read.csv('data/uk/aquaculture_production_weight_2015_2018.csv') %>% clean_names() %>% 
-        rename(species = species_name) %>% 
+        rename(species = x_species_name) %>% 
         select(species, average_tonnes) %>% 
         mutate(species = recode(species,
                                 'Salmonids nei' = 'Other salmonids',
@@ -101,7 +101,8 @@ aq<-read.csv('data/uk/aquaculture_production_weight_2015_2018.csv') %>% clean_na
                                 'Northern quahog(=Hard clam)' = "Clam",
                                 'Marine crustaceans nei' = 'Other crustaceans',
                                 'European seabass' = 'Seabass, European')) %>% 
-          group_by(species) %>% summarise(average_tonnes = sum(average_tonnes))
+          group_by(species) %>% summarise(average_tonnes = sum(average_tonnes)) %>% 
+          mutate(farmed_wild = 'Farmed')
 
 ### now total available seafood
 
@@ -132,7 +133,8 @@ land_19<-read_excel('data/uk/UK_landings_2015_2019.xlsx')  %>% clean_names()  %>
 					'Bass' = 'Seabass, European',
 					'Catfish' = 'Freshwater catfish'))  %>% 
 				group_by(species)  %>% 
-				summarise(catch = sum(catch))
+				summarise(catch = sum(catch)) %>% 
+				mutate(farmed_wild = 'Wild')
 
 ## change import names
 imp_post<-imp_post %>% mutate(species = case_when(
@@ -140,7 +142,8 @@ imp_post<-imp_post %>% mutate(species = case_when(
   str_detect(species, 'eam') ~ 'Bream',
   TRUE ~ species)) %>% 
   group_by(species)  %>% 
-  summarise(w = sum(w))
+  summarise(w = sum(w)) %>% 
+  mutate(farmed_wild = 'Imported')
 
 
 ## join imports and landings and aquaculture
@@ -148,14 +151,14 @@ tot<-full_join(
         full_join(land_19  %>% select(species, catch),
 				imp_post %>% select(species, w)),
 				aq %>% select(species, average_tonnes))  %>% 
-	rename(imported = w, landed = catch, farmed = average_tonnes)  %>% 
+	rename(imported = w, wild = catch, farmed = average_tonnes)  %>% 
   mutate(imported = ifelse(is.na(imported), 0, imported),
-         landed = ifelse(is.na(landed), 0, landed),
+         wild = ifelse(is.na(wild), 0, wild),
          farmed = ifelse(is.na(farmed), 0, farmed),
-         prop_imported = imported / (imported + landed + farmed)) %>% 
+         prop_imported = imported / (imported + wild + farmed)) %>% 
 	pivot_longer(-c(species,prop_imported), values_to = 'catch', names_to = 'source')  %>% 
 	group_by(species) %>% 
-	mutate(tot = sum(catch))  
+	mutate(tot = sum(catch), id = paste(species, source, sep = '_'))  
 
 ## get the species cumulative landings - summed across imports + landings
 tot_post<- tot %>% 
@@ -163,6 +166,7 @@ tot_post<- tot %>%
 	summarise(tot = sum(catch), prop_imported  = unique(prop_imported)) %>% 
 	arrange(desc(tot))  %>% 
 	mutate(all = sum(tot), t80 = cumsum(tot), pos = t80/all, top90 = ifelse(pos <= 0.90, TRUE, FALSE))
+
 
 save(tot, tot_post, file = 'data/uk_seafood.rds')
 

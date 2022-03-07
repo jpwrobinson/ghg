@@ -3,6 +3,9 @@ theme_set(theme_sleek())
 source('scripts/fig/00_plotting.R')
 set.seed(43)
 
+readxl::read_excel('data/gfg/GFG_Export_2021-04-12.xlsx') %>% clean_names() %>% filter(total_score=='Default Red Rating') %>% 
+    group_by(common_name, farmed_wild) %>% summarise(n = n_distinct(id)) %>% data.frame()
+
 gfg<-readxl::read_excel('data/gfg/GFG_Export_2021-04-12.xlsx') %>% clean_names() %>% 
     rename(scientific_name = latin_name) %>% 
     filter(! total_score %in% c('Unknown', 'Under Review', 'Default Red Rating', 'FIP Improver')) %>% 
@@ -32,35 +35,29 @@ nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
 
 nut_rad<-nut %>% filter(!is.na(total_score)) %>% 
       ungroup() %>% 
-      mutate(CO2 = rescale(mid, to=c(1,0)), Nutrients = rescale(nut_score), Sustainability = rescale(total_score), Production = rescale(tot)) %>% 
-      select(id, common_name, scientific_name, farmed_wild, CO2, Nutrients, Sustainability, Production) #%>% 
+      mutate(CO2 = rescale(mid, to=c(1,0)), N = rescale(nut_score), S = rescale(total_score), P = rescale(tot)) %>% 
+      select(id, common_name, scientific_name, farmed_wild, CO2, N, S, P, tot) #%>% 
       # pivot_longer(-c(scientific_name, farmed_wild), names_to = 'variable', values_to = 'value')
 
-create_beautiful_radarchart <- function(data, color = "#00AFBB", 
-                                        vlabels = colnames(data), vlcex = 0.7,
-                                        caxislabels = NULL, title = NULL, ...){
-  radarchart(
-    data, axistype = 1,
-    # Customize the polygon
-    pcol = color, pfcol = scales::alpha(color, 0.5), plwd = 2, plty = 1,
-    # Customize the grid
-    cglcol = "grey", cglty = 1, cglwd = 0.8,
-    # Customize the axis
-    axislabcol = "grey", 
-    # Variable labels
-    vlcex = vlcex, vlabels = vlabels,
-    caxislabels = caxislabels, title = title, ...
-  )
-}
+## catch weighted average values
+nut_avg<-nut_rad %>% group_by(farmed_wild) %>% 
+      summarise(across(where(is.numeric), ~ weighted.mean(.x, w = tot)))
 
-sp<-unique(nut_rad$id)
+## replace production with mean value (not catch weighted, illogical)
+nut_avg_prod<-nut_rad %>% group_by(farmed_wild) %>% 
+      summarise(across(where(is.numeric), ~ mean(.x)))
 
-for(i in 1:length(sp)){
+nut_avg$P<-nut_avg_prod$P
+nut_avg$tot<-NULL
 
-  dat<-nut_rad[i, 4:8]
-  ppcol<-ifelse(unique(nut_rad$farmed_wild[i])=='Farmed', colcol[2], colcol[1])
-  tit<-nut_rad$common_name[i]
-  gridlab<-ifelse(i == 1, 3, 0)
+## average radars
+for(i in 1:2){
+
+  dat<-nut_avg[i,]
+  ppcol<-ifelse(unique(nut_avg$farmed_wild[i])=='Farmed', colcol[2], colcol[1])
+  tit<-nut_avg$farmed_wild[i]
+  # gridlab<-ifelse(i == 1, 3, 0)
+  gridlab = 4
 
   gg<-ggradar(dat, 
     group.colours = ppcol,
@@ -68,18 +65,62 @@ for(i in 1:length(sp)){
     group.point.size = 2,
     group.line.width = 1,
     background.circle.colour = "white",
-    axis.label.size = 2.5,
+    axis.labels=c('CO2', 'Nutrients', 'Sustainability', 'Production'),
+    axis.label.size = 4,
     grid.label.size = gridlab,
     fill=TRUE,
   gridline.mid.colour = "grey") + 
   labs(subtitle = tit) +
-  theme(plot.subtitle = element_text(size=10, colour='black'),
+  theme(plot.subtitle = element_text(size=14, colour='black', face=2),
+    plot.margin =unit(c(0.1, .01, 0.01, -.5), 'cm'))
+  assign(paste0('gAvg', i), gg)
+}
+
+## species radars
+sp<-unique(nut_rad$id)
+for(i in 1:length(sp)){
+
+  dat<-nut_rad[i, 4:8]
+  ppcol<-ifelse(unique(nut_rad$farmed_wild[i])=='Farmed', colcol[2], colcol[1])
+  tit<-nut_rad$common_name[i]
+  # gridlab<-ifelse(i == 1, 3, 0)
+  gridlab = 0
+
+  gg<-ggradar(dat, 
+    group.colours = ppcol,
+    base.size = 1,
+    group.point.size = 2,
+    group.line.width = 1,
+    background.circle.colour = "white",
+    axis.label.size = 3,
+    grid.label.size = gridlab,
+    fill=TRUE,
+  gridline.mid.colour = "grey") + 
+  labs(subtitle = tit) +
+  theme(plot.subtitle = element_text(size=11, colour='black', face=1),
     plot.margin =unit(c(0.01, 0.01, 0.01, 0.01), 'cm'))
   assign(paste0('g', i), gg)
 }
 
-pdf(file = 'fig/final/Figure4_radar.pdf', height=7, width=10)
+ggblank<-ggradar(dat, 
+    group.colours = 'transparent',
+    base.size = 1,
+    group.point.size = 2,
+    group.line.width = 1,
+    background.circle.colour = "white",
+    axis.label.size = 3,
+    grid.label.size = gridlab,
+    grid.line.width= 0,
+    fill=TRUE,
+  gridline.mid.colour = "transparent") + 
+  labs(subtitle = tit) +
+  theme(plot.subtitle = element_text(size=10, colour='transparent'),
+    plot.margin =unit(c(0.01, 0.01, 0.01, 0.01), 'cm'))
+
+pdf(file = 'fig/final/Figure4_radar.pdf', height=7, width=16)
+gavg<-plot_grid(gAvg2, gAvg1, nrow=2)
+gsp<-plot_grid(g1, g2, g3, g4, g5, g6, g7, g8, g9, g10, g11, g12)
 print(
-  plot_grid(g1, g2, g3, g4, g5, g6, g7, g8, g9, g10, g11, g12, nrow=4)
+  plot_grid(gavg, gsp, nrow=1, rel_widths=c(0.5, 1))
   )
 dev.off()

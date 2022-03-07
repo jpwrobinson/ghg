@@ -70,10 +70,14 @@ all<-rbind(all, shrimp %>% select(names(all)), shrimp_warm %>% select(names(all)
 # all[str_detect(all$common_name, tolower(sp[12])),]
 # all[str_detect(all$common_name, 'tuna'),]
 
-all_uk<-left_join(tot_post %>% mutate(uk_name = species), by = 'uk_name', all) %>% 
+all_uk<-left_join(tot_post,
+			all %>% mutate(id = paste(uk_name, tolower(farmed_wild), sep = '_')),
+			by = 'id') %>% 
 		filter(!is.na(tot))
 
-all_uk_bysector<-left_join(tot %>% mutate(uk_name = species), by = 'uk_name', all) 
+all_uk_bysector<-left_join(tot ,#%>% mutate(uk_name = species), 
+			all %>% mutate(id = paste(uk_name, tolower(farmed_wild), sep = '_')),
+			by = 'id') 
 
 write.csv(all_uk, file = 'data/UK_GHG_nutrient_catch.csv', row.names=FALSE)
 write.csv(all_uk_bysector, file = 'data/UK_GHG_nutrient_catch_bysector.csv', row.names=FALSE)
