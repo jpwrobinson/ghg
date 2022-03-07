@@ -1,4 +1,4 @@
-pacman::p_load(tidyverse, skimr, janitor, cowplot, funk, install=FALSE)
+pacman::p_load(tidyverse, skimr, janitor, cowplot, funk, ggrepel, install=FALSE)
 theme_set(theme_sleek())
 source('scripts/fig/00_plotting.R')
 set.seed(43)
@@ -7,8 +7,9 @@ gfg<-readxl::read_excel('data/gfg/GFG_Export_2021-04-12.xlsx') %>% clean_names()
     rename(scientific_name = latin_name) %>% 
     filter(! total_score %in% c('Unknown', 'Under Review', 'Default Red Rating', 'FIP Improver')) %>% 
     group_by(common_name, scientific_name, farmed_wild) %>% 
-    summarise(total_score = median(as.numeric(total_score))) %>% ungroup() %>% 
-    mutate(farmed_wild = recode(farmed_wild, 'Caught at sea' = 'Wild'), 
+    summarise(se = se(as.numeric(total_score)), total_score = mean(as.numeric(total_score))) %>% ungroup() %>% 
+    mutate(lower = total_score - 2*se, upper = total_score + 2*se,
+          farmed_wild = recode(farmed_wild, 'Caught at sea' = 'Wild'), 
           scientific_name = recode(scientific_name, 'Euthynnus pelamis, Katsuwonus pelamis' = 'Katsuwonus pelamis',
                                                       'Theragra chalcogramma' = 'Gadus chalcogrammus'),
           id = paste(farmed_wild, scientific_name, sep='_'))
@@ -22,11 +23,23 @@ nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
   rowwise() %>%
   mutate(n_targets = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda) > 25),  ## estimate nutrition targets (25% RDA) for each species)
          nt_co2 = mid / n_targets / 10, ## estimate the CO2 equivalent per RDA target
+         nt_co2_low = low / n_targets / 10, ## estimate the CO2 equivalent per RDA target
+         nt_co2_hi = max / n_targets / 10, ## estimate the CO2 equivalent per RDA target
          common_name = factor(common_name, levels = levels(fct_reorder(common_name, nt_co2)))) %>% 
   mutate(id = paste(farmed_wild, scientific_name, sep='_')) %>% 
   left_join(gfg %>% select(-farmed_wild, -common_name, -scientific_name), by = 'id')
-      
+
+
+# nut2<-nut %>% filter(!is.na(total_score))
+# pp<-prcomp(~nut2$nut_score + nut2$total_score + nut2$mid)
+# plot(pp)
+
+
+
+
 gg<-ggplot(nut, aes(nt_co2, total_score, col=farmed_wild)) + 
+        # geom_pointrange(size=0.2, aes(ymin = lower, ymax = upper)) + 
+        # geom_errorbarh(size=0.2, aes(xmin = nt_co2_low, xmax = nt_co2_hi)) + 
         geom_point(size=3) + 
         geom_label_repel(aes(label = common_name), force=2,show.legend = FALSE) +
         th +
@@ -50,9 +63,9 @@ stock<-read.csv('data/ices/stock_data_timeries.csv') %>%
 stock$group<-nut$group[match(stock$SpeciesName, nut$scientific_name)]
 stock$F_stat<-factor(stock$F_stat, levels=c('Unknown', 'Over', 'Under'))
 
-## recreate CEFAS fig
-ggplot(stock, aes(Year, fill=F_stat)) + geom_bar(position='fill')
-ggplot(stock, aes(Year, fill=B_stat)) + geom_bar(position='fill') ## B_stat mostly unknown
+# ## recreate CEFAS fig
+# ggplot(stock, aes(Year, fill=F_stat)) + geom_bar(position='fill')
+# ggplot(stock, aes(Year, fill=B_stat)) + geom_bar(position='fill') ## B_stat mostly unknown
 
 ## check only species in nut/ghg
 g2<-ggplot(stock %>% filter(SpeciesName %in% nut$scientific_name & group!='Salmons, trouts, smelts'), aes(Year, fill=F_stat)) + 

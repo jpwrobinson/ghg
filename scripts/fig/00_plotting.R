@@ -16,9 +16,9 @@ th<-theme(axis.text.y=element_text(size=11.5, colour='black'),
           axis.ticks=element_blank())
 
 
-colcol<-c('#2166ac', '#006d2c')
-colcol2<-c('Farmed' = '#006d2c', 'Wild' ='#2166ac')
-colcol3<-c('farmed' = '#006d2c', 'landed' ='#2166ac', 'imported' = 'grey')
+colcol<-c('#17397B', '#C3840C')
+colcol2<-c('Farmed' = '#C3840C', 'Wild' ='#17397B')
+colcol3<-c('farmed' = '#C3840C', 'landed' ='#17397B', 'imported' = 'grey')
 
 nut.cols<-c('Calcium'='#de2d26', 'Iron'='#636363', 'Zinc'='#3182bd', 'Vitamin A'='#31a354',
             'Omega-3' = '#F77D29', 'Selenium' = '#776EB0')
