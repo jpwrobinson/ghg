@@ -1,4 +1,4 @@
-pacman::p_load(tidyverse, skimr, janitor, cowplot, funk, ggrepel, scales, fmsb, install=FALSE)
+pacman::p_load(tidyverse, skimr, janitor, cowplot, funk, ggrepel, scales, ggradar, install=FALSE)
 theme_set(theme_sleek())
 source('scripts/fig/00_plotting.R')
 set.seed(43)
@@ -35,9 +35,18 @@ nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
 
 nut_rad<-nut %>% filter(!is.na(total_score)) %>% 
       ungroup() %>% 
-      mutate(CO2 = rescale(mid, to=c(1,0)), N = rescale(nut_score), S = rescale(total_score), P = rescale(tot)) %>% 
-      select(id, common_name, scientific_name, farmed_wild, CO2, N, S, P, tot) #%>% 
+      mutate(CO2 = rescale(mid, to=c(1,0)), N = rescale(nut_score), S = rescale(total_score), V = rescale(tot)) %>% 
+      select(id, common_name, scientific_name, farmed_wild, CO2, N, S, V, tot) #%>% 
       # pivot_longer(-c(scientific_name, farmed_wild), names_to = 'variable', values_to = 'value')
+
+## add price per kg (Seafish in retail 2021 update)
+nut_rad$price_key_kg<-c(16.34, 8.03, 8.54, 6.45, 9.64, 5.76, 5.08, 10.42, 24.56, 5.47, 5.47, 16.12)
+nut_rad$P<-rescale(nut_rad$price_key_kg, to=c(1,0))
+nut_rad$price_key_kg<-NULL
+
+ # [1] Atlantic salmon   Atlantic mackerel Atlantic cod      Skipjack tuna    
+ # [5] Haddock           Atlantic herring  Alaska pollock    Norway lobster   
+ # [9] Queen scallop     Blue mussel       Blue mussel       Rainbow trout  
 
 ## catch weighted average values
 nut_avg<-nut_rad %>% group_by(farmed_wild) %>% 
@@ -47,17 +56,20 @@ nut_avg<-nut_rad %>% group_by(farmed_wild) %>%
 nut_avg_prod<-nut_rad %>% group_by(farmed_wild) %>% 
       summarise(across(where(is.numeric), ~ mean(.x)))
 
-nut_avg$P<-nut_avg_prod$P
-nut_avg$tot<-NULL
+nut_avg$V<-nut_avg_prod$V
+
 
 ## average radars
 for(i in 1:2){
 
-  dat<-nut_avg[i,]
   ppcol<-ifelse(unique(nut_avg$farmed_wild[i])=='Farmed', colcol[2], colcol[1])
   tit<-nut_avg$farmed_wild[i]
   # gridlab<-ifelse(i == 1, 3, 0)
   gridlab = 4
+  cap <- paste0(scales:comma(round(nut_avg$tot[i],0)), ' t')
+
+  dat<-nut_avg[i,]
+  dat$tot<-NULL
 
   gg<-ggradar(dat, 
     group.colours = ppcol,
@@ -65,13 +77,15 @@ for(i in 1:2){
     group.point.size = 2,
     group.line.width = 1,
     background.circle.colour = "white",
-    axis.labels=c('CO2', 'Nutrients', 'Sustainability', 'Production'),
+    axis.labels=c('CO2', 'Nutrients', 'Sustainability', 'Volume', 'Price'),
     axis.label.size = 4,
     grid.label.size = gridlab,
     fill=TRUE,
   gridline.mid.colour = "grey") + 
-  labs(subtitle = tit) +
-  theme(plot.subtitle = element_text(size=14, colour='black', face=2),
+  labs(title = tit, subtitle = cap) +
+  theme(
+    plot.title = element_text(size=12, colour='black', face=2),
+    plot.subtitle = element_text(size=9, colour='#636363', face=1),
     plot.margin =unit(c(0.1, .01, 0.01, -.5), 'cm'))
   assign(paste0('gAvg', i), gg)
 }
@@ -80,11 +94,14 @@ for(i in 1:2){
 sp<-unique(nut_rad$id)
 for(i in 1:length(sp)){
 
-  dat<-nut_rad[i, 4:8]
+  dat<-nut_rad[i, 4:10]
   ppcol<-ifelse(unique(nut_rad$farmed_wild[i])=='Farmed', colcol[2], colcol[1])
   tit<-nut_rad$common_name[i]
   # gridlab<-ifelse(i == 1, 3, 0)
   gridlab = 0
+  cap <- paste0(scales::comma(round(dat$tot,0)), ' t')
+
+  dat$tot<-NULL
 
   gg<-ggradar(dat, 
     group.colours = ppcol,
@@ -96,8 +113,10 @@ for(i in 1:length(sp)){
     grid.label.size = gridlab,
     fill=TRUE,
   gridline.mid.colour = "grey") + 
-  labs(subtitle = tit) +
-  theme(plot.subtitle = element_text(size=11, colour='black', face=1),
+  labs(title = tit, subtitle = cap) +
+  theme(
+    plot.title = element_text(size=12, colour='black', face=2),
+    plot.subtitle = element_text(size=9, colour='#636363', face=1),
     plot.margin =unit(c(0.01, 0.01, 0.01, 0.01), 'cm'))
   assign(paste0('g', i), gg)
 }
