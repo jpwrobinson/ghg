@@ -35,9 +35,7 @@ nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
 # plot(pp)
 
 
-
-
-gg<-ggplot(nut, aes(nt_co2, total_score, col=farmed_wild)) + 
+g0<-ggplot(nut, aes(nt_co2, total_score, col=farmed_wild)) + 
         # geom_pointrange(size=0.2, aes(ymin = lower, ymax = upper)) + 
         # geom_errorbarh(size=0.2, aes(xmin = nt_co2_low, xmax = nt_co2_hi)) + 
         geom_point(size=3) + 
@@ -46,6 +44,22 @@ gg<-ggplot(nut, aes(nt_co2, total_score, col=farmed_wild)) +
         scale_y_continuous(breaks=seq(0, 16, by = 2)) +
         scale_color_manual(values = colcol2) +
         labs(y = 'Sustainability Score (Good Fish Guide)', x = 'kg CO2 per nutrient target') +
+          theme(legend.position = c(0.8, 0.8), 
+                legend.title=element_blank()) 
+
+source('scripts/fig/Figure5_radar.R')
+nut_rad$price_key_kg<-c(16.34, 8.03, 8.54, 6.45, 9.64, 5.76, 5.08, 10.42, 24.56, 5.47, 5.47, 16.12)
+nut$price_key_kg<-nut_rad$price_key_kg[match(nut$common_name, nut_rad$common_name)]
+
+g1<-ggplot(nut, aes(nt_co2, price_key_kg, col=farmed_wild)) + 
+        # geom_pointrange(size=0.2, aes(ymin = lower, ymax = upper)) + 
+        # geom_errorbarh(size=0.2, aes(xmin = nt_co2_low, xmax = nt_co2_hi)) + 
+        geom_point(size=3) + 
+        geom_label_repel(aes(label = common_name), force=2,show.legend = FALSE) +
+        th +
+        # scale_y_continuous(breaks=seq(0, 16, by = 2)) +
+        scale_color_manual(values = colcol2) +
+        labs(y = 'price per kg (GBP)', x = 'kg CO2 per nutrient target') +
           theme(legend.position = c(0.8, 0.8), 
                 legend.title=element_blank()) 
 
@@ -61,6 +75,7 @@ stock<-read.csv('data/ices/stock_data_timeries.csv') %>%
             B_stat = ifelse(is.na(B_stat), 'Unknown', B_stat))
 
 stock$group<-nut$group[match(stock$SpeciesName, nut$scientific_name)]
+stock$common_name<-nut$common_name[match(stock$SpeciesName, nut$scientific_name)]
 stock$F_stat<-factor(stock$F_stat, levels=c('Unknown', 'Over', 'Under'))
 
 # ## recreate CEFAS fig
@@ -70,27 +85,31 @@ stock$F_stat<-factor(stock$F_stat, levels=c('Unknown', 'Over', 'Under'))
 ## check only species in nut/ghg
 g2<-ggplot(stock %>% filter(SpeciesName %in% nut$scientific_name & group!='Salmons, trouts, smelts'), aes(Year, fill=F_stat)) + 
     geom_bar(position='fill') +
-    facet_wrap(~group) +
+    facet_wrap(~common_name, nrow=1) +
     labs(x = '', y ='% stocks of UK interest') +
     scale_fill_manual(values = rev(c('#4daf4a', '#e41a1c', '#999999')), labels=c( 'Unknown', '>Fmsy', '<Fmsy')) + 
     scale_x_continuous(breaks=seq(1990, 2019, by = 5), expand=c(0,0)) + 
     scale_y_continuous(labels=scales::percent, expand=c(0,0)) + th +
-    theme(legend.position = 'top')
+    theme(legend.position = 'right', axis.text.x = element_text(size=9, angle=0, hjust=0.5, vjust=0.5),
+            axis.ticks = element_line(colour='black'),
+            strip.text.x = element_text(colour='black', size=11, face=1))
 
 g3<-ggplot(stock %>% filter(SpeciesName %in% nut$scientific_name & group!='Salmons, trouts, smelts'), aes(Year, fill=B_stat)) + 
     geom_bar(position='fill') +
-    facet_wrap(~group) +
+    facet_wrap(~common_name, nrow=1) +
     labs(x = '', y ='% stocks of UK interest')  +
     scale_fill_manual(values = rev(c('#4daf4a', '#e41a1c', '#999999')), labels=c( 'Unknown', '>Blim', '<Blim')) + 
     scale_x_continuous(breaks=seq(1990, 2019, by = 5), expand=c(0,0)) + 
     scale_y_continuous(labels=scales::percent, expand=c(0,0)) + th +
-    theme(legend.position = 'top')
+    theme(legend.position = 'right', axis.text.x = element_text(size=9, angle=0, hjust=0.5, vjust=0.5),
+            axis.ticks = element_line(colour='black'),
+            strip.text.x = element_blank())
 
 
-pdf(file = 'fig/final/FigureSX_GFGscore.pdf', height = 7, width=8)
-print(gg)
+pdf(file = 'fig/final/FigureSX_GFGscore.pdf', height = 9, width=7)
+print(plot_grid(g0, g1, labels=c('A', 'B'), nrow=2))
 dev.off()
 
 pdf(file = 'fig/final/FigureSX_stock_status.pdf', height = 7, width=12)
-print(plot_grid(g2, g3, labels=c('A', 'B'), nrow=1))
+print(plot_grid(g2, g3, labels=c('A', 'B'), nrow=2))
 dev.off()

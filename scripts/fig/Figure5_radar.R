@@ -66,7 +66,7 @@ for(i in 1:2){
   tit<-nut_avg$farmed_wild[i]
   # gridlab<-ifelse(i == 1, 3, 0)
   gridlab = 4
-  cap <- paste0(scales:comma(round(nut_avg$tot[i],0)), ' t')
+  cap <- paste0(scales::comma(round(nut_avg$tot[i],0)), ' t')
 
   dat<-nut_avg[i,]
   dat$tot<-NULL

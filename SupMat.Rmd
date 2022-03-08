@@ -33,13 +33,6 @@ knitr::include_graphics("fig/final/FigureS1_nutrient_ghg.pdf"); i = i + 1
 
 \newpage
 
-```{r, out.height="80%", echo=F,fig.align='center', warning=FALSE, message=FALSE}
-knitr::include_graphics("fig/final/FigureS2_UK_profiles_bysector.pdf"); i = i + 1
-```
-
-**Fig. S`r i`. Annual production of major seafood products in the UK.** Bars show annual production for UK landings, UK aquaculture, and imported products. Wild species are filled blue, farmed species are filled green.
-
-\newpage
 
 ```{r, out.height="80%", echo=F,fig.align='center', warning=FALSE, message=FALSE}
 knitr::include_graphics("fig/final/FigureS3.pdf"); i = i + 1
@@ -48,8 +41,14 @@ knitr::include_graphics("fig/final/FigureS3.pdf"); i = i + 1
 **Fig. S`r i`. Carbon emissions per nutrient target for all seafood products in the carbon emissions database** Points are the mean kg CO2 per nutrient target for each seafood species, where a nutrient target was the recommended intake (adults 18-65 years old) contained in a 100g portion for 7 nutrients (calcium, iron, selenium, zinc, omega-3 fatty acids, vitamin A). Points are coloured by the number of nutrient targets in a 100g portion. Animal-source foods (beef, chicken, lamb, pork) are included for comparison using CO2 values from (Clune et al., 2017) and nutrient values from (Widdowson, n.d.).
 
 
+```{r, out.height="80%", echo=F,fig.align='center', warning=FALSE, message=FALSE}
+knitr::include_graphics("fig/final/FigureSX_GFGscore.pdf"); i = i + 1
+```
 
+**Fig. S`r i`. Carbon emissions per nutrient target for UK seafood products against sustainability score (A) and average price per kg (GBP) (B)** Points are the mean kg CO2 per nutrient target for each seafood product, for the mean sustainability score across multiple stocks or production methods (MSC REF) and price per kg (Seafish 2021).
 
+```{r, out.height="80%", echo=F,fig.align='center', warning=FALSE, message=FALSE}
+knitr::include_graphics("fig/final/FigureSX_stock_status.pdf"); i = i + 1
+```
 
-
-
+**Fig. S`r i`. Pressure and state thresholds for wild fisheries stocks relevant to UK seafood production from 1990-2019.** Bars indicate the proportion of stocks that are underfished (green), overfished (red), or data deficient (unknown), according to estimates of fishing mortality (A, F_MSY_) or spawning stock biomass (B_lim_). Data from CEFAS [REF].

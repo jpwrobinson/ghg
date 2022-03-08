@@ -11,15 +11,6 @@ nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
   mutate(species=factor(species), id = paste0(species, ' (', farmed_wild, ')'))
 
 
-g0<-ggplot(nut, aes(mid,portion_adq, col=farmed_wild)) +  
-      ggrepel::geom_label_repel(aes(label = species), seed=4, size=2.5) +
-      geom_errorbarh(aes(xmin = low, xmax=max)) +
-      geom_point() +
-      th+ 
-      theme(legend.position = c(0.8, 0.8), legend.title = element_blank()) +
-      labs(x = 'C02 emmissions equivalent per kg seafood', y = 'Portion for 40% nutrient adequacy, g') +
-      scale_colour_manual(values = colcol2)
-
 ## 1. GHG
 g1<-ggplot(nut, aes(mid, fct_reorder(id, mid), col=farmed_wild)) + 
   geom_segment(aes(x = low, xend = max, y =  fct_reorder(id, mid), yend= fct_reorder(id, mid))) +
@@ -78,10 +69,6 @@ top<-plot_grid(g1, g2, nrow = 1, align = 'h', rel_widths=c(1, 0.6), labels=c('A'
 print(
   plot_grid(top, g3, nrow =2, labels=c('', 'C'), rel_heights=c(1, 0.7))
 )
-dev.off()
-
-pdf(file = 'fig/final/FigureS2_UK_density_CO2.pdf', height=5, width=10)
-print(g0)
 dev.off()
 
 
