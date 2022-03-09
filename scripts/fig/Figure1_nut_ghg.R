@@ -39,9 +39,11 @@ g0<-ggplot(data=groups, aes(x = mid, y =mean)) +
   geom_text_repel(data=groups, aes(x = mid, y =mean, label=x),size=3, force=1.5, point.padding=0.1) +
   geom_text_repel(data=food, aes(x = median, y =nut_score, label=food_lab),size=3, force=1.5, point.padding=0.1) +
   # geom_label(aes(label=common_name), alpha=0.5,size=2.5) +
-  labs(x = 'CO2 emission equivalent per kg food', y = 'Nutrient density, %') +
+  scale_x_continuous(breaks=seq(0, 25, by = 5)) +
+  labs(x = expression(paste(kg~CO[2],'-',eq)), y = 'Nutrient density, %') +
   th + theme(
     legend.position = c(0.8, 0.9), legend.title=element_blank(),
+    axis.ticks=element_line(color='black'),
     plot.margin=unit(c(0.1, 1, 0.1, 0.1), 'cm')) +
     # guides(point = 'legend', text='none') +
   scale_fill_manual(values = colcol2)
@@ -49,8 +51,9 @@ g0<-ggplot(data=groups, aes(x = mid, y =mean)) +
 g0B<-ggplot(all, aes(mid, nut_score)) + 
   geom_point(aes(fill=farmed_wild), size=2, alpha=0.8, pch=21, col='black') +
   # geom_label(aes(label=common_name), alpha=0.5,size=2.5) +
-  labs(x = 'CO2 emission equivalent per kg of seafood', y = 'Nutrient density, %') +
-  th + theme(legend.position = c(0.8, 0.9), legend.title=element_blank()) +
+  labs(x = expression(paste(kg~CO[2],'-',eq)), y = 'Nutrient density, %') +
+  scale_x_continuous(breaks=seq(0, 25, by = 5)) +
+  th + theme(legend.position = c(0.8, 0.9), axis.ticks=element_line(color='black'),legend.title=element_blank()) +
   # guides(point = 'legend', text='none') +
   scale_fill_manual(values = colcol2)
 
@@ -61,8 +64,9 @@ g_inset<-ggplot(wild_f, aes(x = mid, y =mean, fill=farmed_wild)) +
       geom_point(pch=21, col='black', size=4) +
       geom_text_repel(aes(label=x),size=2.5, force=3, point.padding = 0.2) +
       scale_fill_manual(values = colcol2) +
-      th + theme(legend.position = 'none') +
-      labs(x = 'CO2 emission equivalent per kg of seafood', y = 'Nutrient density, %') 
+      # scale_x_continuous(breaks=seq(0, 25, by = 5)) +
+      th + theme(legend.position = 'none', axis.ticks=element_line(color='black')) +
+      labs(x = expression(paste(kg~CO[2],'-',eq)), y = 'Nutrient density, %') 
 
   
 ## sup figures showing names and nutrient scores
@@ -79,10 +83,11 @@ g2<-ggplot(all, aes(mid, nut_score, fill=farmed_wild)) +
   # geom_text(aes(label=common_name))
   geom_point(size=2, pch=21, col='black') +
   geom_text_repel(aes(col=farmed_wild, label=common_name),size=2) +
-  labs(x = 'CO2 emission equivalent per kg of seafood', y = 'Nutrient density, %') +
-  th + theme(legend.position = c(0.8, 0.8), legend.title = element_blank()) +
+  labs(x = expression(paste(kg~CO[2],'-',eq)), y = 'Nutrient density, %') +
+  th + theme(legend.position = c(0.8, 0.8), axis.ticks=element_line(color='black'),legend.title = element_blank()) +
   guides(fill='legend', point = 'none', text='none') +
   scale_colour_manual(values = colcol2) +
+  scale_x_continuous(breaks=seq(0, 25, by = 5)) +
   scale_fill_manual(values = colcol2)
 
 
