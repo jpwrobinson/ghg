@@ -35,13 +35,13 @@ nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
 
 nut_rad<-nut %>% filter(!is.na(total_score)) %>% 
       ungroup() %>% 
-      mutate(CO2 = rescale(mid, to=c(1,0)), N = rescale(nut_score), S = rescale(total_score), V = rescale(tot)) %>% 
-      select(id, common_name, scientific_name, farmed_wild, CO2, N, S, V, tot) #%>% 
+      mutate(GHG = rescale(mid, to=c(1,0)), N = rescale(nut_score), S = rescale(total_score), P = rescale(tot)) %>% 
+      select(id, common_name, scientific_name, farmed_wild, GHG, N, S, P, tot) #%>% 
       # pivot_longer(-c(scientific_name, farmed_wild), names_to = 'variable', values_to = 'value')
 
 ## add price per kg (Seafish in retail 2021 update)
 nut_rad$price_key_kg<-c(16.34, 8.03, 8.54, 6.45, 9.64, 5.76, 5.08, 10.42, 24.56, 5.47, 5.47, 16.12)
-nut_rad$P<-rescale(nut_rad$price_key_kg, to=c(1,0))
+nut_rad$A<-rescale(nut_rad$price_key_kg, to=c(1,0))
 nut_rad$price_key_kg<-NULL
 
  # [1] Atlantic salmon   Atlantic mackerel Atlantic cod      Skipjack tuna    
@@ -56,7 +56,7 @@ nut_avg<-nut_rad %>% group_by(farmed_wild) %>%
 nut_avg_prod<-nut_rad %>% group_by(farmed_wild) %>% 
       summarise(across(where(is.numeric), ~ mean(.x)))
 
-nut_avg$V<-nut_avg_prod$V
+nut_avg$P<-nut_avg_prod$P
 
 
 ## average radars
@@ -66,7 +66,11 @@ for(i in 1:2){
   tit<-nut_avg$farmed_wild[i]
   # gridlab<-ifelse(i == 1, 3, 0)
   gridlab = 4
-  cap <- paste0(scales::comma(round(nut_avg$tot[i],0)), ' t')
+  if(i == 1){
+  cap <- paste0('Average profile, ', scales::comma(round(nut_avg$tot[i],0)), ' t')}
+
+  if(i == 2){
+  cap <- paste0('Average profile, ', scales::comma(round(nut_avg$tot[i],0)), ' t (total annual production)')}
 
   dat<-nut_avg[i,]
   dat$tot<-NULL
@@ -77,16 +81,17 @@ for(i in 1:2){
     group.point.size = 2,
     group.line.width = 1,
     background.circle.colour = "white",
-    axis.labels=c('CO2', 'Nutrients', 'Sustainability', 'Volume', 'Price'),
+    axis.labels=c('Low GHG', 'Nutrients', 'Sustainability', 'Production', 'Affordable'),
     axis.label.size = 4,
     grid.label.size = gridlab,
     fill=TRUE,
   gridline.mid.colour = "grey") + 
   labs(title = tit, subtitle = cap) +
+  coord_equal(clip='off') +
   theme(
     plot.title = element_text(size=12, colour='black', face=2),
     plot.subtitle = element_text(size=9, colour='#636363', face=1),
-    plot.margin =unit(c(0.1, .01, 0.01, -.5), 'cm'))
+    plot.margin =unit(c(0.1, .01, 0.01, -1), 'cm'))
   assign(paste0('gAvg', i), gg)
 }
 
@@ -136,7 +141,7 @@ ggblank<-ggradar(dat,
   theme(plot.subtitle = element_text(size=10, colour='transparent'),
     plot.margin =unit(c(0.01, 0.01, 0.01, 0.01), 'cm'))
 
-pdf(file = 'fig/final/Figure4_radar.pdf', height=7, width=16)
+pdf(file = 'fig/final/Figure4_radar.pdf', height=7, width=15)
 gavg<-plot_grid(gAvg2, gAvg1, nrow=2)
 gsp<-plot_grid(g1, g2, g3, g4, g5, g6, g7, g8, g9, g10, g11, g12)
 print(

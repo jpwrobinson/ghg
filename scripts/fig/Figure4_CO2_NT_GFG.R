@@ -43,7 +43,7 @@ g0<-ggplot(nut, aes(nt_co2, total_score, col=farmed_wild)) +
         th +
         scale_y_continuous(breaks=seq(0, 16, by = 2)) +
         scale_color_manual(values = colcol2) +
-        labs(y = 'Sustainability Score (Good Fish Guide)', x = 'kg CO2 per nutrient target') +
+        labs(y = 'Sustainability score', x  = expression(paste(kg~CO[2],'-',eq~per~nutrient~target))) +
           theme(legend.position = c(0.8, 0.8), 
                 legend.title=element_blank()) 
 
@@ -59,7 +59,7 @@ g1<-ggplot(nut, aes(nt_co2, price_key_kg, col=farmed_wild)) +
         th +
         # scale_y_continuous(breaks=seq(0, 16, by = 2)) +
         scale_color_manual(values = colcol2) +
-        labs(y = 'price per kg (GBP)', x = 'kg CO2 per nutrient target') +
+        labs(y = 'GBP per kg', x  = expression(paste(kg~CO[2],'-',eq~per~nutrient~target))) +
           theme(legend.position = c(0.8, 0.8), 
                 legend.title=element_blank()) 
 

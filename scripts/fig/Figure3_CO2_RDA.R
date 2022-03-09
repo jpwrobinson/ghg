@@ -67,10 +67,10 @@ gmain<-ggplot(fig_dat, aes(product, nt_co2, fill = n_targets)) +
   coord_flip() +
   scale_x_discrete(limits=levels(fig_dat$product)) +
   scale_y_continuous(expand=c(0.03,0)) +
-  labs(x = '', y = 'CO2 equivalent per nutrient target', fill='# nutrient targets (NT)', subtitle = 'Global') +
+  labs(x = '', y = expression(paste(kg~CO[2],'-',eq~per~nutrient~target)), fill='# nutrient targets (NT)', subtitle = 'Global') +
   # scale_shape_manual(values = c(21, 19)) +
-  scale_fill_distiller(limits=c(1, 3.5),breaks=c(1,2,3), palette='RdYlGn',direction=1) +
-  scale_color_distiller(limits=c(1, 3.5),breaks=c(1,2,3), palette='RdYlGn',direction=1) +
+  scale_fill_distiller(limits=c(1, 4),breaks=c(1,2,3,4), palette='RdYlGn',direction=1) +
+  scale_color_distiller(limits=c(1, 4),breaks=c(1,2,3,4), palette='RdYlGn',direction=1) +
   guides(color='none') +
   th +
   theme(legend.position = c(0.8, 0.4), axis.text.y = element_text(size=11), 
@@ -85,10 +85,10 @@ guk<-ggplot(fig_dat_uk, aes(product, nt_co2, fill = n_targets)) +
   coord_flip() +
   scale_x_discrete(limits=levels(fig_dat_uk$product)) +
   scale_y_continuous(expand=c(0.03,0)) +
-  labs(x = '', y = 'CO2 equivalent per nutrient target', fill='# nutrient targets (NT)', subtitle='UK') +
+  labs(x = '', y = expression(paste(kg~CO[2],'-',eq~per~nutrient~target)), fill='# nutrient targets (NT)', subtitle='UK') +
   # scale_shape_manual(values = c(21, 19)) +
-  scale_fill_distiller(limits=c(1, 3.5),breaks=c(1,2,3), palette='RdYlGn',direction=1) +
-  scale_color_distiller(limits=c(1, 3.5),breaks=c(1,2,3), palette='RdYlGn',direction=1) +
+  scale_fill_distiller(limits=c(1, 4),breaks=c(1,2,3,4), palette='RdYlGn',direction=1) +
+  scale_color_distiller(limits=c(1, 4),breaks=c(1,2,3,4), palette='RdYlGn',direction=1) +
   guides(color='none') +
   th +
   theme(legend.position = 'none', axis.text.y = element_text(size=11),
@@ -106,10 +106,10 @@ gl<-ggplot(all, aes(common_name, nt_co2)) +
   coord_flip() +
   scale_x_discrete(limits=levels(all$common_name)) +
   scale_y_continuous(expand=c(0.01,0)) +
-  labs(x = '', y = 'CO2 equivalent per nutrient target', fill='# RDA targets') +
+  labs(x = '', y = expression(paste(kg~CO[2],'-',eq~per~nutrient~target)), fill='# nutrient targets (NT)') +
   # scale_shape_manual(values = c(21, 19)) +
-  scale_fill_distiller(limits=c(1, 3.5),breaks=c(1,2,3), palette='RdYlGn',direction=1) +
-  scale_color_distiller(limits=c(1, 3.5),breaks=c(1,2,3), palette='RdYlGn',direction=1) +
+  scale_fill_distiller(limits=c(1, 4),breaks=c(1,2,3,4), palette='RdYlGn',direction=1) +
+  scale_color_distiller(limits=c(1, 4),breaks=c(1,2,3,4), palette='RdYlGn',direction=1) +
   guides(color='none') +
   th +
   theme(legend.position = c(0.8, 0.4), 

@@ -15,12 +15,14 @@ nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
 g1<-ggplot(nut, aes(mid, fct_reorder(id, mid), col=farmed_wild)) + 
   geom_segment(aes(x = low, xend = max, y =  fct_reorder(id, mid), yend= fct_reorder(id, mid))) +
   geom_point(aes(x = mid, y =  fct_reorder(id, mid)), size=3) +
-  labs(x = 'CO2 emissions equivalent\nper kg seafood', y ='') +
+  labs(x = expression(paste(kg~CO[2],'-',eq)), y ='') +
   facet_grid(rows = vars(class), scales='free_y', space = 'free_y') + 
   scale_colour_manual(values = colcol2) +
   # scale_y_discrete(labels=nut$species[as.factor(levels(fct_reorder(nut$id, nut$mid)))]) +
+  scale_x_continuous(expand=c(0.01, 0.01)) +
   th+ 
-  theme(legend.position = c(0.8, 0.8), legend.title=element_blank(), strip.text.y = element_blank())
+  theme(legend.position = c(0.8, 0.2), panel.grid.major.x = element_line(size=0.2, colour ='grey'),
+    legend.title=element_blank(), strip.text.y = element_blank())
 
 nut2<-nut %>% ungroup() %>%  distinct(nut_score, species, id, mid, class) 
 nut3<-nut %>% ungroup() %>% select(species, farmed_wild, class, mid, id, ca_rda:om_rda) %>%   
@@ -46,7 +48,8 @@ g2<-ggplot(nut3, aes(rda, fct_reorder(id, mid), fill=lab)) +
   th+ 
   theme(plot.margin=unit(c(0.1, 0.5, 0.1, 0.5), 'cm'), 
         axis.ticks = element_blank(), 
-        legend.position = 'none', axis.text.y = element_blank(), axis.title.y = element_blank(), strip.text.y = element_blank())
+        legend.position = 'none', axis.text.y = element_blank(), 
+        axis.title.y = element_blank(), strip.text.y = element_blank())
 
 ## 3. production 
 # g3<-ggplot(nut, aes(tot, fct_reorder(id, mid), fill=farmed_wild)) +

@@ -1,5 +1,5 @@
 
-source('scripts/fig/Figure5_radar.R')
+# source('scripts/fig/Figure5_radar.R')
 source('scripts/fig/00_plotting.R')
 
 drops<-c('Other marine fish')
@@ -26,47 +26,34 @@ nutS<-read.csv('data/UK_GHG_nutrient_catch_bysector.csv') %>%
 
 nutS$source<-factor(nutS$source, levels=unique(nutS$source)[c(1,2)])
 
-# ## 1. GHG
-# g1<-ggplot(nutS, aes(mid, fct_reorder(id, mid), col=farmed_wild)) + 
-#   geom_segment(aes(x = low, xend = max, y =  fct_reorder(id, mid), yend= fct_reorder(id, mid))) +
-#   geom_point(aes(x = mid, y =  fct_reorder(id, mid)), size=3) +
-#   labs(x = 'CO2 emissions equivalent\nper kg seafood', y ='') +
-#   facet_grid(rows = vars(source), scales='free_y', space = 'free_y') + 
-#   scale_colour_manual(values = colcol2) +
-#   # scale_y_discrete(labels=nut$species[as.factor(levels(fct_reorder(nut$id, nut$mid)))]) +
-#   th+ 
-#   theme(legend.position = c(0.8, 0.8), legend.title=element_blank(), strip.text.y = element_blank())
+
+## 1. all products
+all<-read.csv('data/UK_GHG_nutrient_catch.csv') %>% 
+      mutate(uk = (1-prop_imported) * tot, imp = prop_imported * tot) %>% 
+      select(species, tot, uk, imp, common_name, scientific_name, tax) %>% 
+      pivot_longer(uk:imp, names_to = 'type', values_to = 'catch') %>% 
+      filter(tot > 100 & catch !=0)
+
+gsup<-ggplot(all, aes(catch, fct_reorder(species, tot), col = type)) +
+      # geom_bar(stat = 'identity')+# position = position_dodge()) +
+      geom_segment(size=0.5, aes(x= 0.01, xend = catch, yend = fct_reorder(species, tot))) +
+      geom_point(size=2.5, position = position_dodge()) +
+      labs(x = expression(tonnes~yr^{'-1'}), y = '', parse=TRUE) +
+      scale_color_manual(values = colcol4, labels=c('UK', 'Imported')) +
+      scale_x_log10(breaks=c(10^(2:5)), labels=c('100', '1,000', '10K', '100K'), limits=c(10,10e5), expand=c(0, 0.06)) +
+      th+ 
+      theme(plot.margin=unit(c(0.1, 0.5, 0.1, 0.5), 'cm'), 
+            axis.ticks = element_blank(), 
+            legend.position = c(0.9,0.4), 
+            panel.grid.major.x = element_line(size=0.2, colour ='grey'),
+            axis.text.y = element_text(size=9), 
+            axis.title.y = element_blank())
 
 
-# nutS3<-nutS %>% ungroup() %>% select(species, farmed_wild, source, mid, id, ca_rda:om_rda) %>%   
-#     pivot_longer(ca_rda:om_rda, names_to = 'nutrient', values_to = 'rda') 
-
-# nutS3$nutrient<-factor(nutS3$nutrient, levels = rev(unique(nutS3$nutrient)[c(3,5,2,4,1)]))
-# nutS3$lab<-nutS3$nutrient; levels(nutS3$lab) <-rev(c('Selenium','Omega-3', 'Iron', 'Zinc','Calcium')) 
-
-# nutS3<-nutS3 %>% group_by(id) %>% 
-#   arrange(factor(nutrient, levels = rev(levels(nutrient))), .by_group=TRUE) %>% 
-#   mutate(label_ypos=cumsum(rda) - 0.5*rda)
-
-
-# ## 2. nutrient density
-# g2<-ggplot(nutS3, aes(rda, fct_reorder(id, mid), fill=lab)) + 
-#   geom_bar(stat='identity') +
-#   # geom_text(data = nutS3 %>% filter(rda >= 15),
-#   #           aes(x = label_ypos, label= paste0(round(rda, 0), '%')),  color="white", size=2) +
-#   labs(x = 'Nutrient density, %', y ='') +
-#   facet_grid(rows = vars(source), scales='free_y', space = 'free_y') + 
-#   scale_fill_manual(values = nut.cols) +
-#   scale_x_continuous(labels=scales::comma, expand=c(0, 0.06)) +
-#   th+ 
-#   theme(plot.margin=unit(c(0.1, 0.5, 0.1, 0.5), 'cm'), 
-#         axis.ticks = element_blank(), 
-#         legend.position = 'none', axis.text.y = element_blank(), axis.title.y = element_blank(), strip.text.y = element_blank())
-
-## 3. production 
+## 2. production source (for Fig2)
 g3<-ggplot(nutS, aes(catch, fct_reorder(species, tot), fill=farmed_wild)) +
       geom_bar(stat = 'identity') +
-      labs(x = 'Seafood produced, t', y = '') +
+      labs(x = expression(tonnes~yr^{'-1'}), y = '', parse=TRUE) +
       facet_grid(cols = vars(source), scales='free_y', space = 'free_y') + 
       scale_fill_manual(values = colcol2) +
       scale_x_continuous(labels=scales::comma, expand=c(0, 0.06)) +
@@ -74,16 +61,16 @@ g3<-ggplot(nutS, aes(catch, fct_reorder(species, tot), fill=farmed_wild)) +
       theme(plot.margin=unit(c(0.1, 0.5, 0.1, 0.5), 'cm'), 
             axis.ticks = element_blank(), 
             legend.position = c(0.95,0.2), 
-            panel.grid.major.x = element_line(colour ='grey'),
+            panel.grid.major.x = element_line(size=0.2, colour ='grey'),
             # axis.text.y = element_blank(), 
             axis.title.y = element_blank(), strip.text.x = element_text(colour='black',angle=360))
 
 
 
-pdf(file = 'fig/final/FigureS2_UK_profiles_bysector.pdf', height=4, width=12)
+pdf(file = 'fig/final/FigureS2_UK_seafood.pdf', height=12, width=6)
 # print(
 #   plot_grid(g1, g2, g3, nrow = 1, align = 'h', rel_widths=c(1, 0.6, 0.8), labels=c('A', 'B', 'C'))
 # )
-print(g3)
+print(gsup)
 
 dev.off()
