@@ -12,6 +12,8 @@ cats$group<-c('Whitefish', 'Tuna', 'Pelagic (large)', 'Bivalve', 'Pelagic (small
 
 all$group2<-cats$group[match(all$group, cats$isscaap)]
 
+all %>% filter(group2 =='Salmonidae' & nut_score > 200) %>% distinct(common_name) 
+
 ## estimate mean and range of C02 and nutrients by groups
 wild_f<-all %>% group_by(farmed_wild, tax) %>% 
         summarise(se = se(nut_score), mean = mean(nut_score),

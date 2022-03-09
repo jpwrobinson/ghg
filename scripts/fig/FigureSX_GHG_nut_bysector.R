@@ -84,6 +84,6 @@ pdf(file = 'fig/final/FigureS2_UK_profiles_bysector.pdf', height=4, width=12)
 # print(
 #   plot_grid(g1, g2, g3, nrow = 1, align = 'h', rel_widths=c(1, 0.6, 0.8), labels=c('A', 'B', 'C'))
 # )
-g3
+print(g3)
 
 dev.off()
