@@ -3,18 +3,29 @@ theme_set(theme_sleek())
 source('scripts/fig/00_plotting.R')
 set.seed(43)
 
+
+## good fish guide scores: careful because method is different for wild/farmed 
+## AND farmed high = good, wild low = good. 
 gfg<-readxl::read_excel('data/gfg/GFG_Export_2021-04-12.xlsx') %>% clean_names() %>% 
     rename(scientific_name = latin_name) %>% 
     filter(! total_score %in% c('Unknown', 'Under Review', 'Default Red Rating', 'FIP Improver')) %>% 
     group_by(common_name, scientific_name, farmed_wild) %>% 
-    summarise(se = se(as.numeric(total_score)), 
-        lower = min(as.numeric(total_score)), upper = max(as.numeric(total_score)),
-                total_score = mean(as.numeric(total_score))) %>% ungroup() %>% 
-    mutate(
+    mutate(total_score = as.numeric(total_score),
           farmed_wild = recode(farmed_wild, 'Caught at sea' = 'Wild'), 
           scientific_name = recode(scientific_name, 'Euthynnus pelamis, Katsuwonus pelamis' = 'Katsuwonus pelamis',
                                                       'Theragra chalcogramma' = 'Gadus chalcogrammus'),
-          id = paste(farmed_wild, scientific_name, sep='_'))
+          id = paste(farmed_wild, scientific_name, sep='_')) %>% 
+    group_by(farmed_wild) %>% 
+    ## rescale ratings between 0-1, but inverse for farmed
+    mutate(total_score = ifelse(farmed_wild == 'Farmed', rescale(total_score, to = c(0,1)),rescale(total_score, to = c(1,0)))) 
+
+## check ratings rescaled
+# ggplot(gfg, aes(rating, total_score)) + geom_point() + facet_wrap(~farmed_wild)
+
+gfg<-gfg %>% group_by(common_name, farmed_wild, scientific_name, id) %>% 
+    summarise(lower = min(total_score), upper = max(total_score), total_score = median(total_score)) %>% ungroup()
+
+    
 
 
 # read nutrient/ghg data, join with gfg
@@ -38,8 +49,8 @@ nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
 
 
 g0<-ggplot(nut, aes(nt_co2, total_score, col=farmed_wild)) + 
-        geom_pointrange(size=0.4, aes(ymin = lower, ymax = upper)) + 
-        geom_errorbarh(size=0.4, aes(xmin = nt_co2_low, xmax = nt_co2_hi)) + 
+        # geom_pointrange(size=0.4, aes(ymin = lower, ymax = upper)) + 
+        # geom_errorbarh(size=0.4, aes(xmin = nt_co2_low, xmax = nt_co2_hi)) + 
         geom_point(size=3) + 
         geom_text_repel(aes(label = common_name), col='black',segment.color='grey',max.overlaps=Inf, box.padding = 1.75, size=2.5,show.legend = FALSE) +
         th +
@@ -47,9 +58,27 @@ g0<-ggplot(nut, aes(nt_co2, total_score, col=farmed_wild)) +
         scale_color_manual(values = colcol2) +
         labs(y = 'Sustainability score', x  = expression(paste(kg~CO[2],'-',eq~per~nutrient~target))) +
           theme(legend.position = c(0.8, 0.8), 
+            plot.margin=unit(c(0.1, 0.5, 0.1, 0.1), 'cm'), 
             axis.ticks=element_line(colour='black'),
                 legend.title=element_blank()) 
-g0
+
+g0B<-ggplot(nut %>% filter(!is.na(total_score)), 
+        aes(fct_reorder(common_name, total_score),total_score, col=farmed_wild)) + 
+        geom_pointrange(size=0.4, aes(ymin = lower, ymax = upper)) + 
+        geom_point(size=3) + 
+        th +
+        coord_flip(clip='off') +
+        scale_x_discrete(position = 'top') +
+        scale_y_continuous(limits=c(0,1.1),
+            sec.axis = sec_axis(~ . * 1, breaks=c(0, 1), labels=c('Less\nsustainable', 'More\nsustainable'))) +
+        scale_color_manual(values = colcol2) +
+        labs(y = 'Sustainability score', x  = '') +
+          theme(legend.position = 'none', 
+            plot.margin=unit(c(0.1, 0.1, 0.1, 1), 'cm'), 
+            axis.ticks=element_line(colour='black'),
+            axis.ticks.x.top=element_blank(),
+                legend.title=element_blank()) 
+
 source('scripts/fig/Figure5_radar.R')
 nut_rad$price_key_kg<-c(16.34, 8.03, 8.54, 6.45, 9.64, 5.76, 5.08, 10.42, 24.56, 5.47, 5.47, 16.12)
 nut$price_key_kg<-nut_rad$price_key_kg[match(nut$common_name, nut_rad$common_name)]
@@ -65,6 +94,7 @@ g1<-ggplot(nut, aes(nt_co2, price_key_kg, col=farmed_wild)) +
         scale_color_manual(values = colcol2) +
         labs(y = 'GBP per kg', x  = expression(paste(kg~CO[2],'-',eq~per~nutrient~target))) +
           theme(legend.position = c(0.8, 0.8), 
+            plot.margin=unit(c(1, 1.5, 0.1, 1.5), 'cm'), 
             axis.ticks=element_line(colour='black'),
                 legend.title=element_blank()) 
 
@@ -111,8 +141,9 @@ g3<-ggplot(stock %>% filter(SpeciesName %in% nut$scientific_name & group!='Salmo
             strip.text.x = element_blank())
 
 
-pdf(file = 'fig/final/FigureSX_GFGscore.pdf', height = 9, width=7)
-print(plot_grid(g0, g1, labels=c('A', 'B'), nrow=2))
+pdf(file = 'fig/final/FigureSX_GFGscore.pdf', height = 9, width=9)
+top<-plot_grid(g0, g0B, labels=c('A', 'B'), nrow=1, rel_widths = c(1, 0.8), align='h')
+print(plot_grid(top, g1, labels=c('', 'C'), nrow=2))
 dev.off()
 
 pdf(file = 'fig/final/FigureSX_stock_status.pdf', height = 7, width=12)

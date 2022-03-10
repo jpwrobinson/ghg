@@ -45,4 +45,8 @@ stock %>% count(F_stat)
 n_distinct(stock$FishStock)
 unique(stock$SpeciesName[stock$SpeciesName %in% nut$scientific_name])
 
->>>>>>> c40ee679ed2757c93f99403e6d779ee5b027e73e
+
+
+readxl::read_excel('data/gfg/GFG_Export_2021-04-12.xlsx') %>% clean_names() %>% 
+    filter(wild_stock_score > 5) %>% 
+    group_by(common_name) %>% summarise(n = n_distinct(id)) %>% data.frame()

@@ -53,7 +53,7 @@ knitr::include_graphics("fig/final/FigureS2_UK_seafood.pdf"); i = i + 1
 knitr::include_graphics("fig/final/FigureSX_GFGscore.pdf"); i = i + 1
 ```
 
-**Fig. S`r i`. Carbon emissions per nutrient target for UK seafood products against sustainability score (A) and average price per kg (GBP) (B)** Points are the mean kg CO2-eq per nutrient target for each seafood product by the mean sustainability score across multiple stocks or production methods (MSC REF) and price per kg (Seafish 2021). Error bars in A show the minimum and maximum value for sustainability scores and kg CO2-eq.
+**Fig. S`r i`. Sustainability and price of UK seafood products.** A) Carbon emissions per nutrient target by sustainability score, where points are the mean sustainability score of each product against the mean kg CO2-eq per nutrient target. B) is the range in sustainability scores by seafood product and C) is the price per kg (Seafish 2021) against kg CO2-eq per nutrient target. Sustinability scores are rescaled such that 0 = low sustainability and 1 = high sustainability.
 
 \newpage
 

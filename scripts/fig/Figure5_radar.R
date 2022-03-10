@@ -10,13 +10,18 @@ gfg<-readxl::read_excel('data/gfg/GFG_Export_2021-04-12.xlsx') %>% clean_names()
     rename(scientific_name = latin_name) %>% 
     filter(! total_score %in% c('Unknown', 'Under Review', 'Default Red Rating', 'FIP Improver')) %>% 
     group_by(common_name, scientific_name, farmed_wild) %>% 
-    summarise(se = se(as.numeric(total_score)), total_score = mean(as.numeric(total_score))) %>% ungroup() %>% 
-    mutate(lower = total_score - 2*se, upper = total_score + 2*se,
+    mutate(total_score = as.numeric(total_score),
           farmed_wild = recode(farmed_wild, 'Caught at sea' = 'Wild'), 
           scientific_name = recode(scientific_name, 'Euthynnus pelamis, Katsuwonus pelamis' = 'Katsuwonus pelamis',
                                                       'Theragra chalcogramma' = 'Gadus chalcogrammus'),
-          id = paste(farmed_wild, scientific_name, sep='_'))
+          id = paste(farmed_wild, scientific_name, sep='_')) %>% 
+    group_by(farmed_wild) %>% 
+    ## rescale ratings between 0-1, but inverse for farmed
+    mutate(total_score = ifelse(farmed_wild == 'Farmed', rescale(total_score, to = c(0,1)),rescale(total_score, to = c(1,0))))  %>% 
+    group_by(common_name, farmed_wild, scientific_name, id) %>% 
+    summarise(lower = min(total_score), upper = max(total_score), total_score = median(total_score)) %>% ungroup()
 
+    
 
 # read nutrient/ghg data, join with gfg
 drops<-c('Other marine fish')
@@ -33,9 +38,10 @@ nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
   left_join(gfg %>% select(-farmed_wild, -common_name, -scientific_name), by = 'id')
 
 
+## rescale variables to 0-1. Sustainability is already on 0-1 scale.
 nut_rad<-nut %>% filter(!is.na(total_score)) %>% 
       ungroup() %>% 
-      mutate(GHG = rescale(mid, to=c(1,0)), N = rescale(nut_score), S = rescale(total_score), P = rescale(tot)) %>% 
+      mutate(GHG = rescale(mid, to=c(1,0)), N = rescale(nut_score), S = (total_score), P = rescale(tot)) %>% 
       select(id, common_name, scientific_name, farmed_wild, GHG, N, S, P, tot) #%>% 
       # pivot_longer(-c(scientific_name, farmed_wild), names_to = 'variable', values_to = 'value')
 
