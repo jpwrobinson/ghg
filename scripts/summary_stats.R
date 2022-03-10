@@ -8,8 +8,11 @@ read.csv('data/UK_GHG_nutrient_catch.csv') %>%
   summarise(sum(prop_tot))
 
 read.csv('data/UK_GHG_nutrient_catch.csv') %>% filter(common_name == 'Atlantic mackerel')
+read.csv('data/UK_GHG_nutrient_catch.csv') %>% filter(common_name == 'Atlantic salmon')
 
-<<<<<<< HEAD
+all<-read.csv('data/UK_GHG_nutrient_catch.csv')
+271378.8 / sum(all$tot[all$farmed_wild == 'Farmed']) * 100
+
 ## top 5 species
 read.csv('data/UK_GHG_nutrient_catch.csv') %>% filter(uk_name %in% c('Mackerel', 'Cod', "Salmon", 'Tuna, skipjack', 'Haddock')) %>% 
 summarise(mean(mid), mean(nut_score))
@@ -20,7 +23,7 @@ all %>%
     filter(str_detect(common_name, c('tiger|mussel'))) %>% data.frame()
 all %>% 
     filter(str_detect(common_name, c('carp|bass'))) %>% data.frame()
-=======
+
 
 
 ## stock status

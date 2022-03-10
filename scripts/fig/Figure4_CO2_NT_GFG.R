@@ -7,8 +7,10 @@ gfg<-readxl::read_excel('data/gfg/GFG_Export_2021-04-12.xlsx') %>% clean_names()
     rename(scientific_name = latin_name) %>% 
     filter(! total_score %in% c('Unknown', 'Under Review', 'Default Red Rating', 'FIP Improver')) %>% 
     group_by(common_name, scientific_name, farmed_wild) %>% 
-    summarise(se = se(as.numeric(total_score)), total_score = mean(as.numeric(total_score))) %>% ungroup() %>% 
-    mutate(lower = total_score - 2*se, upper = total_score + 2*se,
+    summarise(se = se(as.numeric(total_score)), 
+        lower = min(as.numeric(total_score)), upper = max(as.numeric(total_score)),
+                total_score = mean(as.numeric(total_score))) %>% ungroup() %>% 
+    mutate(
           farmed_wild = recode(farmed_wild, 'Caught at sea' = 'Wild'), 
           scientific_name = recode(scientific_name, 'Euthynnus pelamis, Katsuwonus pelamis' = 'Katsuwonus pelamis',
                                                       'Theragra chalcogramma' = 'Gadus chalcogrammus'),
@@ -36,17 +38,18 @@ nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
 
 
 g0<-ggplot(nut, aes(nt_co2, total_score, col=farmed_wild)) + 
-        # geom_pointrange(size=0.2, aes(ymin = lower, ymax = upper)) + 
-        # geom_errorbarh(size=0.2, aes(xmin = nt_co2_low, xmax = nt_co2_hi)) + 
+        geom_pointrange(size=0.4, aes(ymin = lower, ymax = upper)) + 
+        geom_errorbarh(size=0.4, aes(xmin = nt_co2_low, xmax = nt_co2_hi)) + 
         geom_point(size=3) + 
-        geom_label_repel(aes(label = common_name), force=2,show.legend = FALSE) +
+        geom_text_repel(aes(label = common_name), col='black',segment.color='grey',max.overlaps=Inf, box.padding = 1.75, size=2.5,show.legend = FALSE) +
         th +
-        scale_y_continuous(breaks=seq(0, 16, by = 2)) +
+        # scale_y_continuous(breaks=seq(0, 16, by = 2)) +
         scale_color_manual(values = colcol2) +
         labs(y = 'Sustainability score', x  = expression(paste(kg~CO[2],'-',eq~per~nutrient~target))) +
           theme(legend.position = c(0.8, 0.8), 
+            axis.ticks=element_line(colour='black'),
                 legend.title=element_blank()) 
-
+g0
 source('scripts/fig/Figure5_radar.R')
 nut_rad$price_key_kg<-c(16.34, 8.03, 8.54, 6.45, 9.64, 5.76, 5.08, 10.42, 24.56, 5.47, 5.47, 16.12)
 nut$price_key_kg<-nut_rad$price_key_kg[match(nut$common_name, nut_rad$common_name)]
@@ -55,12 +58,14 @@ g1<-ggplot(nut, aes(nt_co2, price_key_kg, col=farmed_wild)) +
         # geom_pointrange(size=0.2, aes(ymin = lower, ymax = upper)) + 
         # geom_errorbarh(size=0.2, aes(xmin = nt_co2_low, xmax = nt_co2_hi)) + 
         geom_point(size=3) + 
-        geom_label_repel(aes(label = common_name), force=2,show.legend = FALSE) +
+        # geom_label_repel(aes(label = common_name), size=2.5, force=2,show.legend = FALSE) +
+        geom_text_repel(aes(label = common_name), col='black',segment.color='grey',max.overlaps=Inf, box.padding = 1.75, size=2.5,show.legend = FALSE) +
         th +
         # scale_y_continuous(breaks=seq(0, 16, by = 2)) +
         scale_color_manual(values = colcol2) +
         labs(y = 'GBP per kg', x  = expression(paste(kg~CO[2],'-',eq~per~nutrient~target))) +
           theme(legend.position = c(0.8, 0.8), 
+            axis.ticks=element_line(colour='black'),
                 legend.title=element_blank()) 
 
 

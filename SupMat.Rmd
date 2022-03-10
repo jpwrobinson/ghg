@@ -29,7 +29,7 @@ i = 0
 knitr::include_graphics("fig/final/FigureS1_nutrient_ghg.pdf"); i = i + 1
 ```
 
-**Fig. S`r i`. Nutritional value and carbon footprint of seafood species** Points are CO2 equivalents per kg of seafood of each species and the corresponding the nutrient density (%). Nutrient density is the summed contribution of a 100g portion to recommended intakes of five nutrients (calcium, iron, selenium, zinc, omega-3 fatty acids) (recommended daily intakes for adults (18-65 years old)).
+**Fig. S`r i`. Nutritional value and carbon footprint of seafood species** Points are kg CO2-eq of each species and its corresponding the nutrient density (%). Nutrient density is the summed contribution of a 100g portion to recommended intakes of five nutrients (calcium, iron, selenium, zinc, omega-3 fatty acids) (recommended daily intakes for adults (18-65 years old)).
 
 \newpage
 
@@ -38,7 +38,7 @@ knitr::include_graphics("fig/final/FigureS1_nutrient_ghg.pdf"); i = i + 1
 knitr::include_graphics("fig/final/FigureS3.pdf"); i = i + 1
 ```
 
-**Fig. S`r i`. Carbon emissions per nutrient target for all seafood products in the carbon emissions database** Points are the mean kg CO2 per nutrient target for each seafood species, where a nutrient target was the recommended intake (adults 18-65 years old) contained in a 100g portion for 7 nutrients (calcium, iron, selenium, zinc, omega-3 fatty acids, vitamin A). Points are coloured by the number of nutrient targets in a 100g portion. Animal-source foods (beef, chicken, lamb, pork) are included for comparison using CO2 values from (Clune et al., 2017) and nutrient values from (Widdowson, n.d.).
+**Fig. S`r i`. Carbon emissions per nutrient target for all seafood products in the carbon emissions database** Points are the mean kg CO2-eq per nutrient target for each seafood species, where a nutrient target was the recommended intake (adults 18-65 years old) contained in a 100g portion for 7 nutrients (calcium, iron, selenium, zinc, omega-3 fatty acids, vitamin A). Points are coloured by the number of nutrient targets in a 100g portion. Animal-source foods (beef, chicken, lamb, pork) are included for comparison using CO2 values from (Clune et al., 2017) and nutrient values from (Widdowson, n.d.).
 
 \newpage
 
@@ -53,7 +53,7 @@ knitr::include_graphics("fig/final/FigureS2_UK_seafood.pdf"); i = i + 1
 knitr::include_graphics("fig/final/FigureSX_GFGscore.pdf"); i = i + 1
 ```
 
-**Fig. S`r i`. Carbon emissions per nutrient target for UK seafood products against sustainability score (A) and average price per kg (GBP) (B)** Points are the mean kg CO2 per nutrient target for each seafood product, for the mean sustainability score across multiple stocks or production methods (MSC REF) and price per kg (Seafish 2021).
+**Fig. S`r i`. Carbon emissions per nutrient target for UK seafood products against sustainability score (A) and average price per kg (GBP) (B)** Points are the mean kg CO2-eq per nutrient target for each seafood product by the mean sustainability score across multiple stocks or production methods (MSC REF) and price per kg (Seafish 2021). Error bars in A show the minimum and maximum value for sustainability scores and kg CO2-eq.
 
 \newpage
 
