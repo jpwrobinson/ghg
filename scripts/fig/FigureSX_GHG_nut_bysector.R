@@ -6,9 +6,13 @@ source('scripts/fig/00_plotting.R')
 ## 1. all products
 all<-read.csv('data/UK_GHG_nutrient_catch.csv') %>% 
       mutate(uk = (1-prop_imported) * tot, imp = prop_imported * tot) %>% 
-      select(species, tot, uk, imp, common_name, scientific_name, tax) %>% 
+      select(species, tot, uk, imp, common_name, scientific_name, tax, top90) %>% 
       pivot_longer(uk:imp, names_to = 'type', values_to = 'catch') %>% 
       filter(tot > 100 & catch !=0)
+
+tots<-all %>% distinct(species, top90, tot)  %>% 
+            mutate(tc = sum(tot), t80 = cumsum(tot), pos = t80/tc, top80 = ifelse(pos <= 0.8, TRUE, FALSE))
+
 
 gsup<-ggplot(all, aes(catch, fct_reorder(species, tot), col = type)) +
       # geom_bar(stat = 'identity')+# position = position_dodge()) +

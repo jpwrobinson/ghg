@@ -46,7 +46,39 @@ n_distinct(stock$FishStock)
 unique(stock$SpeciesName[stock$SpeciesName %in% nut$scientific_name])
 
 
+## look at GFG categories
+readxl::read_excel('data/gfg/GFG_Export_2021-04-12.xlsx') %>% clean_names() %>% 
+    filter(str_detect(common_name, 'Mack*|erring')) %>% data.frame()
 
 readxl::read_excel('data/gfg/GFG_Export_2021-04-12.xlsx') %>% clean_names() %>% 
-    filter(wild_stock_score > 5) %>% 
-    group_by(common_name) %>% summarise(n = n_distinct(id)) %>% data.frame()
+    filter(str_detect(common_name, 'Salmon, Atlantic')) %>% data.frame()
+
+readxl::read_excel('data/gfg/GFG_Export_2021-04-12.xlsx') %>% clean_names() %>% rename(scientific_name = latin_name) %>% 
+    filter(! total_score %in% c('Unknown', 'Under Review', 'Default Red Rating', 'FIP Improver')) %>% 
+    group_by(common_name, scientific_name, farmed_wild) %>% 
+    mutate(total_score = as.numeric(total_score),
+          farmed_wild = recode(farmed_wild, 'Caught at sea' = 'Wild'), 
+          scientific_name = recode(scientific_name, 'Euthynnus pelamis, Katsuwonus pelamis' = 'Katsuwonus pelamis',
+                                                      'Theragra chalcogramma' = 'Gadus chalcogrammus'),
+          id = paste(farmed_wild, scientific_name, sep='_')) %>% 
+    group_by(farmed_wild) %>% 
+    ## rescale ratings between 0-1, but inverse for farmed
+    mutate(total_score = ifelse(farmed_wild == 'Farmed', rescale(total_score, to = c(0,1)),rescale(total_score, to = c(1,0))))  %>% 
+    summarise(n_distinct(id))
+
+## count GFG records
+gg<-readxl::read_excel('data/gfg/GFG_Export_2021-04-12.xlsx') %>% clean_names() %>% rename(scientific_name = latin_name) %>% 
+    filter(! total_score %in% c('Unknown', 'Under Review', 'Default Red Rating', 'FIP Improver')) %>% 
+    group_by(common_name, scientific_name, farmed_wild) %>% 
+    mutate(total_score = as.numeric(total_score),
+          farmed_wild = recode(farmed_wild, 'Caught at sea' = 'Wild'), 
+          scientific_name = recode(scientific_name, 'Euthynnus pelamis, Katsuwonus pelamis' = 'Katsuwonus pelamis',
+                                                      'Theragra chalcogramma' = 'Gadus chalcogrammus'),
+          id = paste(farmed_wild, scientific_name, sep='_')) %>% 
+    filter(id %in% nut$id) %>% 
+    group_by(farmed_wild) %>% 
+    ## rescale ratings between 0-1, but inverse for farmed
+    mutate(total_score = ifelse(farmed_wild == 'Farmed', rescale(total_score, to = c(0,1)),rescale(total_score, to = c(1,0)))) 
+
+gg %>% group_by(common_name) %>% tally()
+gg %>% group_by(farmed_wild) %>% tally()
