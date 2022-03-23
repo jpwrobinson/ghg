@@ -93,6 +93,17 @@ all_uk$vitamin_d <- vit$vitamin_d[match(all_uk$species, vit$uk_name)]
 all_uk$folate <- vit$folate[match(all_uk$species, vit$uk_name)]
 all_uk$vitamin_b12 <- vit$vitamin_b12[match(all_uk$species, vit$uk_name)]
 
+## now RDA
+all_uk$vita_rda<-rda$rni_women[rda$nutrient=='vitamin_a']*100
+all_uk$vitd_rda<-rda$rni_women[rda$nutrient=='vitamin_d']*100
+all_uk$vitb12_rda<-rda$rni_women[rda$nutrient=='vitamin_b12']*100
+all_uk$folate_rda<-rda$rni_women[rda$nutrient=='folate']*100
+
+## now cap nutrient RDA at 100% (i.e. a species either meets (100%) or doesn't meet (<100%) the RDA)
+all$vita_rda[all$vita_rda>100]<-100
+all$vitd_rda[all$vitd_rda>100]<-100
+all$vitb12_rda[all$vitb12_rda>100]<-100
+all$folate_rda[all$folate_rda>100]<-100
 
 write.csv(all_uk, file = 'data/UK_GHG_nutrient_catch.csv', row.names=FALSE)
 write.csv(all_uk_bysector, file = 'data/UK_GHG_nutrient_catch_bysector.csv', row.names=FALSE)
