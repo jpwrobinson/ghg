@@ -6,8 +6,10 @@ nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
   mutate(prop_tot = tot / all * 100, class = ifelse(prop_tot >= 5, 'High production', 'Low production')) %>% 
   filter(top90 == TRUE & !species %in% drops & !is.na(mid)) %>%
   select(-tax) %>% 
+  ## redo nut_score
+  mutate(nut_score = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda, vita_rda, vitd_rda, vitb12_rda, folate_rda))) %>% 
   group_by(species, farmed_wild, tot, class) %>% 
-  summarise_at(vars(low:nut_score), mean) %>% 
+  summarise_at(vars(low:nut_score, vitamin_d:vitd_rda), mean) %>% 
   mutate(species=factor(species), id = paste0(species, ' (', farmed_wild, ')'))
 
 
