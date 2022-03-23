@@ -165,7 +165,8 @@ tot_post<- tot %>%
 	group_by(species)  %>% 
 	summarise(tot = sum(catch), prop_imported  = unique(prop_imported)) %>% 
 	arrange(desc(tot))  %>% 
-	mutate(all = sum(tot), t80 = cumsum(tot), pos = t80/all, top90 = ifelse(pos <= 0.90, TRUE, FALSE))
+	mutate(all = sum(tot), t80 = cumsum(tot), pos = t80/all, 
+		top90 = ifelse(pos <= 0.90, TRUE, FALSE))
 
 
 save(tot, tot_post, file = 'data/uk_seafood.rds')

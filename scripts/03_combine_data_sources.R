@@ -70,14 +70,29 @@ all<-rbind(all, shrimp %>% select(names(all)), shrimp_warm %>% select(names(all)
 # all[str_detect(all$common_name, tolower(sp[12])),]
 # all[str_detect(all$common_name, 'tuna'),]
 
+## now subset UK food
 all_uk<-left_join(tot_post,
-			all %>% mutate(id = paste(uk_name, tolower(farmed_wild), sep = '_')),
-			by = 'id') %>% 
+			all %>% mutate(species=uk_name),
+			by = 'species') %>% 
 		filter(!is.na(tot))
 
 all_uk_bysector<-left_join(tot ,#%>% mutate(uk_name = species), 
 			all %>% mutate(id = paste(uk_name, tolower(farmed_wild), sep = '_')),
 			by = 'id') 
+
+
+## add vitamin data for major UK products
+vit<-read.csv('data/nut/uk_vitamin_data.csv') %>% janitor::clean_names()
+
+## match vitamins, extracted only for top products
+all_uk$vitamin_a[all_uk$species=='Lobster, Norway'] <- vit$vitamin_a[vit$uk_name=='Lobster, Norway']
+all_uk$vitamin_a[all_uk$species=='Scallop'] <- vit$vitamin_a[vit$uk_name=='Scallop']
+all_uk$vitamin_a[all_uk$species=='Sea mussels'] <- vit$vitamin_a[vit$uk_name=='Sea mussels']
+
+all_uk$vitamin_d <- vit$vitamin_d[match(all_uk$species, vit$uk_name)]
+all_uk$folate <- vit$folate[match(all_uk$species, vit$uk_name)]
+all_uk$vitamin_b12 <- vit$vitamin_b12[match(all_uk$species, vit$uk_name)]
+
 
 write.csv(all_uk, file = 'data/UK_GHG_nutrient_catch.csv', row.names=FALSE)
 write.csv(all_uk_bysector, file = 'data/UK_GHG_nutrient_catch_bysector.csv', row.names=FALSE)
