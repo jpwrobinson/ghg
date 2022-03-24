@@ -1,4 +1,4 @@
-pacman::p_load(tidyverse, readxl, janitor)
+ pacman::p_load(tidyverse, readxl, janitor)
 theme_set(theme_bw())
 
 land<-read_excel('data/uk/UK_landings_2015_2019.xlsx')  %>% clean_names()  %>% 
