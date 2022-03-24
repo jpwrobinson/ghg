@@ -6,8 +6,10 @@ nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
   mutate(prop_tot = tot / all * 100, class = ifelse(prop_tot >= 5, 'High production', 'Low production')) %>% 
   filter(top90 == TRUE & !species %in% drops & !is.na(mid)) %>%
   select(-tax) %>% 
+  ## redo nut_score
+  mutate(nut_score = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda, vita_rda, vitd_rda, vitb12_rda, folate_rda))) %>% 
   group_by(species, farmed_wild, tot, class) %>% 
-  summarise_at(vars(low:nut_score), mean) %>% 
+  summarise_at(vars(low:nut_score, vitamin_d:folate_rda), mean) %>% 
   mutate(species=factor(species), id = paste0(species, ' (', farmed_wild, ')'))
 
 
@@ -44,11 +46,11 @@ g1<-ggplot(nut, aes(mid, fct_reorder(species, mid), col=farmed_wild)) +
     legend.title=element_blank(), strip.text.y = element_blank())
 
 nut3<-nut %>% ungroup() %>% group_by(species, class) %>% 
-    summarise_at(vars(ca_rda:om_rda), mean) %>%   
-    pivot_longer(ca_rda:om_rda, names_to = 'nutrient', values_to = 'rda') 
+    summarise_at(vars(ca_rda:om_rda, vita_rda:folate_rda), mean) %>%   
+    pivot_longer(ca_rda:folate_rda, names_to = 'nutrient', values_to = 'rda') 
 
-nut3$nutrient<-factor(nut3$nutrient, levels = rev(unique(nut3$nutrient)[c(3,5,2,4,1)]))
-nut3$lab<-nut3$nutrient; levels(nut3$lab) <-rev(c('Selenium','Omega-3', 'Iron', 'Zinc','Calcium')) 
+nut3$nutrient<-factor(nut3$nutrient, levels = rev(unique(nut3$nutrient)[c(8,3,5,7,4,2,1,9,6)]))
+nut3$lab<-nut3$nutrient; levels(nut3$lab) <-rev(c('Vitamin B12', 'Selenium','Omega-3', 'Vitamin D', 'Zinc', 'Iron','Calcium','Folate', 'Vitamin A')) 
 
 nut3<-nut3 %>% group_by(species) %>% 
   arrange(factor(nutrient, levels = rev(levels(nutrient))), .by_group=TRUE) %>% 
@@ -89,8 +91,9 @@ g3<-ggplot(nutS, aes(catch, species, fill=source)) +
 
 
 
-pdf(file = 'fig/final/Figure2_UK_profiles.pdf', height=5, width=11)
-top<-plot_grid(g1, g2, g3, nrow = 1, align = 'h', rel_widths=c(1, 0.6, 0.6), labels=c('A', 'B', 'C'))
+pdf(file = 'fig/final/Figure2_UK_profiles.pdf', height=5, width=13)
+top<-plot_grid(g1, g2, g3, nrow = 1, align = 'h', 
+  rel_widths=c(0.9, 0.8, 0.6), labels=c('A', 'B', 'C'), hjust=0.3)
 print(
   # plot_grid(top, g3, nrow =2, labels=c('', 'C'), rel_heights=c(1, 0.7))
   top

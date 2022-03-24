@@ -21,5 +21,9 @@ colcol2<-c('Farmed' = '#C3840C', 'Wild' ='#17397B')
 colcol3<-c('Farmed (UK)' = '#C3840C', 'Wild (UK)' ='#17397B', 'Imported' = 'grey')
 colcol4<-c('uk' ='#17397B', 'imp' = 'grey')
 
-nut.cols<-c('Calcium'='#de2d26', 'Iron'='#636363', 'Zinc'='#3182bd', 'Vitamin A'='#31a354',
-            'Omega-3' = '#F77D29', 'Selenium' = '#776EB0')
+nut.cols<-c('Calcium'='#de2d26', 'Iron'='#636363', 'Zinc'='#3182bd', 
+            'Omega-3' = '#F77D29', 'Selenium' = '#776EB0',
+            'Vitamin A'='#31a354',
+            'Vitamin D' = '#fb9a99', 
+            'Vitamin B12' = '#b2df8a', 
+            'Folate' = '#b15928')

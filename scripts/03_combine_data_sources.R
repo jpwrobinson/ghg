@@ -70,14 +70,42 @@ all<-rbind(all, shrimp %>% select(names(all)), shrimp_warm %>% select(names(all)
 # all[str_detect(all$common_name, tolower(sp[12])),]
 # all[str_detect(all$common_name, 'tuna'),]
 
+## now subset UK food
 all_uk<-left_join(tot_post,
-			all %>% mutate(id = paste(uk_name, tolower(farmed_wild), sep = '_')),
-			by = 'id') %>% 
+			all %>% mutate(species=uk_name),
+			by = 'species') %>% 
 		filter(!is.na(tot))
 
 all_uk_bysector<-left_join(tot ,#%>% mutate(uk_name = species), 
 			all %>% mutate(id = paste(uk_name, tolower(farmed_wild), sep = '_')),
 			by = 'id') 
+
+
+## add vitamin data for major UK products
+vit<-read.csv('data/nut/uk_vitamin_data.csv') %>% janitor::clean_names()
+
+## match vitamins, extracted only for top products
+all_uk$vitamin_a[all_uk$species=='Lobster, Norway'] <- vit$vitamin_a[vit$uk_name=='Lobster, Norway']
+all_uk$vitamin_a[all_uk$species=='Scallop'] <- vit$vitamin_a[vit$uk_name=='Scallop']
+all_uk$vitamin_a[all_uk$species=='Sea mussels'] <- vit$vitamin_a[vit$uk_name=='Sea mussels']
+all_uk$vitamin_a[all_uk$species=='Shrimp, miscellaneous'] <- vit$vitamin_a[vit$uk_name=='Shrimp, miscellaneous']
+all_uk$vitamin_a[all_uk$species=='Shrimp, warmwater'] <- vit$vitamin_a[vit$uk_name=='Shrimp, warmwater']
+
+all_uk$vitamin_d <- vit$vitamin_d[match(all_uk$species, vit$uk_name)]
+all_uk$folate <- vit$folate[match(all_uk$species, vit$uk_name)]
+all_uk$vitamin_b12 <- vit$vitamin_b12[match(all_uk$species, vit$uk_name)]
+
+## now RDA
+all_uk$vita_rda<-all_uk$vitamin_a/rda$rni_women[rda$nutrient=='vitamin_a']*100
+all_uk$vitd_rda<-all_uk$vitamin_d/rda$rni_women[rda$nutrient=='vitamin_d']*100
+all_uk$vitb12_rda<-all_uk$vitamin_b12/rda$rni_women[rda$nutrient=='vitamin_b12']*100
+all_uk$folate_rda<-all_uk$folate/rda$rni_women[rda$nutrient=='folate']*100
+
+## now cap nutrient RDA at 100% (i.e. a species either meets (100%) or doesn't meet (<100%) the RDA)
+all_uk$vita_rda[all_uk$vita_rda>100]<-100
+all_uk$vitd_rda[all_uk$vitd_rda>100]<-100
+all_uk$vitb12_rda[all_uk$vitb12_rda>100]<-100
+all_uk$folate_rda[all_uk$folate_rda>100]<-100
 
 write.csv(all_uk, file = 'data/UK_GHG_nutrient_catch.csv', row.names=FALSE)
 write.csv(all_uk_bysector, file = 'data/UK_GHG_nutrient_catch_bysector.csv', row.names=FALSE)
