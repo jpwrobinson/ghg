@@ -59,13 +59,14 @@ nut3<-nut3 %>% group_by(species) %>%
 nut3$species<-factor(nut3$species, levels=levels(fct_reorder(nut$species, nut$mid)[!duplicated(fct_reorder(nut$species, nut$mid))]))
 
 ## 2. nutrient density
-g2<-ggplot(nut3, aes(rda, species, fill=lab)) + 
+g2<-ggplot(nut3, aes(rda, species, col=lab, fill=lab)) + 
   geom_bar(stat='identity') +
   geom_text(data = nut3 %>% filter(rda >= 15),
             aes(x = label_ypos, label= paste0(round(rda, 0), '%')),  color="white", size=2) +
   labs(x = 'Nutrient density, %', y ='') +
   facet_grid(rows = vars(class), scales='free_y', space = 'free_y') + 
-  scale_fill_manual(values = nut.cols) +
+  scale_fill_manual(values = nut.cols2) +
+  scale_colour_manual(values = nut.cols2) +
   scale_x_continuous(labels=scales::comma, expand=c(0, 0.06)) +
   th+ 
   theme(plot.margin=unit(c(0.1, 0.5, 0.1, 0.5), 'cm'), 
@@ -92,8 +93,8 @@ g3<-ggplot(nutS, aes(catch, species, fill=source)) +
 
 
 pdf(file = 'fig/final/Figure2_UK_profiles.pdf', height=5, width=13)
-top<-plot_grid(g1, g2, g3, nrow = 1, align = 'h', 
-  rel_widths=c(0.9, 0.8, 0.6), labels=c('A', 'B', 'C'), hjust=0.3)
+top<-plot_grid(g1, g3, g2, nrow = 1, align = 'h', 
+  rel_widths=c(0.9, 0.6, 0.8), labels=c('A', 'B', 'C'), hjust=0)
 print(
   # plot_grid(top, g3, nrow =2, labels=c('', 'C'), rel_heights=c(1, 0.7))
   top
