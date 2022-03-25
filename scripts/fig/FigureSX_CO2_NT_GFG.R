@@ -30,7 +30,7 @@ gfg<-gfg %>% group_by(common_name, farmed_wild, scientific_name, id) %>%
 
 # read nutrient/ghg data, join with gfg
 drops<-c('Other marine fish')
-nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
+nutCO<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
   filter(top90 == TRUE & !species %in% drops & !is.na(mid)) %>%
   select(-tax) %>%
   rowwise() %>%
@@ -48,7 +48,7 @@ nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
 # plot(pp)
 
 
-g0<-ggplot(nut, aes(nt_co2, total_score, col=farmed_wild)) + 
+g0<-ggplot(nutCO, aes(nt_co2, total_score, col=farmed_wild)) + 
         # geom_pointrange(size=0.4, aes(ymin = lower, ymax = upper)) + 
         # geom_errorbarh(size=0.4, aes(xmin = nt_co2_low, xmax = nt_co2_hi)) + 
         geom_point(size=3) + 
@@ -62,7 +62,7 @@ g0<-ggplot(nut, aes(nt_co2, total_score, col=farmed_wild)) +
             axis.ticks=element_line(colour='black'),
                 legend.title=element_blank()) 
 
-g0B<-ggplot(nut %>% filter(!is.na(total_score)), 
+g0B<-ggplot(nutCO %>% filter(!is.na(total_score)), 
         aes(fct_reorder(common_name, total_score),total_score, col=farmed_wild)) + 
         geom_pointrange(size=0.4, aes(ymin = lower, ymax = upper)) + 
         geom_point(size=3) + 
@@ -81,9 +81,9 @@ g0B<-ggplot(nut %>% filter(!is.na(total_score)),
 
 source('scripts/fig/Figure5_radar.R')
 nut_rad$price_key_kg<-c(16.34, 8.03, 8.54, 6.45, 9.64, 5.76, 5.08, 10.42, 24.56, 5.47, 16.12)
-nut$price_key_kg<-nut_rad$price_key_kg[match(nut$common_name, nut_rad$common_name)]
+nutCO$price_key_kg<-nut_rad$price_key_kg[match(nutCO$common_name, nut_rad$common_name)]
 
-g1<-ggplot(nut, aes(nt_co2, price_key_kg, col=farmed_wild)) + 
+g1<-ggplot(nutCO, aes(nt_co2, price_key_kg, col=farmed_wild)) + 
         # geom_pointrange(size=0.2, aes(ymin = lower, ymax = upper)) + 
         # geom_errorbarh(size=0.2, aes(xmin = nt_co2_low, xmax = nt_co2_hi)) + 
         geom_point(size=3) + 
