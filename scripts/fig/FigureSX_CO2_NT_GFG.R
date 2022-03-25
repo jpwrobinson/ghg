@@ -34,13 +34,13 @@ nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
   filter(top90 == TRUE & !species %in% drops & !is.na(mid)) %>%
   select(-tax) %>%
   rowwise() %>%
-  mutate(n_targets = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda) > 25),  ## estimate nutrition targets (25% RDA) for each species)
+  mutate(n_targets = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda, vita_rda, vitb12_rda, vitd_rda, folate_rda) > 25),  ## estimate nutrition targets (25% RDA) for each species)
+        n_targets2 = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda) > 25), 
          nt_co2 = mid / n_targets / 10, ## estimate the CO2 equivalent per RDA target
-         nt_co2_low = low / n_targets / 10, ## estimate the CO2 equivalent per RDA target
-         nt_co2_hi = max / n_targets / 10, ## estimate the CO2 equivalent per RDA target
          common_name = factor(common_name, levels = levels(fct_reorder(common_name, nt_co2)))) %>% 
   mutate(id = paste(farmed_wild, scientific_name, sep='_')) %>% 
-  left_join(gfg %>% select(-farmed_wild, -common_name, -scientific_name), by = 'id')
+  left_join(gfg %>% select(-farmed_wild, -common_name, -scientific_name), by = 'id') %>% 
+  filter(id != 'Wild_Mytilus edulis')
 
 
 # nut2<-nut %>% filter(!is.na(total_score))
@@ -80,7 +80,7 @@ g0B<-ggplot(nut %>% filter(!is.na(total_score)),
                 legend.title=element_blank()) 
 
 source('scripts/fig/Figure5_radar.R')
-nut_rad$price_key_kg<-c(16.34, 8.03, 8.54, 6.45, 9.64, 5.76, 5.08, 10.42, 24.56, 5.47, 5.47, 16.12)
+nut_rad$price_key_kg<-c(16.34, 8.03, 8.54, 6.45, 9.64, 5.76, 5.08, 10.42, 24.56, 5.47, 16.12)
 nut$price_key_kg<-nut_rad$price_key_kg[match(nut$common_name, nut_rad$common_name)]
 
 g1<-ggplot(nut, aes(nt_co2, price_key_kg, col=farmed_wild)) + 

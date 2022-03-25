@@ -48,12 +48,18 @@ knitr::include_graphics("fig/final/FigureS2_UK_seafood.pdf"); i = i + 1
 
 **Fig. S`r i`. Seafood available for UK consumers.** Points are the estimated UK production (blue, landings and farms) and imported (grey) seafood per year, for all seafood with more than 100 tonnes total production.
 
+\newpage
+```{r, out.height="80%", echo=F,fig.align='center', warning=FALSE, message=FALSE}
+knitr::include_graphics("fig/final/FigureSX_UK_fournut_density.pdf"); i = i + 1
+```
 
+**Fig. S`r i`. Nutrient density for major UK seafood products estimated for five nutrients (calcium, iron, selenium, zinc, omega-3 fatty acids).** Nutrient density based on recommended daily intakes for adults (18-65 years old), recalculated here for comparison with Fig. 1 (nutrient content of global seafood products).
+
+\newpage
 ```{r, out.height="80%", echo=F,fig.align='center', warning=FALSE, message=FALSE}
 knitr::include_graphics("fig/final/FigureSX_GFGscore.pdf"); i = i + 1
 ```
-
-**Fig. S`r i`. Sustainability and price of UK seafood products.** A) Carbon emissions per nutrient target by sustainability score, where points are the mean sustainability score of each product against the mean kg CO2-eq per nutrient target. B) is the range in sustainability scores by seafood product and C) is the price per kg (Seafish 2021) against kg CO2-eq per nutrient target. Sustinability scores are rescaled such that 0 = low sustainability and 1 = high sustainability.
+**Fig. S`r i`. Sustainability and price of UK seafood products.** A) Carbon emissions per nutrient target by sustainability score, where points are the mean sustainability score of each product against the mean kg CO2-eq per nutrient target. B) is the range in sustainability scores by seafood product and C) is the price per kg (Seafish 2021) against kg CO2-eq per nutrient target. Sustainability scores were rescaled such that 0 = low sustainability and 1 = high sustainability, and kg CO2-eq per nutrient target was estimated from recommended intakes of nine nutrients (calcium, iron, selenium, zinc, omega-3 fatty acids, vitamins A, B12, D and folate).
 
 \newpage
 

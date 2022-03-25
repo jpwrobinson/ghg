@@ -7,9 +7,10 @@ nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
   filter(top90 == TRUE & !species %in% drops & !is.na(mid)) %>%
   select(-tax) %>% 
   ## redo nut_score
-  mutate(nut_score = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda, vita_rda, vitd_rda, vitb12_rda, folate_rda))) %>% 
+  mutate(nut_score = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda, vita_rda, vitd_rda, vitb12_rda, folate_rda)),
+        nut_score2 = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda))) %>% 
   group_by(species, farmed_wild, tot, class) %>% 
-  summarise_at(vars(low:nut_score, vitamin_d:folate_rda), mean) %>% 
+  summarise_at(vars(low:nut_score2, vitamin_d:folate_rda), mean) %>% 
   mutate(species=factor(species), id = paste0(species, ' (', farmed_wild, ')'))
 
 
@@ -58,6 +59,14 @@ nut3<-nut3 %>% group_by(species) %>%
 
 nut3$species<-factor(nut3$species, levels=levels(fct_reorder(nut$species, nut$mid)[!duplicated(fct_reorder(nut$species, nut$mid))]))
 
+nut4<-nut3 %>% filter(lab %in% c('Calcium', 'Iron', 'Selenium', 'Zinc', 'Omega-3')) %>% 
+  droplevels() %>% 
+  group_by(species) %>% 
+  arrange(factor(nutrient, levels = rev(levels(nutrient))), .by_group=TRUE) %>% 
+  mutate(label_ypos=cumsum(rda) - 0.5*rda) %>% 
+  mutate(lab = recode(lab, 'Calcium'='Other (Ca + Vit-A)', 'Vitamin A' = 'Other (Ca + Vit-A)'))
+
+
 ## 2. nutrient density
 g2<-ggplot(nut3, aes(rda, species, col=lab, fill=lab)) + 
   geom_bar(stat='identity') +
@@ -72,6 +81,23 @@ g2<-ggplot(nut3, aes(rda, species, col=lab, fill=lab)) +
   theme(plot.margin=unit(c(0.1, 0.5, 0.1, 0.5), 'cm'), 
         axis.ticks = element_blank(), 
         legend.position = 'none', axis.text.y = element_blank(), 
+        axis.title.y = element_blank(), strip.text.y = element_blank())
+
+## 2B. nutrient density (5 nut version)
+gS<-ggplot(nut4, aes(rda, species, col=lab, fill=lab)) + 
+  geom_bar(stat='identity') +
+  geom_text(data = nut4 %>% filter(rda >= 15),
+            aes(x = label_ypos, label= paste0(round(rda, 0), '%')),  color="white", size=3) +
+  labs(x = 'Nutrient density, %', y ='') +
+  facet_grid(rows = vars(class), scales='free_y', space = 'free_y') + 
+  scale_fill_manual(values = nut.cols3) +
+  scale_colour_manual(values = nut.cols3) +
+  scale_x_continuous(labels=scales::comma, expand=c(0, 0.06)) +
+  th+ 
+  theme(plot.margin=unit(c(0.1, 0.5, 0.1, 0.5), 'cm'), 
+        axis.ticks = element_blank(), 
+        legend.position = 'right', 
+        # axis.text.y = element_blank(), 
         axis.title.y = element_blank(), strip.text.y = element_blank())
 
 ## 3. production 
@@ -102,6 +128,9 @@ print(
 dev.off()
 
 
+pdf(file = 'fig/final/FigureSX_UK_fournut_density.pdf', height=5, width=9)
+print(gS)
+dev.off()
 
 
 

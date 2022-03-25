@@ -45,3 +45,14 @@ nut.cols2<-c(
     'Vitamin B12' = '#fb9a99', # pink
     'Folate' = '#969696' # grey
     )
+
+nut.cols3<-c(
+    # minerals
+    # 'Calcium'='#969696', # grey
+    'Iron'='#e6ab02', 'Zinc'='#3182bd', 
+    'Selenium' = '#776EB0',
+    # fat
+    'Omega-3' = '#d95f02',  # orange
+    # vitamins
+    'Other (Ca + Vit-A)' = '#969696' # grey
+    )
