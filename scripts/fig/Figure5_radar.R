@@ -29,13 +29,10 @@ nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
   filter(top90 == TRUE & !species %in% drops & !is.na(mid)) %>%
   select(-tax) %>%
   rowwise() %>%
-  mutate(n_targets = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda) > 25),  ## estimate nutrition targets (25% RDA) for each species)
-         nt_co2 = mid / n_targets / 10, ## estimate the CO2 equivalent per RDA target
-         nt_co2_low = low / n_targets / 10, ## estimate the CO2 equivalent per RDA target
-         nt_co2_hi = max / n_targets / 10, ## estimate the CO2 equivalent per RDA target
-         common_name = factor(common_name, levels = levels(fct_reorder(common_name, nt_co2)))) %>% 
+  mutate(nut_score = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda, vita_rda, vitd_rda, vitb12_rda, folate_rda))) %>% 
   mutate(id = paste(farmed_wild, scientific_name, sep='_')) %>% 
-  left_join(gfg %>% select(-farmed_wild, -common_name, -scientific_name), by = 'id')
+  left_join(gfg %>% select(-farmed_wild, -common_name, -scientific_name), by = 'id') %>% 
+  filter(id != 'Wild_Mytilus edulis')
 
 
 ## rescale variables to 0-1. Sustainability is already on 0-1 scale.
@@ -46,7 +43,7 @@ nut_rad<-nut %>% filter(!is.na(total_score)) %>%
       # pivot_longer(-c(scientific_name, farmed_wild), names_to = 'variable', values_to = 'value')
 
 ## add price per kg (Seafish in retail 2021 update)
-nut_rad$price_key_kg<-c(16.34, 8.03, 8.54, 6.45, 9.64, 5.76, 5.08, 10.42, 24.56, 5.47, 5.47, 16.12)
+nut_rad$price_key_kg<-c(16.34, 8.03, 8.54, 6.45, 9.64, 5.76, 5.08, 10.42, 24.56, 5.47, 16.12)
 nut_rad$A<-rescale(nut_rad$price_key_kg, to=c(1,0))
 nut_rad$price_key_kg<-NULL
 
@@ -149,7 +146,7 @@ ggblank<-ggradar(dat,
 
 pdf(file = 'fig/final/Figure4_radar.pdf', height=7, width=15)
 gavg<-plot_grid(gAvg2, gAvg1, nrow=2)
-gsp<-plot_grid(g1, g2, g3, g4, g5, g6, g7, g8, g9, g10, g11, g12)
+gsp<-plot_grid(g1, g2, g3, g4, g5, g6, g7, g8, g9, g10, g11)
 print(
   plot_grid(gavg, gsp, nrow=1, rel_widths=c(0.5, 1))
   )
