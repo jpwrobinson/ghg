@@ -26,6 +26,7 @@ nut.cols<-c('Calcium'='#de2d26',
             'Zinc'='#3182bd', 
             'Omega-3' = '#d95f02', #  old = F77D29
              'Selenium' = '#776EB0',
+             'Iodine' = '#35978f',
             'Vitamin A'='#31a354',
             'Vitamin D' = '#fb9a99', 
             'Vitamin B12' = '#b2df8a', 
@@ -39,6 +40,7 @@ nut.cols2<-c(
     'Selenium' = '#776EB0',
     # fat
     'Omega-3' = '#d95f02',  # orange
+    'Iodine' = '#35978f',
     # vitamins
     'Vitamin A'='#969696', # grey
     'Vitamin D' = '#31a354', # 

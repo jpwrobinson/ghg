@@ -7,10 +7,10 @@ nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
   filter(top90 == TRUE & !species %in% drops & !is.na(mid)) %>%
   select(-tax) %>% 
   ## redo nut_score
-  mutate(nut_score = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda, vita_rda, vitd_rda, vitb12_rda, folate_rda)),
+  mutate(nut_score = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda, iodine_rda, vita_rda, vitd_rda, vitb12_rda, folate_rda)),
         nut_score2 = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda))) %>% 
   group_by(species, farmed_wild, tot, class) %>% 
-  summarise_at(vars(low:nut_score2, vitamin_d:folate_rda), mean) %>% 
+  summarise_at(vars(low:nut_score2, vitamin_d:iodine_rda), mean) %>% 
   mutate(species=factor(species), id = paste0(species, ' (', farmed_wild, ')'))
 
 
@@ -47,11 +47,11 @@ g1<-ggplot(nut, aes(mid, fct_reorder(species, mid), col=farmed_wild)) +
     legend.title=element_blank(), strip.text.y = element_blank())
 
 nut3<-nut %>% ungroup() %>% group_by(species, class) %>% 
-    summarise_at(vars(ca_rda:om_rda, vita_rda:folate_rda), mean) %>%   
-    pivot_longer(ca_rda:folate_rda, names_to = 'nutrient', values_to = 'rda') 
+    summarise_at(vars(ca_rda:om_rda, vita_rda:iodine_rda), mean) %>%   
+    pivot_longer(ca_rda:iodine_rda, names_to = 'nutrient', values_to = 'rda') 
 
-nut3$nutrient<-factor(nut3$nutrient, levels = rev(unique(nut3$nutrient)[c(8,3,5,7,4,2,1,9,6)]))
-nut3$lab<-nut3$nutrient; levels(nut3$lab) <-rev(c('Vitamin B12', 'Selenium','Omega-3', 'Vitamin D', 'Zinc', 'Iron','Calcium','Folate', 'Vitamin A')) 
+nut3$nutrient<-factor(nut3$nutrient, levels = rev(unique(nut3$nutrient)[c(8,3,5,10, 7,4,2,1,9,6)]))
+nut3$lab<-nut3$nutrient; levels(nut3$lab) <-rev(c('Vitamin B12', 'Selenium','Omega-3','Iodine', 'Vitamin D', 'Zinc', 'Iron','Calcium','Folate', 'Vitamin A')) 
 
 nut3<-nut3 %>% group_by(species) %>% 
   arrange(factor(nutrient, levels = rev(levels(nutrient))), .by_group=TRUE) %>% 

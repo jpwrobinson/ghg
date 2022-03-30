@@ -1,6 +1,6 @@
 pacman::p_load(tidyverse, skimr, janitor, cowplot, funk, install=FALSE)
 theme_set(theme_sleek())
-
+source('scripts/rda_reader.R')
 
 load('data/uk_seafood.rds')
 load('data/nutrient_ghg_species.rds')
@@ -94,18 +94,21 @@ all_uk$vitamin_a[all_uk$species=='Shrimp, warmwater'] <- vit$vitamin_a[vit$uk_na
 all_uk$vitamin_d <- vit$vitamin_d[match(all_uk$species, vit$uk_name)]
 all_uk$folate <- vit$folate[match(all_uk$species, vit$uk_name)]
 all_uk$vitamin_b12 <- vit$vitamin_b12[match(all_uk$species, vit$uk_name)]
+all_uk$iodine <- vit$iodine[match(all_uk$species, vit$uk_name)]
 
 ## now RDA
 all_uk$vita_rda<-all_uk$vitamin_a/rda$rni_women[rda$nutrient=='vitamin_a']*100
 all_uk$vitd_rda<-all_uk$vitamin_d/rda$rni_women[rda$nutrient=='vitamin_d']*100
 all_uk$vitb12_rda<-all_uk$vitamin_b12/rda$rni_women[rda$nutrient=='vitamin_b12']*100
 all_uk$folate_rda<-all_uk$folate/rda$rni_women[rda$nutrient=='folate']*100
+all_uk$iodine_rda<-all_uk$iodine/rda$rni_women[rda$nutrient=='iodine']*100
 
 ## now cap nutrient RDA at 100% (i.e. a species either meets (100%) or doesn't meet (<100%) the RDA)
 all_uk$vita_rda[all_uk$vita_rda>100]<-100
 all_uk$vitd_rda[all_uk$vitd_rda>100]<-100
 all_uk$vitb12_rda[all_uk$vitb12_rda>100]<-100
 all_uk$folate_rda[all_uk$folate_rda>100]<-100
+all_uk$iodine_rda[all_uk$iodine_rda>100]<-100
 
 write.csv(all_uk, file = 'data/UK_GHG_nutrient_catch.csv', row.names=FALSE)
 write.csv(all_uk_bysector, file = 'data/UK_GHG_nutrient_catch_bysector.csv', row.names=FALSE)
