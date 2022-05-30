@@ -1,6 +1,7 @@
 pacman::p_load(ggrepel, tidyverse, skimr, janitor, cowplot, funk, install=FALSE)
 theme_set(theme_sleek())
 source('scripts/fig/00_plotting.R')
+set.seed(47)
 
 load('data/nutrient_ghg_species.rds')
 
@@ -44,7 +45,7 @@ g0<-ggplot(data=groups, aes(x = mid, y =mean)) +
   th + theme(
     legend.position = c(0.8, 0.9), legend.title=element_blank(),
     axis.ticks=element_line(color='black'),
-    plot.margin=unit(c(0.1, 1, 0.1, 0.1), 'cm')) +
+    plot.margin = unit(c(5.5, 0,5.5,5.5), 'points')) +
     # guides(point = 'legend', text='none') +
   scale_fill_manual(values = colcol2)
 
@@ -65,8 +66,10 @@ g_inset<-ggplot(wild_f, aes(x = mid, y =mean, fill=farmed_wild)) +
       geom_text_repel(aes(label=x),size=2.5, force=3, point.padding = 0.2) +
       scale_fill_manual(values = colcol2) +
       # scale_x_continuous(breaks=seq(0, 25, by = 5)) +
-      th + theme(legend.position = 'none', axis.ticks=element_line(color='black')) +
-      labs(x = expression(paste(kg~CO[2],'-',eq)), y = 'Nutrient density, %') 
+      th + theme(legend.position = 'none', 
+                 axis.ticks=element_line(color='black'),
+                 plot.margin = unit(c(5.5, 5.5,5.5,1), 'points')) +
+      labs(x = expression(paste(kg~CO[2],'-',eq)), y = '') 
 
   
 ## sup figures showing names and nutrient scores
@@ -90,11 +93,12 @@ g2<-ggplot(all, aes(mid, nut_score, fill=farmed_wild)) +
   scale_x_continuous(breaks=seq(0, 25, by = 5)) +
   scale_fill_manual(values = colcol2)
 
+source('scripts/fig/Figure3_CO2_RDA.R')
 
-pdf(file = 'fig/final/Figure1_nutrient_ghg.pdf', height=5, width=10)
-bot<-plot_grid(g0B, g_inset, nrow=2, rel_widths=c(1, 1), labels=c('B', 'C'))
+pdf(file = 'fig/final/Figure1_nutrient_ghg.pdf', height=4, width=14)
+# bot<-plot_grid(gmain, g_inset, nrow=2, rel_widths=c(1, 1), labels=c('B', 'C'))
 print(
-  plot_grid(g0, bot, nrow=1, labels=c('A',''), rel_widths=c(1,0.75))
+  plot_grid(g0, g_inset, gmain, nrow=1, labels=c('A','B', 'C'), rel_widths=c(1,1,1.2))
 )
 dev.off()
 
