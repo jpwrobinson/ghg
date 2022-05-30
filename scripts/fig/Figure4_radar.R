@@ -29,7 +29,7 @@ nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
   filter(top90 == TRUE & !species %in% drops & !is.na(mid)) %>%
   select(-tax) %>%
   rowwise() %>%
-  mutate(nut_score = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda, vita_rda, vitd_rda, vitb12_rda, folate_rda))) %>% 
+  mutate(nut_score = sum(c(ca_rda, fe_rda, se_rda, zn_rda, iodine_rda, om_rda, vita_rda, vitd_rda, vitb12_rda, folate_rda))) %>% 
   mutate(id = paste(farmed_wild, scientific_name, sep='_')) %>% 
   left_join(gfg %>% select(-farmed_wild, -common_name, -scientific_name), by = 'id') %>% 
   filter(id != 'Wild_Mytilus edulis')

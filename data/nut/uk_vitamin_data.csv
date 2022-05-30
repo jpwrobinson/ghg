@@ -1,14 +1,14 @@
-﻿Source,uk_name,Food Name,Vitamin A,Vitamin D,Vitamin B12,Folate
-McCance_Widdowsons,Cod,"Cod, flesh only, raw",2,0,1.5,7
-McCance_Widdowsons,Haddock,"Haddock, flesh only, raw",1,0,1.9,10
-McCance_Widdowsons,Herring,"Herring, flesh only, raw",44,19,13,9
-McCance_Widdowsons,Mackerel,"Mackerel, flesh only, raw",54,8,8.8,1
-Norwegian_Food_Composition_Table_2021,Sea mussels,"Mussel, blue, raw",14,0,25,42
-McCance_Widdowsons,Alaska pollock,"Pollock, Alaskan, flesh only, raw",0,0,2.3,5
-McCance_Widdowsons,"Shrimp, warmwater","Prawns, king, raw",0,0,1.3,11
-McCance_Widdowsons,Salmon,"Salmon, farmed, flesh only, raw",16,4.7,4.4,5
-McCance_Widdowsons,Trout,"Trout, rainbow, flesh only, raw",25,7.9,2.8,9
-McCance_Widdowsons,"Tuna, skipjack","Tuna, flesh only, raw",76,3.2,2.2,4
-McCance_Widdowsons,"Shrimp, miscellaneous","Shrimps, frozen",2,0,3,14
-Norwegian_Food_Composition_Table_2021,Scallop,"Scallop, raw",4,4.2,4,11
-McCance_Widdowsons,"Lobster, Norway","Lobster, boiled",0,0,3,9
+﻿Source,uk_name,Food Name,Vitamin A,Vitamin D,Vitamin B12,Folate,Iodine
+McCance_Widdowsons,Cod,"Cod, flesh only, raw",2,0,1.5,7,196
+McCance_Widdowsons,Haddock,"Haddock, flesh only, raw",1,0,1.9,10,320
+McCance_Widdowsons,Herring,"Herring, flesh only, raw",44,19,13,9,29
+McCance_Widdowsons,Mackerel,"Mackerel, flesh only, raw",54,8,8.8,1,29
+Norwegian_Food_Composition_Table_2021,Sea mussels,"Mussel, blue, raw",14,0,25,42,270
+McCance_Widdowsons,Alaska pollock,"Pollock, Alaskan, flesh only, raw",0,0,2.3,5,56
+McCance_Widdowsons,"Shrimp, warmwater","Prawns, king, raw",0,0,1.3,11,5
+McCance_Widdowsons,Salmon,"Salmon, farmed, flesh only, raw",16,4.7,4.4,5,12
+McCance_Widdowsons,Trout,"Trout, rainbow, flesh only, raw",25,7.9,2.8,9,5
+McCance_Widdowsons,"Tuna, skipjack","Tuna, flesh only, raw",76,3.2,2.2,4,18
+McCance_Widdowsons,"Shrimp, miscellaneous","Shrimps, frozen",2,0,3,14,100
+Norwegian_Food_Composition_Table_2021,Scallop,"Scallop, raw",4,4.2,4,11,11
+McCance_Widdowsons,"Lobster, Norway","Lobster, boiled",0,0,3,9,100
