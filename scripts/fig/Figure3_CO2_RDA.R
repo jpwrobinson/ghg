@@ -31,10 +31,11 @@ nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
   filter(top90 == TRUE & !species %in% drops & !is.na(mid)) %>%
   select(-tax) %>%
   rowwise() %>%
-  mutate(n_targets = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda) > 25),  ## estimate nutrition targets (25% RDA) for each species)
+  mutate(n_targets = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda,  vita_rda, vitd_rda, vitb12_rda, folate_rda) > 25),  ## estimate nutrition targets (25% RDA) for each species)
          nt_co2 = mid / n_targets / 10, ## estimate the CO2 equivalent per RDA target
          common_name = factor(common_name, levels = levels(fct_reorder(common_name, nt_co2))))
          
+
 nut$group2<-cats$group[match(nut$group, cats$isscaap)]
 ## estimate mean nt_co2 by group
 groups_uk<-nut %>% group_by(species) %>% 
@@ -87,8 +88,8 @@ guk<-ggplot(fig_dat_uk, aes(product, nt_co2, fill = n_targets)) +
   scale_y_continuous(expand=c(0.03,0)) +
   labs(x = '', y = expression(paste(kg~CO[2],'-',eq~per~nutrient~target)), fill='# nutrient targets (NT)') +
   # scale_shape_manual(values = c(21, 19)) +
-  scale_fill_distiller(limits=c(1, 4),breaks=c(1,2,3,4), palette='RdYlGn',direction=1) +
-  scale_color_distiller(limits=c(1, 4),breaks=c(1,2,3,4), palette='RdYlGn',direction=1) +
+  scale_fill_distiller(limits=c(1, 5),breaks=c(1,2,3,4,5), palette='RdYlGn',direction=1) +
+  scale_color_distiller(limits=c(1, 5),breaks=c(1,2,3,4,5), palette='RdYlGn',direction=1) +
   guides(color='none') +
   th +
   theme(legend.position = c(0.8, 0.4), axis.text.y = element_text(size=11),
@@ -131,3 +132,4 @@ pdf(file = 'fig/final/FigureS3.pdf', height=12, width=8)
 # )
 print(gl)
 dev.off()
+

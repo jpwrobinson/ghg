@@ -50,6 +50,13 @@ knitr::include_graphics("fig/final/FigureS2_UK_seafood.pdf"); i = i + 1
 
 \newpage
 ```{r, out.height="80%", echo=F,fig.align='center', warning=FALSE, message=FALSE}
+knitr::include_graphics("fig/final/Figure3.pdf"); i = i + 1
+```
+
+**Figure S`r i`. Carbon emissions per nutrient target for UK seafood products, for nine essential dietary nutrients.** Points are kg CO2-eq per nutrient target (averaged across species), coloured by the number of nutrient targets in a 100g portion. Targets were recommended intakes for adults (18-65 years old) of nine nutrients (calcium, iron, selenium, zinc, omega-3 fatty acids, vitamins A, D, B12, folate). Animal-source foods (beef, chicken, lamb, pork) are included for comparison using CO2 values from (Clune et al., 2017) and nutrient values from (Widdowson, n.d.).
+
+\newpage
+```{r, out.height="80%", echo=F,fig.align='center', warning=FALSE, message=FALSE}
 knitr::include_graphics("fig/final/FigureSX_UK_fournut_density.pdf"); i = i + 1
 ```
 
