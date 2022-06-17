@@ -57,6 +57,13 @@ knitr::include_graphics("fig/final/Figure3.pdf"); i = i + 1
 
 \newpage
 ```{r, out.height="80%", echo=F,fig.align='center', warning=FALSE, message=FALSE}
+knitr::include_graphics("fig/final/FigureSX_UK_export.pdf"); i = i + 1
+```
+
+**Fig. S`r i`. Seafood exported from the UK in 2019** A) Export volume in tonnes of live weight and B) export volume as a proportion of available seafood (landed + farmed + imported). Seafood products shown had more than 100 tonnes total production (i.e. those in Fig. 2).
+
+\newpage
+```{r, out.height="80%", echo=F,fig.align='center', warning=FALSE, message=FALSE}
 knitr::include_graphics("fig/final/FigureSX_UK_fournut_density.pdf"); i = i + 1
 ```
 

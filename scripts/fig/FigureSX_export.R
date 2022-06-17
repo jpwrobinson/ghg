@@ -38,7 +38,7 @@ nutS<-nutS %>% group_by(species, class, source, tot, mid) %>% summarise(catch = 
 ex<-readxl::read_excel('data/uk/uk_export.xlsx') %>% clean_names() %>% 
 	pivot_longer(-c(species, indicator), names_to = 'year', values_to='value') %>% 
 	mutate(year = as.numeric(str_replace_all(year, 'x', ''))) %>% 
-	filter(indicator == 'live_weight_tonnes') %>% 
+	filter(indicator == 'live_weight_tonnes' & year == 2019) %>% 
 	group_by(species, indicator) %>% 
 	summarise(value = mean(value))
 
@@ -51,8 +51,8 @@ ex$species<-factor(ex$species, levels=levels(fct_reorder(nut$species, nut$mid)[!
 ## 3. production 
 gg<-ggplot(ex, aes(value, species)) +
       geom_bar(stat = 'identity', fill='grey50') +
-      labs(x = expression(exported~tonnes~yr^{'-1'}), y = '', parse=TRUE) +
-      scale_x_continuous(labels=scales::comma, expand=c(0, 0.06), breaks=c(0, 25000, 50000, 75000, 100000,125000)) +
+      labs(x =  'Exported seafood in 2019, t', y = '', parse=TRUE) +
+      scale_x_continuous(labels=scales::comma, expand=c(0, 0.06), breaks=c(0, 25000, 50000, 75000, 100000,125000,150000)) +
       th+ 
       theme(plot.margin=unit(c(0.1, 0.5, 0.1, 0.5), 'cm'), 
             axis.ticks = element_blank(), 
@@ -64,7 +64,7 @@ gg<-ggplot(ex, aes(value, species)) +
 
 gg1<-ggplot(ex, aes(prop_export, species)) +
       geom_bar(stat = 'identity', fill='grey50') +
-      labs(x = 'proportion of available seafood exported, %', y = '', parse=TRUE) +
+      labs(x = 'proportion of available seafood exported in 2019, %', y = '', parse=TRUE) +
       scale_x_continuous(labels=scales::comma, expand=c(0, 0.06)) +
       th+ 
       theme(plot.margin=unit(c(0.1, 0.5, 0.1, 0.5), 'cm'), 
@@ -76,6 +76,6 @@ gg1<-ggplot(ex, aes(prop_export, species)) +
 
 
 
-pdf(file = 'fig/final/FigureSX_UK_export.pdf', height=5, width=10)
+pdf(file = 'fig/final/FigureSX_UK_export.pdf', height=5, width=11)
 print(plot_grid(gg, gg1, nrow = 1, labels=c('A', 'B'), align='h', rel_widths=c(1, 0.7)))
 dev.off()
