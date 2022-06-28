@@ -110,7 +110,7 @@ gS<-ggplot(nut4, aes(rda, species, col=lab, fill=lab)) +
 ## 3. production 
 g3<-ggplot(nutS) +
       geom_bar(stat = 'identity',aes(catch, species, fill=source)) +
-      geom_errorbarh(col='#AB7DCD',
+      geom_errorbarh(col='#E90600',
         aes(xmin = apparent_consumption,xmax = apparent_consumption, y=species)) +
       labs(x = expression(tonnes~yr^{'-1'}), y = '', parse=TRUE) +
       # facet_grid(cols = vars(source), scales='free_y', space = 'free_y') + 

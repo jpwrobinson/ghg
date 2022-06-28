@@ -38,7 +38,7 @@ nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
 ## rescale variables to 0-1. Sustainability is already on 0-1 scale.
 nut_rad<-nut %>% filter(!is.na(total_score)) %>% 
       ungroup() %>% 
-      mutate(GHG = rescale(mid, to=c(1,0)), N = rescale(nut_score), S = (total_score), P = rescale(tot)) %>% 
+      mutate(GHG = rescale(mid, to=c(1,0)), N = rescale(nut_score), S = rescale(total_score), P = rescale(tot)) %>% 
       select(id, common_name, scientific_name, farmed_wild, GHG, N, S, P, tot) #%>% 
       # pivot_longer(-c(scientific_name, farmed_wild), names_to = 'variable', values_to = 'value')
 
