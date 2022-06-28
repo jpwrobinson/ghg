@@ -45,18 +45,23 @@ ex<-readxl::read_excel('data/uk/uk_export.xlsx') %>% clean_names() %>%
 ex$available<-nutS$tot[match(ex$species, nutS$species)]
 ex$prop_export<-ex$value / ex$available * 100
 
+## read apparent consumption
+ac<-read.csv( file = 'data/UK_GHG_nutrient_catch.csv') %>% 
+  filter(species %in% nut$species) %>% 
+  distinct(species, apparent_consumption)
+
 ## order according to nut GHG
 ex$species<-factor(ex$species, levels=levels(fct_reorder(nut$species, nut$mid)[!duplicated(fct_reorder(nut$species, nut$mid))]))
+ac$species<-factor(ac$species, levels=levels(fct_reorder(nut$species, nut$mid)[!duplicated(fct_reorder(nut$species, nut$mid))]))
 
 ## 3. production 
 gg<-ggplot(ex, aes(value, species)) +
       geom_bar(stat = 'identity', fill='grey50') +
-      labs(x =  'Exported seafood in 2019, t', y = '', parse=TRUE) +
+      labs(x =  'exported seafood in 2019, t', y = '', parse=TRUE) +
       scale_x_continuous(labels=scales::comma, expand=c(0, 0.06), breaks=c(0, 25000, 50000, 75000, 100000,125000,150000)) +
       th+ 
       theme(plot.margin=unit(c(0.1, 0.5, 0.1, 0.5), 'cm'), 
             axis.ticks = element_blank(), 
-            legend.position = c(0.85,0.5), 
             panel.grid.major.x = element_line(size=0.2, colour ='grey'),
             # axis.text.y = element_blank(), 
             axis.title.y = element_blank(), strip.text.y = element_blank())
@@ -69,13 +74,21 @@ gg1<-ggplot(ex, aes(prop_export, species)) +
       th+ 
       theme(plot.margin=unit(c(0.1, 0.5, 0.1, 0.5), 'cm'), 
             axis.ticks = element_blank(), 
-            legend.position = c(0.85,0.5), 
             panel.grid.major.x = element_line(size=0.2, colour ='grey'),
             axis.text.y = element_blank(), 
             axis.title.y = element_blank(), strip.text.y = element_blank())
 
+gg2<-ggplot(ac, aes(apparent_consumption, species)) +
+      geom_bar(stat = 'identity', fill='grey50') +
+      labs(x = 'apparent seafood consumption in 2019', y = '', parse=TRUE) +
+      scale_x_continuous(labels=scales::comma, expand=c(0, 0.06)) +
+      th+ 
+      theme(plot.margin=unit(c(0.1, 0.5, 0.1, 0.5), 'cm'), 
+            axis.ticks = element_blank(), 
+            panel.grid.major.x = element_line(size=0.2, colour ='grey'),
+            axis.text.y = element_blank(), 
+            axis.title.y = element_blank(), strip.text.y = element_blank())
 
-
-pdf(file = 'fig/final/FigureSX_UK_export.pdf', height=5, width=11)
-print(plot_grid(gg, gg1, nrow = 1, labels=c('A', 'B'), align='h', rel_widths=c(1, 0.7)))
+pdf(file = 'fig/final/FigureSX_UK_export.pdf', height=5, width=15)
+print(plot_grid(gg, gg1,gg2, nrow = 1, labels=c('A', 'B', 'C'), align='h', rel_widths=c(1, 0.7, 0.7)))
 dev.off()

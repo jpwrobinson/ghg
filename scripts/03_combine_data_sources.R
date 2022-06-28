@@ -77,9 +77,21 @@ all_uk<-left_join(tot_post,
 		filter(!is.na(tot))
 
 all_uk_bysector<-left_join(tot ,#%>% mutate(uk_name = species), 
-			all %>% mutate(id = paste(uk_name, tolower(farmed_wild), sep = '_')),
+			all %>% mutate(id = paste(uk_name, tolower(farmed_wild), sep = '_')) %>% 
+			group_by(id, farmed_wild) %>% 
+  				summarise_at(vars(mid, nut_score), mean),
 			by = 'id') 
 
+## join export to all_uk
+ex<-readxl::read_excel('data/uk/uk_export.xlsx') %>% clean_names() %>% 
+	pivot_longer(-c(species, indicator), names_to = 'year', values_to='value') %>% 
+	mutate(year = as.numeric(str_replace_all(year, 'x', ''))) %>% 
+	filter(indicator == 'live_weight_tonnes' & year == 2019) %>% 
+	group_by(species, indicator) %>% 
+	summarise(value = mean(value))
+
+all_uk$exported<-ex$value[match(all_uk$species, ex$species)]
+all_uk$apparent_consumption <- all_uk$tot - all_uk$exported
 
 ## add vitamin data for major UK products
 vit<-read.csv('data/nut/uk_vitamin_data.csv') %>% janitor::clean_names()

@@ -1,21 +1,14 @@
- pacman::p_load(tidyverse, readxl, janitor)
+pacman::p_load(tidyverse, readxl, janitor)
 theme_set(theme_bw())
 
 land<-read_excel('data/uk/UK_landings_2015_2019.xlsx')  %>% clean_names()  %>% 
 		rename_with(~ str_replace_all(.x, 'x', ''), starts_with('x'))
 
 land_tot<-land  %>% group_by(species, name)  %>% 	
-			summarise(catch = sum(sum_of_total_live_weight_landed_tonnes))  %>% 
+			summarise(catch = sum(`2019_landings_tonnes`, na.rm=TRUE))  %>% 
 			ungroup()  %>% 
 			arrange(desc(catch))  %>% 
 			mutate(tc = sum(catch), t80 = cumsum(catch), pos = t80/tc, top80 = ifelse(pos <= 0.8, TRUE, FALSE))
-
-value_tot<-land  %>% group_by(species, name)  %>% 	
-			summarise(value = sum(sum_of_total_value_of_landings_euro))  %>% 
-			ungroup()  %>% 
-			arrange(desc(value))  %>% 
-			mutate(tc = sum(value), t80 = cumsum(value), pos = t80/tc, top80 = ifelse(pos <= 0.8, TRUE, FALSE))
-
 
 ## most species groups have a dominant gear (>90% of catch)
 

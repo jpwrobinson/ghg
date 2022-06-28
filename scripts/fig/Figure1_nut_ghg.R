@@ -31,6 +31,7 @@ groups<-all %>% group_by(group2) %>%
 food<-read.csv('data/ghg_nutrient_other_foods.csv') %>% 
       filter(product %in% c('Chicken', 'Pork', 'Beef', 'Lamb', 'Eggs', 'Milk', 'Cheese')) ## take ASFs only
 
+
 # main panel: nutrient adequacy vs CO2 by species
 g0<-ggplot(data=groups, aes(x = mid, y =mean)) + 
   # geom_linerange(data=groups, aes(x = mid, y =mean, xmin = lower, xmax = upper)) +
@@ -85,7 +86,7 @@ g_inset<-ggplot(wild_f, aes(x = mid, y =mean, fill=farmed_wild)) +
 g2<-ggplot(all, aes(mid, nut_score, fill=farmed_wild)) + 
   # geom_text(aes(label=common_name))
   geom_point(size=2, pch=21, col='black') +
-  geom_text_repel(aes(col=farmed_wild, label=common_name),size=2) +
+  geom_text_repel(aes(col=farmed_wild, label=common_name),size=1.5) +
   labs(x = expression(paste(kg~CO[2],'-',eq)), y = 'Nutrient density, %') +
   th + theme(legend.position = c(0.8, 0.8), axis.ticks=element_line(color='black'),legend.title = element_blank()) +
   guides(fill='legend', point = 'none', text='none') +

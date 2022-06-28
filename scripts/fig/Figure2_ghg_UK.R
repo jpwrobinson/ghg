@@ -17,7 +17,7 @@ nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
 
 nutS<-read.csv('data/UK_GHG_nutrient_catch_bysector.csv') %>% 
   filter(species %in% nut$species) %>%
-  select(-tax) %>% 
+  # select(-tax) %>% 
   group_by(species, farmed_wild, tot, catch, source) %>% 
   mutate(species=factor(species), id = paste0(species, ' (', farmed_wild, ')')) %>% 
   mutate(source = case_when(
@@ -31,6 +31,12 @@ nutS<-nutS %>% group_by(species, class, source, tot, mid) %>% summarise(catch = 
 
 nutS$species<-factor(nutS$species, levels=levels(fct_reorder(nut$species, nut$mid)[!duplicated(fct_reorder(nut$species, nut$mid))]))
 
+## read apparent consumption
+ac<-read.csv( file = 'data/UK_GHG_nutrient_catch.csv') %>% 
+  filter(species %in% nutS$species) %>% 
+  distinct(species, apparent_consumption)
+
+nutS$apparent_consumption<-ac$apparent_consumption[match(nutS$species, ac$species)]
 
 ## 1. GHG
 g1<-ggplot(nut, aes(mid, fct_reorder(species, mid), col=farmed_wild)) + 
@@ -86,7 +92,7 @@ g2<-ggplot(nut3, aes(rda, species, col=lab, fill=lab)) +
 
 ## 2B. nutrient density (5 nut version)
 gS<-ggplot(nut4, aes(rda, species, col=lab, fill=lab)) + 
-  geom_bar(stat='identity') +
+  geom_bar(stat='identity', col='white' ,size=0.25) +
   geom_text(data = nut4 %>% filter(rda >= 15),
             aes(x = label_ypos, label= paste0(round(rda, 0), '%')),  color="white", size=3) +
   labs(x = 'Nutrient density, %', y ='') +
@@ -102,8 +108,10 @@ gS<-ggplot(nut4, aes(rda, species, col=lab, fill=lab)) +
         axis.title.y = element_blank(), strip.text.y = element_blank())
 
 ## 3. production 
-g3<-ggplot(nutS, aes(catch, species, fill=source)) +
-      geom_bar(stat = 'identity') +
+g3<-ggplot(nutS) +
+      geom_bar(stat = 'identity',aes(catch, species, fill=source)) +
+      geom_errorbarh(col='#AB7DCD',
+        aes(xmin = apparent_consumption,xmax = apparent_consumption, y=species)) +
       labs(x = expression(tonnes~yr^{'-1'}), y = '', parse=TRUE) +
       # facet_grid(cols = vars(source), scales='free_y', space = 'free_y') + 
       facet_grid(rows = vars(class), scales='free_y', space = 'free_y') + 
