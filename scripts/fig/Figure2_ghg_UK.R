@@ -59,30 +59,32 @@ nut3<-nut %>% ungroup() %>% group_by(species, class) %>%
 
 nut3$nutrient<-factor(nut3$nutrient, levels = rev(unique(nut3$nutrient)[c(8,3,5,10, 7,4,2,1,9,6)]))
 nut3$lab<-nut3$nutrient; levels(nut3$lab) <-rev(c('Vitamin B12', 'Selenium','Omega-3','Iodine', 'Vitamin D', 'Zinc', 'Iron','Calcium','Folate', 'Vitamin A')) 
-
-nut3<-nut3 %>% group_by(species) %>% 
-  arrange(factor(nutrient, levels = rev(levels(nutrient))), .by_group=TRUE) %>% 
-  mutate(label_ypos=cumsum(rda) - 0.5*rda)
-
 nut3$species<-factor(nut3$species, levels=levels(fct_reorder(nut$species, nut$mid)[!duplicated(fct_reorder(nut$species, nut$mid))]))
+
+nut_plot<-nut3 %>% group_by(species) %>% 
+  arrange(factor(nutrient, levels = rev(levels(nutrient))), .by_group=TRUE) %>% 
+  mutate(label_ypos=cumsum(rda) - 0.5*rda) %>% 
+  mutate(lab = recode(lab, 'Calcium'='misc', 'Vitamin A' = 'misc', 'Folate' = 'misc')) %>% 
+  group_by(species, class, lab) %>% 
+  summarise(rda = sum(rda), label_ypos = mean(label_ypos))
+  
 
 nut4<-nut3 %>% filter(lab %in% c('Calcium', 'Iron', 'Selenium', 'Zinc', 'Omega-3')) %>% 
   droplevels() %>% 
   group_by(species) %>% 
   arrange(factor(nutrient, levels = rev(levels(nutrient))), .by_group=TRUE) %>% 
   mutate(label_ypos=cumsum(rda) - 0.5*rda) %>% 
-  mutate(lab = recode(lab, 'Calcium'='Other (Ca + Vit-A)', 'Vitamin A' = 'Other (Ca + Vit-A)'))
+  mutate(lab = recode(lab, 'Calcium'='Other (Ca + Vit-A)', 'Vitamin A' = 'Other (Ca + Vit-A)')) 
 
 
 ## 2. nutrient density
-g2<-ggplot(nut3, aes(rda, species, col=lab, fill=lab)) + 
-  geom_bar(stat='identity') +
-  geom_text(data = nut3 %>% filter(rda >= 15),
+g2<-ggplot(nut_plot, aes(rda, species, fill=lab)) + 
+  geom_bar(stat='identity',col='white', size=0.1) +
+  geom_text(data = nut_plot %>% filter(rda >= 15 & lab != 'misc'),
             aes(x = label_ypos, label= paste0(round(rda, 0), '%')),  color="white", size=2) +
   labs(x = 'Nutrient density, %', y ='') +
   facet_grid(rows = vars(class), scales='free_y', space = 'free_y') + 
   scale_fill_manual(values = nut.cols2) +
-  scale_colour_manual(values = nut.cols2) +
   scale_x_continuous(labels=scales::comma, expand=c(0, 0.06)) +
   th+ 
   theme(plot.margin=unit(c(0.1, 0.5, 0.1, 0.5), 'cm'), 
@@ -91,14 +93,13 @@ g2<-ggplot(nut3, aes(rda, species, col=lab, fill=lab)) +
         axis.title.y = element_blank(), strip.text.y = element_blank())
 
 ## 2B. nutrient density (5 nut version)
-gS<-ggplot(nut4, aes(rda, species, col=lab, fill=lab)) + 
-  geom_bar(stat='identity', col='white' ,size=0.25) +
+gS<-ggplot(nut4, aes(rda, species,fill=lab)) + 
+  geom_bar(stat='identity', col='white' ,size=0.1) +
   geom_text(data = nut4 %>% filter(rda >= 15),
             aes(x = label_ypos, label= paste0(round(rda, 0), '%')),  color="white", size=3) +
   labs(x = 'Nutrient density, %', y ='') +
   facet_grid(rows = vars(class), scales='free_y', space = 'free_y') + 
   scale_fill_manual(values = nut.cols3) +
-  scale_colour_manual(values = nut.cols3) +
   scale_x_continuous(labels=scales::comma, expand=c(0, 0.06)) +
   th+ 
   theme(plot.margin=unit(c(0.1, 0.5, 0.1, 0.5), 'cm'), 
@@ -140,12 +141,3 @@ dev.off()
 pdf(file = 'fig/final/FigureSX_UK_fournut_density.pdf', height=5, width=9)
 print(gS)
 dev.off()
-
-
-
-
-
-
-
-
-

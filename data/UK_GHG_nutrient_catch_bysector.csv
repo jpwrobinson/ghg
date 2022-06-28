@@ -5,9 +5,6 @@
 "Blue Whiting",0,"wild",57894.7068459,57894.7068459,"Blue Whiting_wild", , , 
 "Blue Whiting",0,"imported",0,57894.7068459,"Blue Whiting_imported", , , 
 "Blue Whiting",0,"farmed",0,57894.7068459,"Blue Whiting_farmed", , , 
-"Brown Shrimps",0,"wild",350.938864,350.938864,"Brown Shrimps_wild", , , 
-"Brown Shrimps",0,"imported",0,350.938864,"Brown Shrimps_imported", , , 
-"Brown Shrimps",0,"farmed",0,350.938864,"Brown Shrimps_farmed", , , 
 "Cockles",0,"wild",9645.614,9645.614,"Cockles_wild", , , 
 "Cockles",0,"imported",0,9645.614,"Cockles_imported", , , 
 "Cockles",0,"farmed",0,9645.614,"Cockles_farmed", , , 
@@ -95,6 +92,9 @@
 "Seabass, European",0.959211819947143,"wild",413.7650063,10144.2380063,"Seabass, European_wild", , , 
 "Seabass, European",0.959211819947143,"imported",9730.473,10144.2380063,"Seabass, European_imported", , , 
 "Seabass, European",0.959211819947143,"farmed",0,10144.2380063,"Seabass, European_farmed", , , 
+"Shrimps, miscellaneous",0,"wild",350.938864,350.938864,"Shrimps, miscellaneous_wild", , , 
+"Shrimps, miscellaneous",0,"imported",0,350.938864,"Shrimps, miscellaneous_imported", , , 
+"Shrimps, miscellaneous",0,"farmed",0,350.938864,"Shrimps, miscellaneous_farmed", , , 
 "Sole, common",0.194921394896271,"wild",1757.4601403,2182.9671403,"Sole, common_wild", , , 
 "Sole, common",0.194921394896271,"imported",425.507,2182.9671403,"Sole, common_imported", , , 
 "Sole, common",0.194921394896271,"farmed",0,2182.9671403,"Sole, common_farmed", , , 
@@ -242,18 +242,9 @@
 "Seabass, other",1,"wild",0,201.29,"Seabass, other_wild", , , 
 "Seabass, other",1,"imported",201.29,201.29,"Seabass, other_imported", , , 
 "Seabass, other",1,"farmed",0,201.29,"Seabass, other_farmed", , , 
-"Shrimp Crangon spp",1,"wild",0,874.409,"Shrimp Crangon spp_wild", , , 
-"Shrimp Crangon spp",1,"imported",874.409,874.409,"Shrimp Crangon spp_imported", , , 
-"Shrimp Crangon spp",1,"farmed",0,874.409,"Shrimp Crangon spp_farmed", , , 
-"Shrimp, coldwater",1,"wild",0,1698.952,"Shrimp, coldwater_wild", , , 
-"Shrimp, coldwater",1,"imported",1698.952,1698.952,"Shrimp, coldwater_imported", , , 
-"Shrimp, coldwater",1,"farmed",0,1698.952,"Shrimp, coldwater_farmed", , , 
-"Shrimp, deep-water rose",1,"wild",0,0.976,"Shrimp, deep-water rose_wild", , , 
-"Shrimp, deep-water rose",1,"imported",0.976,0.976,"Shrimp, deep-water rose_imported", , , 
-"Shrimp, deep-water rose",1,"farmed",0,0.976,"Shrimp, deep-water rose_farmed", , , 
-"Shrimp, miscellaneous",1,"wild",0,40955.253,"Shrimp, miscellaneous_wild","Wild",13.2125,173.337125292672
-"Shrimp, miscellaneous",1,"imported",40955.253,40955.253,"Shrimp, miscellaneous_imported", , , 
-"Shrimp, miscellaneous",1,"farmed",0,40955.253,"Shrimp, miscellaneous_farmed","Farmed",4.54333333333333,178.799284545643
+"Shrimp, miscellaneous",1,"wild",0,43529.59,"Shrimp, miscellaneous_wild","Wild",13.2125,173.337125292672
+"Shrimp, miscellaneous",1,"imported",43529.59,43529.59,"Shrimp, miscellaneous_imported", , , 
+"Shrimp, miscellaneous",1,"farmed",0,43529.59,"Shrimp, miscellaneous_farmed","Farmed",4.54333333333333,178.799284545643
 "Shrimp, warmwater",1,"wild",0,34912.551,"Shrimp, warmwater_wild","Wild",15.61,172.244693442078
 "Shrimp, warmwater",1,"imported",34912.551,34912.551,"Shrimp, warmwater_imported", , , 
 "Shrimp, warmwater",1,"farmed",0,34912.551,"Shrimp, warmwater_farmed","Farmed",4.64,178.799284545643

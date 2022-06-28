@@ -23,16 +23,6 @@ pdf(file = 'fig/uk/UK_landed_weight_by_species.pdf', height=8, width=5)
 g1
 dev.off()
 
-g2<-ggplot(value_tot, aes(fct_reorder(name, value), value)) +
-		geom_bar(stat = 'identity', aes(fill = top80)) +
-		coord_flip() +
-		labs(y = 'Value, live weight ($ euros)', x = '', caption = 'Total UK landings 2015-19, summed across all gears.\nTop 80% of catch highlighted blue.') +
-		scale_y_continuous(labels=scales::comma) +
-		theme(legend.position = 'none')
-
-pdf(file = 'fig/uk/UK_landed_value_by_species.pdf', height=8, width=5)
-g2
-dev.off()
 
 save(land, land_tot, value_tot, file = 'data/uk_landings.rds')
 
@@ -123,6 +113,7 @@ land_19<-read_excel('data/uk/UK_landings_2015_2019.xlsx')  %>% clean_names()  %>
 					'Lesser Spotted Dog' = 'Dogfish',
 					'Thornback Ray' = 'Ray',
 					'Blonde Ray' = 'Ray',
+					'Brown Shrimps' = 'Shrimps, miscellaneous',
 					'Bass' = 'Seabass, European',
 					'Catfish' = 'Freshwater catfish'))  %>% 
 				group_by(species)  %>% 
@@ -133,6 +124,9 @@ land_19<-read_excel('data/uk/UK_landings_2015_2019.xlsx')  %>% clean_names()  %>
 imp_post<-imp_post %>% mutate(species = case_when(
   str_detect(species, 'ussel') ~ 'Sea mussels',
   str_detect(species, 'eam') ~ 'Bream',
+  str_detect(species, 'deep-water rose') ~ 'Shrimp, miscellaneous',
+  str_detect(species, 'Shrimp, coldwater') ~ 'Shrimp, miscellaneous',
+  str_detect(species, 'Crangon spp') ~ 'Shrimp, miscellaneous',
   TRUE ~ species)) %>% 
   group_by(species)  %>% 
   summarise(w = sum(w)) %>% 

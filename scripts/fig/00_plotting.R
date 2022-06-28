@@ -45,7 +45,8 @@ nut.cols2<-c(
     'Vitamin A'='#969696', # grey
     'Vitamin D' = '#31a354', # 
     'Vitamin B12' = '#fb9a99', # pink
-    'Folate' = '#969696' # grey
+    'Folate' = '#969696', # grey
+    'Misc' = '#969696' # grey
     )
 
 nut.cols3<-c(
@@ -57,4 +58,18 @@ nut.cols3<-c(
     'Omega-3' = '#d95f02',  # orange
     # vitamins
     'Other (Ca + Vit-A)' = '#969696' # grey
+    )
+
+nut.cols4<-c(
+    # minerals
+    'Iron'= 'white',
+    'Selenium' = 'white',
+    'Zinc'='white', 
+    # fat
+    'Omega-3' = 'white',
+    'Iodine' = 'white',
+    # vitamins
+    'Vitamin D' = 'white',
+    'Vitamin B12' = 'white',
+    'misc' = '#969696' # grey
     )
