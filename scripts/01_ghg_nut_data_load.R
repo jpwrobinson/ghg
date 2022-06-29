@@ -76,13 +76,14 @@ wild<-read.csv('data/ghg/Specie_List_07_05_2021_Wild.csv') %>%
 
 ghg<-rbind(farm %>% select(names(wild)), wild)
 
-## fix some species names
+## fix some species names, drop recirulcating salmon
 ghg <- ghg %>% mutate(scientific_name = recode(scientific_name, 
                                 'Theragra chalcogramma' = 'Gadus chalcogrammus',
                                 'Fenneropenaeus merguiensis' = 'Penaeus merguiensis',
 																'Seriola quinqueriadata' = 'Seriola quinqueradiata',
 																'Psetta maxima' = 'Scophthalmus maximus', 
-																'Pampus' = 'Pampus argenteus'))
+																'Pampus' = 'Pampus argenteus')) %>% 
+        filter(!(gear == 'Recirculating tanks' & common_name == 'Atlantic salmon'))
 
 save(ghg, file = 'data/ghg_all_dal_data.rds')
 
@@ -97,6 +98,23 @@ dev.off()
 ghg<-ghg %>% group_by(common_name, scientific_name, farmed_wild) %>%
 			summarise(low = min(ghg_low), max = max(ghg_high)) %>%
 			mutate(mid = low + ((max - low)/2))
+
+
+## need to weight for production method within UK
+ghg %>% filter(str_detect(common_name, 'una'))
+# Alaska pollock - Midwater trawl (only method)
+# Cod - Bottom trawl (one of 3)
+# Haddock - Bottom trawl (only method)
+# Herring - Purse seine (only method)
+# Mackerel - Purse seine (only method)
+# Norway Lobster - Bottom trawl (one of 2)
+# Salmon - Net pen (excluding Raceway + Recirculating)
+# Scallop - Dredge (only method)
+# Sea mussels - Rafts (farmed) OR Longline (farmed) OR Dredge (wild)
+# Shrimp, miscellaneous - mixed group, bottom trawl or intensive ponds
+# Shrimp, warmwater - mixed group, bottom trawl or intensive ponds
+# Trout - Net pen OR Raceway (excluding Recirculating)
+# Tuna, skipjack - Longlines OR Purse seine OR Troll OR Pole and line
 
 ## join nutrients (species-level)
 all<-ghg %>% left_join(nut)
