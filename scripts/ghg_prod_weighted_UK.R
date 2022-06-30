@@ -76,3 +76,4 @@ ghg$dom<-prod$method[match(ghg$id, prod$id)]
 
 
 write.csv(ghg %>% filter(!is.na(dom)), file = 'data/ghg_uk_dominant_production_method.csv')
+

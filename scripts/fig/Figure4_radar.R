@@ -25,9 +25,25 @@ gfg<-readxl::read_excel('data/gfg/GFG_Export_2021-04-12.xlsx') %>% clean_names()
 
 # read nutrient/ghg data, join with gfg
 drops<-c('Other marine fish')
-nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
-  filter(top90 == TRUE & !species %in% drops & !is.na(mid)) %>%
-  select(-tax) %>%
+nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>% 
+  mutate(prop_tot = tot / all * 100, class = ifelse(prop_tot >= 5, 'High production', 'Low production')) %>% 
+  filter(top90 == TRUE & !species %in% drops & !is.na(mid)) 
+
+## replace ghg with dominant production values
+ghg_w<-read.csv(file = 'data/ghg_uk_dominant_production_method.csv') %>% 
+    mutate(species = uk_name)
+nut<-nut %>% left_join(ghg_w, by = c('species', 'farmed_wild', 'scientific_name'))
+
+## save the new GHG values where they exist
+nut$mid<-nut$mid.y
+nut$low<-nut$low.y
+nut$max<-nut$max.y
+
+nut$mid[is.na(nut$mid.y)]<-nut$mid.x[is.na(nut$mid.y)]
+nut$low[is.na(nut$low.y)]<-nut$low.x[is.na(nut$low.y)]
+nut$max[is.na(nut$max.y)]<-nut$max.x[is.na(nut$max.y)]
+
+nut<-nut %>% 
   rowwise() %>%
   mutate(nut_score = sum(c(ca_rda, fe_rda, se_rda, zn_rda, iodine_rda, om_rda, vita_rda, vitd_rda, vitb12_rda, folate_rda))) %>% 
   mutate(id = paste(farmed_wild, scientific_name, sep='_')) %>% 

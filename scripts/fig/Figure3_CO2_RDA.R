@@ -27,9 +27,35 @@ groups<-all %>% group_by(group2) %>%
 
 ## now UK production focus only
 drops<-c('Other marine fish')
-nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
-  filter(top90 == TRUE & !species %in% drops & !is.na(mid)) %>%
-  select(-tax) %>%
+
+nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>% 
+  mutate(prop_tot = tot / all * 100, class = ifelse(prop_tot >= 5, 'High production', 'Low production')) %>% 
+  filter(top90 == TRUE & !species %in% drops & !is.na(mid)) 
+
+## replace ghg with dominant production values
+ghg_w<-read.csv(file = 'data/ghg_uk_dominant_production_method.csv') %>% 
+    mutate(species = uk_name)
+nut<-nut %>% left_join(ghg_w, by = c('species', 'farmed_wild'))
+
+## save the new GHG values where they exist
+nut$mid<-nut$mid.y
+nut$low<-nut$low.y
+nut$max<-nut$max.y
+
+nut$mid[is.na(nut$mid.y)]<-nut$mid.x[is.na(nut$mid.y)]
+nut$low[is.na(nut$low.y)]<-nut$low.x[is.na(nut$low.y)]
+nut$max[is.na(nut$max.y)]<-nut$max.x[is.na(nut$max.y)]
+
+pdf(file = 'fig/ghg_uk_dominant_production_method.pdf', height=7, width=10)
+nut_tester<-nut %>% filter(!is.na(mid.y)) 
+ggplot(nut_tester, aes(species, mid.x, ymin = low.x, ymax = max.x)) + 
+    geom_pointrange(col='black') +
+    geom_pointrange(position = position_nudge(x=0.2), aes(species, mid.y, ymin = low.y, ymax = max.y, col='red')) +
+    coord_flip() +
+    labs(subtitle = 'Dominant production method GHG (red) vs. all production method GHG (black)')
+dev.off()
+
+nut<-nut %>% 
   rowwise() %>%
   mutate(n_targets = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda,  vita_rda, vitd_rda, vitb12_rda, folate_rda) > 25),  ## estimate nutrition targets (25% RDA) for each species)
          nt_co2 = mid / n_targets / 10, ## estimate the CO2 equivalent per RDA target
