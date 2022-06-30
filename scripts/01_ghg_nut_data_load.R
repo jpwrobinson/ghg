@@ -94,27 +94,10 @@ ggplot(ghg, aes(common_name, ymin = ghg_low, ymax = ghg_high, col=farmed_wild)) 
 			facet_grid(~data_certainty)
 dev.off()
 
-## get midpoint of GHG range for each species, separate farm + wild
+## get midpoint of GHG range for each species, separate farm + wild, by gear
 ghg<-ghg %>% group_by(common_name, scientific_name, farmed_wild) %>%
 			summarise(low = min(ghg_low), max = max(ghg_high)) %>%
 			mutate(mid = low + ((max - low)/2))
-
-
-## need to weight for production method within UK
-ghg %>% filter(str_detect(common_name, 'una'))
-# Alaska pollock - Midwater trawl (only method)
-# Cod - Bottom trawl (one of 3)
-# Haddock - Bottom trawl (only method)
-# Herring - Purse seine (only method)
-# Mackerel - Purse seine (only method)
-# Norway Lobster - Bottom trawl (one of 2)
-# Salmon - Net pen (excluding Raceway + Recirculating)
-# Scallop - Dredge (only method)
-# Sea mussels - Rafts (farmed) OR Longline (farmed) OR Dredge (wild)
-# Shrimp, miscellaneous - mixed group, bottom trawl or intensive ponds
-# Shrimp, warmwater - mixed group, bottom trawl or intensive ponds
-# Trout - Net pen OR Raceway (excluding Recirculating)
-# Tuna, skipjack - Longlines OR Purse seine OR Troll OR Pole and line
 
 ## join nutrients (species-level)
 all<-ghg %>% left_join(nut)
@@ -152,7 +135,6 @@ all$Omega_3_mu[is.na(all$Omega_3_mu)]<-nut_inv$Omega_3_mu[match(all$scientific_n
 all$Calcium_mu[is.na(all$Calcium_mu)]<-nut_inv$Calcium_mu[match(all$scientific_name[is.na(all$Calcium_mu)], nut_inv$scientific_name)]
 all$Iron_mu[is.na(all$Iron_mu)]<-nut_inv$Iron_mu[match(all$scientific_name[is.na(all$Iron_mu)], nut_inv$scientific_name)]
 
-all %>% filter(is.na(Selenium_mu))
 
 ## export species without nutrient estimates (should be zero)
 write.csv(
@@ -190,9 +172,7 @@ all$om_rda[all$om_rda>100]<-100
 all <- all %>% rowwise() %>%
   mutate(nut_adq = mean(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda)),
          portion_adq = 40 / nut_adq * 100,
-    nut_score = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda))) #%>%
-  # filter(!is.na(nut_score)) %>% 
-  # filter(!is.na(mid))
+    nut_score = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda)))
 
 ## add FAO grouping information
 asfis<-readxl::read_excel('data/ASFIS_sp_2021.xlsx') %>% clean_names() %>% mutate(isscaap_code = as.numeric(isscaap))
@@ -216,83 +196,3 @@ all$group<-codes$isscaap_group_en[match(all$scientific_name, codes$scientific_na
 save(all, file = 'data/nutrient_ghg_species.rds')
 
 # ------- END OF DATA CLEAN AND EXPORT ------------ #
-
-## Now figures exploring GHG
-## species filter for UK products
-# uk_prods<-c("Anchovy", "Herring", "Mackerel", "Sardine", "Tuna", "Crab", "Nephrops", "Prawn", "Scallop",
-#             "Alaska Pollock", "Cod", "Haddock", "Atlantic Salmon", "Mussels", "Prawns_warm", "Pangasius", "Tilapia", "Sea bass")
-# 
-# ## fuzzy grepl on UK common and scientific names in ghg dataset
-# all_uk<-all %>% filter(grepl(paste(uk_prods, collapse="|"), common_name, ignore.case = TRUE) |
-#                          grepl(paste(uk_prods, collapse="|"), scientific_name, ignore.case = TRUE))
-# 
-# all_uk$product<-NA
-# for(i in 1:length(uk_prods)){
-#   all_uk$product[grep(uk_prods[i] , all_uk$common_name, ignore.case = TRUE)]<-uk_prods[i]
-# }
-# 
-# ## need invert nutrients
-# 
-# pdf(file = 'fig/ghg/ghg_nutrients_uk.pdf', height=3, width=15)
-# ggplot(all_uk %>%  filter(!is.na(conc)), aes(mid, conc, colour=farmed_wild)) + 
-#   geom_point() +
-#   labs(x = 'kg CO2 (midpoint of lower and upper estimates)', y = 'nutrient concentration per 100g') +
-#   facet_wrap(~nutrient, scales='free_y', nrow=1) +
-#   theme(legend.position = 'top')
-# 
-# all_uk %>% group_by(product, farmed_wild, nutrient) %>% summarise(conc = median(conc), mid = median(mid)) %>% 
-#   filter(!is.na(conc)) %>%
-#   ggplot(aes(mid, conc, colour=farmed_wild, label=product)) + 
-#   # geom_point() +
-#   geom_text() +
-#   labs(x = 'kg CO2 (midpoint of lower and upper estimates)', y = 'nutrient concentration per 100g') +
-#   facet_wrap(~nutrient, scales='free_y', nrow=1) +
-#   theme(legend.position = 'top')
-# 
-# dev.off()
-# 
-# 
-# 
-# ## nutrient density
-# 
-# all_uk<-all_uk %>% mutate(nutrient = tolower(str_replace_all(nutrient, '_mu', ''))) %>%  
-#         pivot_wider(names_from = 'nutrient', values_from = 'conc')
-# all_uk$ca_rda<-all_uk$calcium/rda$rni_women[rda$nutrient=='calcium']*100
-# all_uk$fe_rda<-all_uk$iron/rda$rni_women[rda$nutrient=='iron']*100
-# all_uk$se_rda<-all_uk$selenium/rda$rni_women[rda$nutrient=='selenium']*100
-# all_uk$zn_rda<-all_uk$zinc/rda$rni_women[rda$nutrient=='zinc']*100
-# all_uk$vita_rda<-all_uk$vitamin_a/rda$rni_women[rda$nutrient=='vitamin_a']*100
-# all_uk$om_rda<-all_uk$omega_3/rda$rni_women[rda$nutrient=='omega_3']*100
-# 
-# ## now cap nutrient RDA at 100% (i.e. a species either meets (100%) or doesn't meet (<100%) the RDA)
-# # TY BEAL: https://twitter.com/TyRBeal/status/1344662877458886656
-# all_uk$ca_rda[all_uk$ca_rda>100]<-100
-# all_uk$fe_rda[all_uk$fe_rda>100]<-100
-# all_uk$se_rda[all_uk$se_rda>100]<-100
-# all_uk$zn_rda[all_uk$zn_rda>100]<-100
-# all_uk$vita_rda[all_uk$vita_rda>100]<-100
-# all_uk$om_rda[all_uk$om_rda>100]<-100
-# 
-# ## now add prob nutrient adequacy (mean rda), and price to reach 40% nutrient adequacy
-# all_uk <- all_uk %>% rowwise() %>%
-#   mutate(#nut_adq = mean(c(ca_rda, fe_rda, se_rda, zn_rda, vita_rda, om_rda)),
-#     nut_score = sum(c(ca_rda, fe_rda, se_rda, zn_rda, vita_rda, om_rda))) %>%
-#   filter(!is.na(nut_score)) %>% 
-#   filter(!is.na(mid))
-# 
-# pdf(file = 'fig/ghg/ghg_nutrient_density_uk.pdf', height=5, width=6)
-# 
-# all_uk %>% group_by(product, farmed_wild) %>% summarise(nut_score = median(nut_score), mid = mean(mid)) %>% 
-#   ggplot(aes(mid, nut_score, colour=farmed_wild, label=product)) + 
-#   # geom_point() +
-#   geom_text() +
-#   labs(x = 'kg CO2 (midpoint of lower and upper estimates)', y = 'nutrient density (combined % RDA for 5 nutrients)', subtitle='Mean GHG per product') +
-#   theme(legend.position = 'top')
-# 
-# 
-#   ggplot(all_uk, aes(mid, nut_score, colour=farmed_wild, label=product)) + 
-#   geom_point() +
-#   labs(x = 'kg CO2 (midpoint of lower and upper estimates)', y = 'nutrient density (combined % RDA for 5 nutrients)', subtitle='All GHG data points') +
-#   theme(legend.position = 'top')
-# 
-# dev.off()

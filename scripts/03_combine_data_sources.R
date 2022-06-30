@@ -70,6 +70,7 @@ all<-rbind(all, shrimp %>% select(names(all)), shrimp_warm %>% select(names(all)
 # all[str_detect(all$common_name, tolower(sp[12])),]
 # all[str_detect(all$common_name, 'tuna'),]
 
+
 ## now subset UK food
 all_uk<-left_join(tot_post,
 			all %>% mutate(species=uk_name),
