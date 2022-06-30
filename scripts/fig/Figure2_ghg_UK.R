@@ -14,6 +14,19 @@ nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
   summarise_at(vars(low:nut_score2, vitamin_d:iodine_rda), mean) %>% 
   mutate(species=factor(species), id = paste0(species, ' (', farmed_wild, ')'))
 
+## replace ghg with dominant production values
+ghg_w<-read.csv(file = 'data/ghg_uk_dominant_production_method.csv') %>% 
+    mutate(species = uk_name)
+nut<-nut %>% left_join(ghg_w, by = c('species', 'farmed_wild'))
+
+## save the new GHG values where they exist
+nut$mid<-nut$mid.y
+nut$low<-nut$low.y
+nut$max<-nut$max.y
+
+nut$mid[is.na(nut$mid.y)]<-nut$mid.x[is.na(nut$mid.y)]
+nut$low[is.na(nut$low.y)]<-nut$low.x[is.na(nut$low.y)]
+nut$max[is.na(nut$max.y)]<-nut$max.x[is.na(nut$max.y)]
 
 nutS<-read.csv('data/UK_GHG_nutrient_catch_bysector.csv') %>% 
   filter(species %in% nut$species) %>%

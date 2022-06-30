@@ -84,6 +84,7 @@ ghg <- ghg %>% mutate(scientific_name = recode(scientific_name,
 																'Psetta maxima' = 'Scophthalmus maximus', 
 																'Pampus' = 'Pampus argenteus')) %>% 
         filter(!(gear == 'Recirculating tanks' & common_name == 'Atlantic salmon'))
+        filter(!(gear == 'Raceway' & common_name == 'Atlantic salmon'))
 
 save(ghg, file = 'data/ghg_all_dal_data.rds')
 
