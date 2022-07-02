@@ -1,5 +1,8 @@
 library(tidyverse)
 
+## ghg database
+load(file = 'data/ghg_all_dal_data.rds')
+dim(ghg)
 
 ## prop UK production by volume
 read.csv('data/UK_GHG_nutrient_catch.csv') %>% 

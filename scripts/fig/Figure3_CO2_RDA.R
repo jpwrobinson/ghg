@@ -47,12 +47,15 @@ nut$low[is.na(nut$low.y)]<-nut$low.x[is.na(nut$low.y)]
 nut$max[is.na(nut$max.y)]<-nut$max.x[is.na(nut$max.y)]
 
 pdf(file = 'fig/ghg_uk_dominant_production_method.pdf', height=7, width=10)
-nut_tester<-nut %>% filter(!is.na(mid.y)) 
+nut_tester<-nut %>% filter(!is.na(mid.y)) %>% 
+  group_by(species, farmed_wild)  %>% summarise_at(vars(low.x:mid.x, low.y:mid.y), mean)
 ggplot(nut_tester, aes(species, mid.x, ymin = low.x, ymax = max.x)) + 
     geom_pointrange(col='black') +
-    geom_pointrange(position = position_nudge(x=0.2), aes(species, mid.y, ymin = low.y, ymax = max.y, col='red')) +
+    geom_pointrange(position = position_nudge(x=0.2), 
+      aes(species, mid.y, ymin = low.y, ymax = max.y, col='red')) +
     coord_flip() +
-    labs(subtitle = 'Dominant production method GHG (red) vs. all production method GHG (black)')
+    facet_wrap(~farmed_wild, scales='free_x') +
+    labs(y = 'CO2-eq', subtitle = 'Dominant production method GHG (red) vs. all production method GHG (black)')
 dev.off()
 
 nut<-nut %>% 
@@ -71,11 +74,16 @@ groups_uk<-nut %>% group_by(species) %>%
 
 
 ## read other foods
-food<-read.csv('data/ghg_nutrient_other_foods.csv') %>%  rowwise() %>% 
+food<-read.csv('data/ghg_nutrient_other_foods.csv') 
+## correct foods to the farm gate (-processing - packaging - transport to distribution centre)
+food$median <- food$median - 0.59 - 0.05 - 0.09
+
+food<- food  %>%  rowwise() %>% 
   mutate(n_targets = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda) > 25),  ## estimate nutrition targets (25% RDA) for each species)
          nt_co2 = median / n_targets / 10 ) %>% ## estimate the median CO2 equivalent per RDA target (correct kg to 100g)
   ungroup() %>% droplevels() %>% 
   filter(product %in% c('Chicken', 'Pork', 'Beef', 'Lamb')) ## take ASMs only
+
 
 fig_dat<-rbind(groups %>% select(product, nt_co2, n_targets),
                food %>% select(product, nt_co2, n_targets)) %>% 

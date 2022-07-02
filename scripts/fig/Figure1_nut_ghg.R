@@ -31,6 +31,8 @@ groups<-all %>% group_by(group2) %>%
 food<-read.csv('data/ghg_nutrient_other_foods.csv') %>% 
       filter(product %in% c('Chicken', 'Pork', 'Beef', 'Lamb', 'Eggs', 'Milk', 'Cheese')) ## take ASFs only
 
+## correct foods to the farm gate (-processing - packaging - transport to distribution centre)
+food$median <- food$median - 0.59 - 0.05 - 0.09
 
 # main panel: nutrient adequacy vs CO2 by species
 g0<-ggplot(data=groups, aes(x = mid, y =mean)) + 

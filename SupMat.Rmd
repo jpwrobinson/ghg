@@ -9,9 +9,9 @@ output:
   latex_engine: xelatex
 ---
 
-# The carbon footprint and nutrient density of blue foods
+# Navigating sustainability and health trade-offs in global seafood systems
 
-Authors: James Robinson, Angus Garrett, Juan Carlos Paredes Esclapez, Eva Maire, Christina Hicks, Nick Graham
+Authors: James PW Robinson, Angus Garrett, Juan Carlos Paredes Esclapez, Eva Maire, Robert WR Parker, Christina C Hicks, Nicholas AJ Graham
 
 
 \newpage
@@ -60,7 +60,7 @@ knitr::include_graphics("fig/final/Figure3.pdf"); i = i + 1
 knitr::include_graphics("fig/final/FigureSX_UK_export.pdf"); i = i + 1
 ```
 
-**Fig. S`r i`. Seafood exported from the UK in 2019** A) Export volume in tonnes of live weight and B) export volume as a proportion of available seafood (landed + farmed + imported). Seafood products shown had more than 100 tonnes total production (i.e. those in Fig. 2).
+**Fig. S`r i`. Seafood exported from the UK in 2019** A) Export volume in tonnes of live weight,  B) export volume as a proportion of available seafood, and C) apparent consumption as a proportion to available seafood. Seafood products shown had more than 100 tonnes total production (i.e. those in Fig. 2). Available seafood was the sum of landed, farmed, imported and apparent consumption was available seafood minus exports, using data for 2019.
 
 \newpage
 ```{r, out.height="80%", echo=F,fig.align='center', warning=FALSE, message=FALSE}

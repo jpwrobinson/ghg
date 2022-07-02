@@ -48,7 +48,8 @@ ex$prop_export<-ex$value / ex$available * 100
 ## read apparent consumption
 ac<-read.csv( file = 'data/UK_GHG_nutrient_catch.csv') %>% 
   filter(species %in% nut$species) %>% 
-  distinct(species, apparent_consumption)
+  distinct(species, apparent_consumption, tot) %>% 
+  mutate(prop_ac = apparent_consumption / tot * 100)
 
 ## order according to nut GHG
 ex$species<-factor(ex$species, levels=levels(fct_reorder(nut$species, nut$mid)[!duplicated(fct_reorder(nut$species, nut$mid))]))
@@ -78,9 +79,9 @@ gg1<-ggplot(ex, aes(prop_export, species)) +
             axis.text.y = element_blank(), 
             axis.title.y = element_blank(), strip.text.y = element_blank())
 
-gg2<-ggplot(ac, aes(apparent_consumption, species)) +
+gg2<-ggplot(ac, aes(prop_ac, species)) +
       geom_bar(stat = 'identity', fill='grey50') +
-      labs(x = 'apparent seafood consumption in 2019', y = '', parse=TRUE) +
+      labs(x = 'apparent seafood consumption\nrelative to total production in 2019, %', y = '', parse=TRUE) +
       scale_x_continuous(labels=scales::comma, expand=c(0, 0.06)) +
       th+ 
       theme(plot.margin=unit(c(0.1, 0.5, 0.1, 0.5), 'cm'), 
