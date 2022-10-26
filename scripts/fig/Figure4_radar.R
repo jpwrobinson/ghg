@@ -63,9 +63,18 @@ nut_rad$price_key_kg<-c(16.34, 8.03, 8.54, 6.45, 9.64, 5.76, 5.08, 10.42, 24.56,
 nut_rad$A<-rescale(nut_rad$price_key_kg, to=c(1,0))
 nut_rad$price_key_kg<-NULL
 
+nut_rad %>% filter(price < 6)
+price<-c(16.34, 8.03, 8.54, 6.45, 9.64, 5.76, 5.08, 10.42, 24.56, 5.47, 16.12)
+median(price) 
+range(price)
+
  # [1] Atlantic salmon   Atlantic mackerel Atlantic cod      Skipjack tuna    
  # [5] Haddock           Atlantic herring  Alaska pollock    Norway lobster   
  # [9] Queen scallop     Blue mussel       Blue mussel       Rainbow trout  
+
+# Lowest cost for common food items in the UK (ONS 2022)
+# https://www.ons.gov.uk/economy/inflationandpriceindices/datasets/analysisoflowestcostitemsuk
+asmp<-data.frame(price_kg = c(4.00, 5.83), prod = c('Beef mince', 'Chicken breast'))
 
 ## catch weighted average values
 nut_avg<-nut_rad %>% group_by(farmed_wild) %>% 

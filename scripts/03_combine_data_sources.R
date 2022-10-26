@@ -45,7 +45,7 @@ all<-all  %>%  ungroup()  %>%  mutate(uk_name = common_name)  %>%
 			TRUE ~ uk_name)) 
 
 # create a new 'shrimp misc.' category for GHG based on all available GHG estimates for shrimps
-shrimp<-all %>% filter(str_detect(common_name, 'shrimp|prawn')) %>% group_by(farmed_wild) %>% summarise_at(vars(low:nut_score), mean) %>% 
+shrimp<-all %>% filter(str_detect(common_name, 'shrimp|prawn')) %>% group_by(farmed_wild) %>% summarise_at(vars(edible_fraction:nut_score), mean) %>% 
         mutate(uk_name = 'Shrimp, miscellaneous',
                common_name = 'Shrimp, miscellaneous',
                scientific_name = 'Shrimp, miscellaneous',
@@ -56,7 +56,7 @@ warmies<-c('Fenneropenaeus merguiensis', 'Penaeus esculentus', 'Macrobrachium ro
 cold<-c('Pleoticus muelleri', 'Pandalus borealis')
 
 shrimp_warm<-all %>% filter(scientific_name %in% warmies) %>% 
-    group_by(group, farmed_wild) %>% summarise_at(vars(low:nut_score), mean) %>%
+    group_by(group, farmed_wild) %>% summarise_at(vars(edible_fraction:nut_score), mean) %>%
   mutate(uk_name = 'Shrimp, warmwater',
          common_name = 'Shrimp, warmwater',
          scientific_name = 'Shrimp, warmwater',

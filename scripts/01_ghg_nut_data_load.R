@@ -76,6 +76,14 @@ wild<-read.csv('data/ghg/Specie_List_07_05_2021_Wild.csv') %>%
 
 ghg<-rbind(farm %>% select(names(wild)), wild)
 
+## add edible fraction
+ed<-read_excel('data/ghg/seafood_watch_ghg_by_lw_and_edible_JamesRobinson_20221024.xlsx') %>%
+  clean_names() %>% 
+  group_by(common_name, scientific_name, species_group, category) %>% 
+  summarise(edible_fraction = mean(edible_fraction)) 
+
+ghg<-ghg %>% left_join(eds %>% ungroup() %>%  select(scientific_name, edible_fraction), by = 'scientific_name')
+
 ## fix some species names, drop recirulcating salmon
 ghg <- ghg %>% mutate(scientific_name = recode(scientific_name, 
                                 'Theragra chalcogramma' = 'Gadus chalcogrammus',
@@ -96,7 +104,7 @@ ggplot(ghg, aes(common_name, ymin = ghg_low, ymax = ghg_high, col=farmed_wild)) 
 dev.off()
 
 ## get midpoint of GHG range for each species, separate farm + wild, by gear
-ghg<-ghg %>% group_by(common_name, scientific_name, farmed_wild) %>%
+ghg<-ghg %>% group_by(common_name, scientific_name, farmed_wild, edible_fraction) %>%
 			summarise(low = min(ghg_low), max = max(ghg_high)) %>%
 			mutate(mid = low + ((max - low)/2))
 

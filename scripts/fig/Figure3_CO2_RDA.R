@@ -2,13 +2,13 @@ pacman::p_load(ggrepel, tidyverse, skimr, janitor, cowplot, funk, install=FALSE)
 theme_set(theme_sleek())
 source('scripts/fig/00_plotting.R')
 
+
 load('data/nutrient_ghg_species.rds')
 all<-all %>% rowwise() %>% 
       mutate(n_targets = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda) > 25),  ## estimate nutrition targets (25% RDA) for each species)
-             nt_co2 = mid / n_targets / 10 ) %>% ## estimate the CO2 equivalent per RDA target
+             nt_co2 = mid / edible_fraction / 100 / n_targets / 10 ) %>% ## estimate the CO2 equivalent per RDA target
       ungroup() %>% droplevels() %>% 
       mutate(common_name = factor(common_name, levels = levels(fct_reorder(common_name, nt_co2))))
-
 
 
 ## setup fish groups of interest
@@ -35,7 +35,7 @@ nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
 ## replace ghg with dominant production values
 ghg_w<-read.csv(file = 'data/ghg_uk_dominant_production_method.csv') %>% 
     mutate(species = uk_name)
-nut<-nut %>% left_join(ghg_w, by = c('species', 'farmed_wild'))
+nut<-nut %>% left_join(ghg_w, by = c('species', 'farmed_wild', 'scientific_name'))
 
 ## save the new GHG values where they exist
 nut$mid<-nut$mid.y
@@ -60,10 +60,10 @@ dev.off()
 
 nut<-nut %>% 
   rowwise() %>%
-  mutate(n_targets = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda,  vita_rda, vitd_rda, vitb12_rda, folate_rda) > 25),  ## estimate nutrition targets (25% RDA) for each species)
-         nt_co2 = mid / n_targets / 10, ## estimate the CO2 equivalent per RDA target
+  mutate(edible_fraction = edible_fraction / 100,
+         n_targets = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda,  vita_rda, vitd_rda, vitb12_rda, folate_rda) > 25),  ## estimate nutrition targets (25% RDA) for each species)
+         nt_co2 = mid / edible_fraction / n_targets / 10, ## estimate the CO2 equivalent per RDA target
          common_name = factor(common_name, levels = levels(fct_reorder(common_name, nt_co2))))
-         
 
 nut$group2<-cats$group[match(nut$group, cats$isscaap)]
 ## estimate mean nt_co2 by group
