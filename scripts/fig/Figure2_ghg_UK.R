@@ -140,7 +140,6 @@ g3<-ggplot(nutS) +
             axis.title.y = element_blank(), strip.text.y = element_blank())
 
 
-
 pdf(file = 'fig/final/Figure2_UK_profiles.pdf', height=5, width=13)
 top<-plot_grid(g1, g3, g2, nrow = 1, align = 'h', 
   rel_widths=c(0.9, 0.6, 0.8), labels=c('A', 'B', 'C'), hjust=0)
