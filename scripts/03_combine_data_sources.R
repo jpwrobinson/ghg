@@ -5,10 +5,6 @@ source('scripts/rda_reader.R')
 load('data/uk_seafood.rds')
 load('data/nutrient_ghg_species.rds')
 
-
-unique(all$common_name)
-head(all)
-
 ## need species info on
 # 1) shrimp (warm vs cold)
 # 2) crab

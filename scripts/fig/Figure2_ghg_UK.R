@@ -47,6 +47,7 @@ nutS$species<-factor(nutS$species, levels=levels(fct_reorder(nut$species, nut$mi
 ## read apparent consumption
 ac<-read.csv( file = 'data/UK_GHG_nutrient_catch.csv') %>% 
   filter(species %in% nutS$species) %>% 
+  mutate(apparent_consumption = apparent_consumption * edible_fraction/100) %>%
   distinct(species, apparent_consumption)
 
 nutS$apparent_consumption<-ac$apparent_consumption[match(nutS$species, ac$species)]

@@ -1,9 +1,15 @@
 pacman::p_load(ggrepel, tidyverse, skimr, janitor, cowplot, funk, install=FALSE)
 theme_set(theme_sleek())
 source('scripts/fig/00_plotting.R')
-set.seed(47)
+set.seed(42)
 
 load('data/nutrient_ghg_species.rds')
+
+## include edible portion estimates
+# all<-all %>% mutate(edible_fraction = edible_fraction / 100,
+#                     mid = mid / edible_fraction,
+#                     low = low / edible_fraction,
+#                     max = max / edible_fraction)
 
 ## setup fish groups of interest
 cats<-data.frame(isscaap = unique(all$group))
@@ -85,23 +91,23 @@ g_inset<-ggplot(wild_f, aes(x = mid, y =mean, fill=farmed_wild)) +
 #     guides(point = 'legend', text='none') +
 #     scale_colour_manual(values = colcol2)
 
-g2<-ggplot(all, aes(mid, nut_score, fill=farmed_wild)) + 
-  # geom_text(aes(label=common_name))
-  geom_point(size=2, pch=21, col='black') +
-  geom_text_repel(aes(col=farmed_wild, label=common_name),size=1.5) +
-  labs(x = expression(paste(kg~CO[2],'-',eq)), y = 'Nutrient density, %') +
-  th + theme(legend.position = c(0.8, 0.8), axis.ticks=element_line(color='black'),legend.title = element_blank()) +
-  guides(fill='legend', point = 'none', text='none') +
-  scale_colour_manual(values = colcol2) +
-  scale_x_continuous(breaks=seq(0, 25, by = 5)) +
-  scale_fill_manual(values = colcol2)
+# g2<-ggplot(all, aes(mid, nut_score, fill=farmed_wild)) + 
+#   # geom_text(aes(label=common_name))
+#   geom_point(size=2, pch=21, col='black') +
+#   geom_text_repel(aes(col=farmed_wild, label=common_name),size=1.5) +
+#   labs(x = expression(paste(kg~CO[2],'-',eq)), y = 'Nutrient density, %') +
+#   th + theme(legend.position = c(0.8, 0.8), axis.ticks=element_line(color='black'),legend.title = element_blank()) +
+#   guides(fill='legend', point = 'none', text='none') +
+#   scale_colour_manual(values = colcol2) +
+#   scale_x_continuous(breaks=seq(0, 25, by = 5)) +
+#   scale_fill_manual(values = colcol2)
 
 source('scripts/fig/Figure3_CO2_RDA.R')
 
 pdf(file = 'fig/final/Figure1_nutrient_ghg.pdf', height=4, width=14)
 # bot<-plot_grid(gmain, g_inset, nrow=2, rel_widths=c(1, 1), labels=c('B', 'C'))
 print(
-  plot_grid(g0, g_inset, gmain, nrow=1, labels=c('A','B', 'C'), rel_widths=c(1,1,1.2))
+  plot_grid(g0, g_inset, guk, nrow=1, labels=c('A','B', 'C'), rel_widths=c(1,1,1.2))
 )
 dev.off()
 

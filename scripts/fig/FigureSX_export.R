@@ -20,7 +20,7 @@ nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
 ## available seafood
 nutS<-read.csv('data/UK_GHG_nutrient_catch_bysector.csv') %>% 
   filter(species %in% nut$species) %>%
-  select(-tax) %>% 
+  # select(-tax) %>% 
   group_by(species, farmed_wild, tot, catch, source) %>% 
   mutate(species=factor(species), id = paste0(species, ' (', farmed_wild, ')')) %>% 
   mutate(source = case_when(
@@ -81,7 +81,7 @@ gg1<-ggplot(ex, aes(prop_export, species)) +
 
 gg2<-ggplot(ac, aes(prop_ac, species)) +
       geom_bar(stat = 'identity', fill='grey50') +
-      labs(x = 'apparent seafood consumption\nrelative to total production in 2019, %', y = '', parse=TRUE) +
+      labs(x = 'domestic use relative to total production in 2019, %', y = '', parse=TRUE) +
       scale_x_continuous(labels=scales::comma, expand=c(0, 0.06)) +
       th+ 
       theme(plot.margin=unit(c(0.1, 0.5, 0.1, 0.5), 'cm'), 

@@ -5,8 +5,9 @@ source('scripts/fig/00_plotting.R')
 
 load('data/nutrient_ghg_species.rds')
 all<-all %>% rowwise() %>% 
-      mutate(n_targets = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda) > 25),  ## estimate nutrition targets (25% RDA) for each species)
-             nt_co2 = mid / edible_fraction / 100 / n_targets / 10 ) %>% ## estimate the CO2 equivalent per RDA target
+      mutate(edible_fraction = edible_fraction / 100,
+             n_targets = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda) > 25),  ## estimate nutrition targets (25% RDA) for each species)
+             nt_co2 = mid / edible_fraction / n_targets / 10) %>% ## estimate the CO2 equivalent per RDA target
       ungroup() %>% droplevels() %>% 
       mutate(common_name = factor(common_name, levels = levels(fct_reorder(common_name, nt_co2))))
 
