@@ -4,28 +4,29 @@ source('scripts/fig/00_plotting.R')
 set.seed(43)
 
 
-## good fish guide scores: careful because method is different for wild/farmed 
-## AND farmed high = good, wild low = good. 
-gfg<-readxl::read_excel('data/gfg/GFG_Export_2021-04-12.xlsx') %>% clean_names() %>% 
-    rename(scientific_name = latin_name) %>% 
-    filter(! total_score %in% c('Unknown', 'Under Review', 'Default Red Rating', 'FIP Improver')) %>% 
-    group_by(common_name, scientific_name, farmed_wild) %>% 
-    mutate(total_score = as.numeric(total_score),
-          farmed_wild = recode(farmed_wild, 'Caught at sea' = 'Wild'), 
-          scientific_name = recode(scientific_name, 'Euthynnus pelamis, Katsuwonus pelamis' = 'Katsuwonus pelamis',
-                                                      'Theragra chalcogramma' = 'Gadus chalcogrammus'),
-          id = paste(farmed_wild, scientific_name, sep='_')) %>% 
-    group_by(farmed_wild) %>% 
-    ## rescale ratings between 0-1, but inverse for farmed
-    mutate(total_score = ifelse(farmed_wild == 'Farmed', rescale(total_score, to = c(0,1)),rescale(total_score, to = c(1,0)))) 
+## good fish guide scores
 
-## check ratings rescaled
-# ggplot(gfg, aes(rating, total_score)) + geom_point() + facet_wrap(~farmed_wild)
+gfg<-readxl::read_excel('data/gfg/GFG_Export_2022-11-09.xlsx') %>% clean_names() %>% 
+  rename(common_name = species_common_name, 
+         scientific_name = species_scientific_name, 
+         farmed_wild = farmed_or_wild_caught) %>% 
+  mutate(farmed_wild = recode(farmed_wild, 'Wild caught' = 'Wild')) %>% 
+  filter(! public_rating %in% c('Under review')) %>%
+  filter(!(farmed_production_methods == 'Closed system, RAS' & common_name == 'Atlantic salmon')) %>% 
+  group_by(common_name, scientific_name, farmed_wild) %>% 
+  mutate(public_rating = as.numeric(public_rating),
+         farmed_wild = recode(farmed_wild, 'Caught at sea' = 'Wild'), 
+         scientific_name = recode(scientific_name, 'Euthynnus pelamis, Katsuwonus pelamis' = 'Katsuwonus pelamis',
+                                  'Theragra chalcogramma' = 'Gadus chalcogrammus'),
+         id = paste(farmed_wild, scientific_name, sep='_'),
+         total_score = as.numeric(public_rating)) %>% 
+  group_by(farmed_wild) %>% 
+  ## rescale ratings between 0-1, but inverse for farmed
+  # mutate(total_score = ifelse(farmed_wild == 'Farmed', rescale(total_score, to = c(1,0)),rescale(total_score, to = c(1,0))))  %>%
+  mutate(total_score = rescale(total_score, to = c(1,0))) %>% 
+  group_by(common_name, farmed_wild, scientific_name, id) %>% 
+  summarise(lower = min(total_score), upper = max(total_score), total_score = median(total_score)) %>% ungroup()
 
-gfg<-gfg %>% group_by(common_name, farmed_wild, scientific_name, id) %>% 
-    summarise(lower = min(total_score), upper = max(total_score), total_score = median(total_score)) %>% ungroup()
-
-    
 
 
 # read nutrient/ghg data, join with gfg
@@ -79,7 +80,7 @@ g0B<-ggplot(nutCO %>% filter(!is.na(total_score)),
             axis.ticks.x.top=element_blank(),
                 legend.title=element_blank()) 
 
-source('scripts/fig/Figure5_radar.R')
+source('scripts/fig/Figure4_radar.R')
 nut_rad$price_key_kg<-c(16.34, 8.03, 8.54, 6.45, 9.64, 5.76, 5.08, 10.42, 24.56, 5.47, 16.12)
 nutCO$price_key_kg<-nut_rad$price_key_kg[match(nutCO$common_name, nut_rad$common_name)]
 
