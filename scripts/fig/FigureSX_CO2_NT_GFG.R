@@ -13,6 +13,7 @@ gfg<-readxl::read_excel('data/gfg/GFG_Export_2022-11-09.xlsx') %>% clean_names()
   mutate(farmed_wild = recode(farmed_wild, 'Wild caught' = 'Wild')) %>% 
   filter(! public_rating %in% c('Under review')) %>%
   filter(!(farmed_production_methods == 'Closed system, RAS' & common_name == 'Atlantic salmon')) %>% 
+  filter(!(wild_capture_methods == 'Net (gill or fixed)' & common_name == 'Skipjack tuna')) %>% 
   group_by(common_name, scientific_name, farmed_wild) %>% 
   mutate(public_rating = as.numeric(public_rating),
          farmed_wild = recode(farmed_wild, 'Caught at sea' = 'Wild'), 
@@ -32,12 +33,13 @@ gfg<-readxl::read_excel('data/gfg/GFG_Export_2022-11-09.xlsx') %>% clean_names()
 # read nutrient/ghg data, join with gfg
 drops<-c('Other marine fish')
 nutCO<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
+  mutate(edible_fraction = edible_fraction / 100) %>% 
   filter(top90 == TRUE & !species %in% drops & !is.na(mid)) %>%
   select(-tax) %>%
   rowwise() %>%
   mutate(n_targets = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda, vita_rda, vitb12_rda, vitd_rda, folate_rda) > 25),  ## estimate nutrition targets (25% RDA) for each species)
         n_targets2 = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda) > 25), 
-         nt_co2 = mid / n_targets / 10, ## estimate the CO2 equivalent per RDA target
+         nt_co2 = mid / edible_fraction / n_targets / 10, ## estimate the CO2 equivalent per RDA target
          common_name = factor(common_name, levels = levels(fct_reorder(common_name, nt_co2)))) %>% 
   mutate(id = paste(farmed_wild, scientific_name, sep='_')) %>% 
   left_join(gfg %>% select(-farmed_wild, -common_name, -scientific_name), by = 'id') %>% 
@@ -58,7 +60,7 @@ g0<-ggplot(nutCO, aes(nt_co2, total_score, col=farmed_wild)) +
         # scale_y_continuous(breaks=seq(0, 16, by = 2)) +
         scale_color_manual(values = colcol2) +
         labs(y = 'Sustainability score', x  = expression(paste(kg~CO[2],'-',eq~per~nutrient~target))) +
-          theme(legend.position = c(0.8, 0.8), 
+          theme(legend.position = c(0.8, 0.75), 
             plot.margin=unit(c(0.1, 0.5, 0.1, 0.1), 'cm'), 
             axis.ticks=element_line(colour='black'),
                 legend.title=element_blank()) 
@@ -89,7 +91,7 @@ g1<-ggplot(nutCO, aes(nt_co2, price_key_kg, col=farmed_wild)) +
         # geom_errorbarh(size=0.2, aes(xmin = nt_co2_low, xmax = nt_co2_hi)) + 
         geom_point(size=3) + 
         # geom_label_repel(aes(label = common_name), size=2.5, force=2,show.legend = FALSE) +
-        geom_text_repel(aes(label = common_name), col='black',segment.color='grey',max.overlaps=Inf, box.padding = 1.75, size=2.5,show.legend = FALSE) +
+        geom_text_repel(aes(label = common_name), col='black',segment.color='grey',max.overlaps=0, box.padding = 1.75, size=2.5,show.legend = FALSE) +
         th +
         # scale_y_continuous(breaks=seq(0, 16, by = 2)) +
         scale_color_manual(values = colcol2) +
@@ -106,7 +108,7 @@ g1<-ggplot(nutCO, aes(nt_co2, price_key_kg, col=farmed_wild)) +
 stock<-read.csv('data/ices/stock_data_timeries.csv') %>% 
       filter(Year >= 1990 & Year < 2020) %>% 
       mutate(F_stat = ifelse(FishingPressure > FMSY, 'Over', 'Under'),
-            B_stat = ifelse(StockSize > Blim, 'Over', 'Under'),
+            B_stat = ifelse(StockSize < Blim, 'Over', 'Under'),
             F_stat = ifelse(is.na(F_stat), 'Unknown', F_stat),
             B_stat = ifelse(is.na(B_stat), 'Unknown', B_stat))
 
@@ -123,7 +125,7 @@ g2<-ggplot(stock %>% filter(SpeciesName %in% nut$scientific_name & group!='Salmo
     geom_bar(position='fill') +
     facet_wrap(~common_name, nrow=1) +
     labs(x = '', y ='% stocks of UK interest') +
-    scale_fill_manual(values = rev(c('#4daf4a', '#e41a1c', '#999999')), labels=c( 'Unknown', '>Fmsy', '<Fmsy')) + 
+    scale_fill_manual(values = rev(c('#4daf4a', '#e41a1c', '#999999')), labels=c( 'Unknown', 'F > Fmsy', 'F < Fmsy')) + 
     scale_x_continuous(breaks=seq(1990, 2019, by = 5), expand=c(0,0)) + 
     scale_y_continuous(labels=scales::percent, expand=c(0,0)) + th +
     theme(legend.position = 'right', axis.text.x = element_text(size=9, angle=0, hjust=0.5, vjust=0.5),
@@ -134,7 +136,7 @@ g3<-ggplot(stock %>% filter(SpeciesName %in% nut$scientific_name & group!='Salmo
     geom_bar(position='fill') +
     facet_wrap(~common_name, nrow=1) +
     labs(x = '', y ='% stocks of UK interest')  +
-    scale_fill_manual(values = rev(c('#4daf4a', '#e41a1c', '#999999')), labels=c( 'Unknown', '>Blim', '<Blim')) + 
+    scale_fill_manual(values = rev(c('#e41a1c','#4daf4a', '#999999')), labels=c( 'Unknown', 'B > Blim', 'B < Blim')) + 
     scale_x_continuous(breaks=seq(1990, 2019, by = 5), expand=c(0,0)) + 
     scale_y_continuous(labels=scales::percent, expand=c(0,0)) + th +
     theme(legend.position = 'right', axis.text.x = element_text(size=9, angle=0, hjust=0.5, vjust=0.5),

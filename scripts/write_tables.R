@@ -14,7 +14,7 @@ cats$group<-c('Whitefish', 'Tuna', 'Pelagic (large)', 'Bivalve', 'Pelagic (small
 all$group2<-cats$group[match(all$group, cats$isscaap)]
 
 all<-all %>% mutate(nut_score = round(nut_score, 0)) %>% select(group2, common_name:mid, nut_score)
-colnames(all)<-c('Species group', 'Common name', 'Scientific name', 'Wild-caught or farmed', 'Low GHG', 'High GHG', 'Median GHG', '5-nutrient density, %')
+colnames(all)<-c('Species group', 'Common name', 'Scientific name', 'Wild-caught or farmed','Edible fraction', 'Low GHG', 'High GHG', 'Median GHG', '5-nutrient density, %')
 write.csv(all, file = 'submit/Table_S1.csv')
 
 # 2 UK products and production method

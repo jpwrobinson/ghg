@@ -82,7 +82,7 @@ ed<-read_excel('data/ghg/seafood_watch_ghg_by_lw_and_edible_JamesRobinson_202210
   group_by(common_name, scientific_name, species_group, category) %>% 
   summarise(edible_fraction = mean(edible_fraction)) 
 
-ghg<-ghg %>% left_join(eds %>% ungroup() %>%  select(scientific_name, edible_fraction), by = 'scientific_name')
+ghg<-ghg %>% left_join(ed %>% ungroup() %>%  select(scientific_name, edible_fraction), by = 'scientific_name')
 
 ## fix some species names, drop recirulcating salmon
 ghg <- ghg %>% mutate(scientific_name = recode(scientific_name, 
@@ -91,7 +91,7 @@ ghg <- ghg %>% mutate(scientific_name = recode(scientific_name,
 																'Seriola quinqueriadata' = 'Seriola quinqueradiata',
 																'Psetta maxima' = 'Scophthalmus maximus', 
 																'Pampus' = 'Pampus argenteus')) %>% 
-        filter(!(gear == 'Recirculating tanks' & common_name == 'Atlantic salmon'))
+        filter(!(gear == 'Recirculating tanks' & common_name == 'Atlantic salmon')) %>% 
         filter(!(gear == 'Raceway' & common_name == 'Atlantic salmon'))
 
 save(ghg, file = 'data/ghg_all_dal_data.rds')

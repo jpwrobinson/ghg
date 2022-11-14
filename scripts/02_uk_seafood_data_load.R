@@ -24,7 +24,7 @@ g1
 dev.off()
 
 
-save(land, land_tot, value_tot, file = 'data/uk_landings.rds')
+save(land, land_tot, file = 'data/uk_landings.rds')
 
 
 ## now imports
@@ -64,7 +64,7 @@ save(imp, file = 'data/uk_imports.rds')
 
 ## now aquaculture
 aq<-read.csv('data/uk/aquaculture_production_weight_2015_2018.csv') %>% clean_names() %>% 
-        rename(species = x_species_name) %>% 
+        rename(species = species_name) %>% 
         select(species, average_tonnes) %>% 
         mutate(species = recode(species,
                                 'Salmonids nei' = 'Other salmonids',

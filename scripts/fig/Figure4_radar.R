@@ -13,6 +13,7 @@ gfg<-readxl::read_excel('data/gfg/GFG_Export_2022-11-09.xlsx') %>% clean_names()
   mutate(farmed_wild = recode(farmed_wild, 'Wild caught' = 'Wild')) %>% 
   filter(! public_rating %in% c('Under review')) %>%
   filter(!(farmed_production_methods == 'Closed system, RAS' & common_name == 'Atlantic salmon')) %>% 
+  filter(!(wild_capture_methods == 'Net (gill or fixed)' & common_name == 'Skipjack tuna')) %>% 
   group_by(common_name, scientific_name, farmed_wild) %>% 
   mutate(public_rating = as.numeric(public_rating),
          farmed_wild = recode(farmed_wild, 'Caught at sea' = 'Wild'), 
@@ -68,7 +69,7 @@ nut_rad$price_key_kg<-c(16.34, 8.03, 8.54, 6.45, 9.64, 5.76, 5.08, 10.42, 24.56,
 nut_rad$A<-rescale(nut_rad$price_key_kg, to=c(1,0))
 nut_rad$price_key_kg<-NULL
 
-nut_rad %>% filter(price < 6)
+# nut_rad %>% filter(price < 6)
 price<-c(16.34, 8.03, 8.54, 6.45, 9.64, 5.76, 5.08, 10.42, 24.56, 5.47, 16.12)
 median(price) 
 range(price)

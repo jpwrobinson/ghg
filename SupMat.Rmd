@@ -29,7 +29,7 @@ i = 0
 knitr::include_graphics("fig/final/FigureS1_nutrient_ghg.pdf"); i = i + 1
 ```
 
-**Fig. S`r i`. Nutritional value and carbon footprint of seafood species** Points are kg CO2-eq of each species and its corresponding the nutrient density (%). Nutrient density is the summed contribution of a 100g portion to recommended intakes of five nutrients (calcium, iron, selenium, zinc, omega-3 fatty acids) (recommended daily intakes for adults (18-65 years old)).
+**Fig. S`r i`. Nutritional value and carbon footprint of seafood species** Points are live weight kg CO2-eq of each species and its corresponding the nutrient density (%). Nutrient density is the summed contribution of a 100 g portion to recommended intakes of five nutrients (calcium, iron, selenium, zinc, omega-3 fatty acids) (recommended daily intakes for adults (18-65 years old)).
 
 \newpage
 
@@ -37,7 +37,7 @@ knitr::include_graphics("fig/final/FigureS1_nutrient_ghg.pdf"); i = i + 1
 knitr::include_graphics("fig/final/Figure_SX_GHG_edible.pdf"); i = i + 1
 ```
 
-**Fig. S`r i`. Carbon footprint of seafood species corrected for edible portions** Points are kg CO2-eq for groups of global seafood products (A) and UK-specific seafood productions (B), showing unprocessed estimates (black) and estimates for processed, edible seafood (red).
+**Fig. S`r i`. Carbon footprint of seafood species corrected for edible portions** Points are kg CO2-eq for groups of global seafood products (A) and UK-specific seafood productions (B), showing unprocessed live weight estimates (black) and estimates for processed, edible seafood (red).
 
 \newpage
 
@@ -61,7 +61,7 @@ knitr::include_graphics("fig/final/FigureS2_UK_seafood.pdf"); i = i + 1
 knitr::include_graphics("fig/final/Figure3.pdf"); i = i + 1
 ```
 
-**Figure S`r i`. Carbon emissions per nutrient target for UK seafood products, for nine essential dietary nutrients.** Points are kg CO2-eq per nutrient target (averaged across species), coloured by the number of nutrient targets in a 100g portion. Targets were recommended intakes for adults (18-65 years old) of nine nutrients (calcium, iron, selenium, zinc, omega-3 fatty acids, vitamins A, D, B12, folate). Animal-source foods (beef, chicken, lamb, pork) are included for comparison using CO2 values from (Clune et al., 2017) and nutrient values from (Widdowson, n.d.).
+**Figure S`r i`. Carbon emissions per nutrient target for UK seafood products, for nine essential dietary nutrients.** Points are kg CO2-eq per nutrient target (averaged across species), coloured by the number of nutrient targets in a 100 g edible portion. Targets were recommended intakes for adults (18-65 years old) of nine nutrients (calcium, iron, selenium, zinc, omega-3 fatty acids, vitamins A, D, B12, folate). Animal-source foods (beef, chicken, lamb, pork) are included for comparison using CO2 values from (Clune et al., 2017) and nutrient values from (Widdowson, n.d.).
 
 \newpage
 ```{r, out.height="80%", echo=F,fig.align='center', warning=FALSE, message=FALSE}
@@ -81,7 +81,7 @@ knitr::include_graphics("fig/final/FigureSX_UK_fournut_density.pdf"); i = i + 1
 ```{r, out.height="80%", echo=F,fig.align='center', warning=FALSE, message=FALSE}
 knitr::include_graphics("fig/final/FigureSX_GFGscore.pdf"); i = i + 1
 ```
-**Fig. S`r i`. Sustainability and price of UK seafood products.** A) Carbon emissions per nutrient target by sustainability score, where points are the mean sustainability score of each product against the mean kg CO2-eq per nutrient target. B) is the range in sustainability scores by seafood product and C) is the price per kg (Seafish 2021) against kg CO2-eq per nutrient target. Sustainability scores were rescaled such that 0 = low sustainability and 1 = high sustainability, and kg CO2-eq per nutrient target was estimated from recommended intakes of nine nutrients (calcium, iron, selenium, zinc, omega-3 fatty acids, vitamins A, B12, D and folate).
+**Fig. S`r i`. Sustainability and price of UK seafood products.** A) Carbon emissions per nutrient target by sustainability score, where points are the mean sustainability score of each product against the mean kg CO2-eq per nutrient target. B) is the range in sustainability scores by seafood product and C) is the price per kg (Seafish 2021) against kg CO2-eq per nutrient target. Sustainability scores were rescaled such that 0 = low sustainability and 1 = high sustainability, and kg CO2-eq per nutrient target was estimated from recommended intakes of nine nutrients (calcium, iron, selenium, zinc, omega-3 fatty acids, vitamins A, B12, D and folate) from a 100 g edible portion.
 
 \newpage
 
@@ -89,4 +89,4 @@ knitr::include_graphics("fig/final/FigureSX_GFGscore.pdf"); i = i + 1
 knitr::include_graphics("fig/final/FigureSX_stock_status.pdf"); i = i + 1
 ```
 
-**Fig. S`r i`. Pressure and state thresholds for wild fisheries stocks relevant to UK seafood production from 1990-2019.** Bars indicate the proportion of stocks that are underfished (green), overfished (red), or data deficient (unknown), according to estimates of fishing mortality (A, F_MSY_) or spawning stock biomass (B_lim_). Data from CEFAS [REF].
+**Fig. S`r i`. Pressure and state thresholds for wild fisheries stocks relevant to UK seafood production from 1990-2019.** Bars indicate the proportion of stocks that are underfished (green), overfished (red), or data deficient (unknown), according to estimates of fishing mortality relative to F_MSY (A, F\_MSY\_) or stock biomass relative to biomass limit (B, B\_lim\_). Data from CEFAS (Lynam et al. 2021).

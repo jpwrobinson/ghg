@@ -42,7 +42,7 @@ nutS$source<-factor(nutS$source, levels=unique(nutS$source)[c(2,1,3)])
 nutS$class<-nut$class[match(nutS$species, nut$species)]
 nutS<-nutS %>% group_by(species, class, source, tot, mid) %>% summarise(catch = sum(catch))
 
-nutS$species<-factor(nutS$species, levels=levels(fct_reorder(nut$species, nut$mid)[!duplicated(fct_reorder(nut$species, nut$mid))]))
+nutS$species<-factor(nutS$species, levels=levels(fct_reorder(nut$species, nut$tot)[!duplicated(fct_reorder(nut$species, nut$tot))]))
 
 ## read apparent consumption
 ac<-read.csv( file = 'data/UK_GHG_nutrient_catch.csv') %>% 
@@ -53,18 +53,18 @@ ac<-read.csv( file = 'data/UK_GHG_nutrient_catch.csv') %>%
 nutS$apparent_consumption<-ac$apparent_consumption[match(nutS$species, ac$species)]
 
 ## 1. GHG
-g1<-ggplot(nut, aes(mid, fct_reorder(species, mid), col=farmed_wild)) + 
-  geom_segment(aes(x = low, xend = max, y =  fct_reorder(species, mid), yend= fct_reorder(species, mid))) +
-  geom_point(data = nut %>% filter(species != 'Sea mussels'),aes(x = mid, y =  fct_reorder(species, mid)), size=3,) +
+g1<-ggplot(nut, aes(mid, fct_reorder(species, tot), col=farmed_wild)) + 
+  geom_segment(aes(x = low, xend = max, y =  fct_reorder(species, tot), yend= fct_reorder(species, tot))) +
+  geom_point(data = nut %>% filter(species != 'Sea mussels'),aes(x = mid, y =  fct_reorder(species, tot)), size=3,) +
   geom_point(data =nut %>% filter(species == 'Sea mussels'),
-    aes(x = mid, y =  fct_reorder(species, mid)), size=3, position = position_dodge(width=0.5)) +
+    aes(x = mid, y =  fct_reorder(species, tot)), size=3, position = position_dodge(width=0.5)) +
   labs(x = expression(paste(kg~CO[2],'-',eq)), y ='') +
   facet_grid(rows = vars(class), scales='free_y', space = 'free_y') + 
   scale_colour_manual(values = colcol2) +
   # scale_y_discrete(labels=nut$species[as.factor(levels(fct_reorder(nut$id, nut$mid)))]) +
   scale_x_continuous(expand=c(0.01, 0.01)) +
   th+ 
-  theme(legend.position = c(0.8, 0.2), panel.grid.major.x = element_line(size=0.2, colour ='grey'),
+  theme(legend.position = c(0.8, 0.1), panel.grid.major.x = element_line(size=0.2, colour ='grey'),
     legend.title=element_blank(), strip.text.y = element_blank())
 
 nut3<-nut %>% ungroup() %>% group_by(species, class) %>% 
@@ -73,7 +73,7 @@ nut3<-nut %>% ungroup() %>% group_by(species, class) %>%
 
 nut3$nutrient<-factor(nut3$nutrient, levels = rev(unique(nut3$nutrient)[c(8,3,5,10, 7,4,2,1,9,6)]))
 nut3$lab<-nut3$nutrient; levels(nut3$lab) <-rev(c('Vitamin B12', 'Selenium','Omega-3','Iodine', 'Vitamin D', 'Zinc', 'Iron','Calcium','Folate', 'Vitamin A')) 
-nut3$species<-factor(nut3$species, levels=levels(fct_reorder(nut$species, nut$mid)[!duplicated(fct_reorder(nut$species, nut$mid))]))
+nut3$species<-factor(nut3$species, levels=levels(fct_reorder(nut$species, nut$tot)[!duplicated(fct_reorder(nut$species, nut$tot))]))
 
 nut_plot<-nut3 %>% group_by(species) %>% 
   arrange(factor(nutrient, levels = rev(levels(nutrient))), .by_group=TRUE) %>% 

@@ -1,5 +1,5 @@
 "Common name","Scientific name","Wild-caught or farmed","Dominant production method","Low GHG","High GHG","Median GHG","Annual production, tonnes","Proportion imported, %","Annual apparent consumption, tonnes","5-nutrient density, %","10-nutrient density, %"
-"Atlantic salmon","Salmo salar","Farmed","Net pen",1.6,7.4,4.5,271379,0.37,115985,180,361
+"Atlantic salmon","Salmo salar","Farmed","Net pen",1.6,2.9,2.2,271379,0.37,115985,180,361
 "Atlantic mackerel","Scomber scombrus","Wild","Purse seine",0.2,0.3,0.2,159087,0.13,91028,224,447
 "Atlantic cod","Gadus morhua","Wild","Bottom trawl",1.5,4,2.8,134356,0.79,107201,158,324
 "Skipjack tuna","Katsuwonus pelamis","Wild","Purse seine",1.6,6.3,4,94729,1,88126,195,348

@@ -13,13 +13,23 @@ read.csv('data/UK_GHG_nutrient_catch.csv') %>%
 
 read.csv('data/UK_GHG_nutrient_catch.csv') %>% filter(common_name == 'Atlantic mackerel')
 read.csv('data/UK_GHG_nutrient_catch.csv') %>% filter(common_name == 'Atlantic salmon')
+read.csv('data/UK_GHG_nutrient_catch.csv') %>% filter(common_name == 'Queen scallop')
 
 all<-read.csv('data/UK_GHG_nutrient_catch.csv')
 271378.8 / sum(all$tot[all$farmed_wild == 'Farmed']) * 100
 
 ## top 5 species
-read.csv('data/UK_GHG_nutrient_catch.csv') %>% filter(uk_name %in% c('Mackerel', 'Cod', "Salmon", 'Tuna, skipjack', 'Haddock')) %>% 
-summarise(mean(mid), mean(nut_score))
+source('scripts/fig/Figure2_ghg_UK.R')
+# read.csv('data/UK_GHG_nutrient_catch.csv') %>% 
+  nut %>% 
+  filter(species %in% c('Mackerel', 'Cod', "Salmon", 'Tuna, skipjack', 'Haddock')) %>% 
+  # group_by(farmed_wild) %>% 
+    ungroup() %>% 
+summarise(mean(mid), mean(nut_score),range(mid), range(nut_score)) %>% data.frame()
+
+read.csv('data/UK_GHG_nutrient_catch.csv') %>% 
+  group_by(farmed_wild) %>% 
+  summarise(mean(mid), mean(nut_score), range(mid), range(nut_score))
 
 ## big range
 load('data/nutrient_ghg_species.rds')
