@@ -115,4 +115,3 @@ pdf(file = 'fig/final/FigureS1_nutrient_ghg.pdf', height=5, width=8)
 print(g2)
 dev.off()
 
-
