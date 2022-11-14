@@ -91,16 +91,16 @@ g_inset<-ggplot(wild_f, aes(x = mid, y =mean, fill=farmed_wild)) +
 #     guides(point = 'legend', text='none') +
 #     scale_colour_manual(values = colcol2)
 
-# g2<-ggplot(all, aes(mid, nut_score, fill=farmed_wild)) + 
-#   # geom_text(aes(label=common_name))
-#   geom_point(size=2, pch=21, col='black') +
-#   geom_text_repel(aes(col=farmed_wild, label=common_name),size=1.5) +
-#   labs(x = expression(paste(kg~CO[2],'-',eq)), y = 'Nutrient density, %') +
-#   th + theme(legend.position = c(0.8, 0.8), axis.ticks=element_line(color='black'),legend.title = element_blank()) +
-#   guides(fill='legend', point = 'none', text='none') +
-#   scale_colour_manual(values = colcol2) +
-#   scale_x_continuous(breaks=seq(0, 25, by = 5)) +
-#   scale_fill_manual(values = colcol2)
+g2<-ggplot(all, aes(mid, nut_score, fill=farmed_wild)) +
+  # geom_text(aes(label=common_name))
+  geom_point(size=2, pch=21, col='black') +
+  geom_text_repel(aes(col=farmed_wild, label=common_name),size=1.5) +
+  labs(x = expression(paste(kg~CO[2],'-',eq)), y = 'Nutrient density, %') +
+  th + theme(legend.position = c(0.8, 0.8), axis.ticks=element_line(color='black'),legend.title = element_blank()) +
+  guides(fill='legend', point = 'none', text='none') +
+  scale_colour_manual(values = colcol2) +
+  scale_x_continuous(breaks=seq(0, 25, by = 5)) +
+  scale_fill_manual(values = colcol2)
 
 source('scripts/fig/Figure3_CO2_RDA.R')
 

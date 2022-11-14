@@ -50,11 +50,11 @@ nut<-nut %>% mutate(edible_fraction = edible_fraction / 100,
                     low2 = low / edible_fraction,
                     max2 = max / edible_fraction)
 
-plotter<-groups %>% rename('Unprocessed' = mid, 'Edible portion' = mid2) %>% 
+plotter<-groups %>% rename('Live weight' = mid, 'Edible portion' = mid2) %>% 
   pivot_longer(-c(x, group2), names_to = 'type', values_to = 'mid')
 
 plotter2<-nut %>% ungroup() %>% select(mid, mid2, common_name, farmed_wild) %>% 
-  rename('Unprocessed' = mid, 'Edible portion' = mid2) %>% 
+  rename('Live weight' = mid, 'Edible portion' = mid2) %>% 
   mutate(x = paste(common_name, farmed_wild, sep = ', ')) %>% 
   pivot_longer(-c(x, common_name, farmed_wild), names_to = 'type', values_to = 'mid')
 
@@ -83,5 +83,7 @@ g2<-ggplot(plotter2, aes(fct_reorder(x,mid), mid, col=type)) +
 
 
 pdf(file = 'fig/final/Figure_SX_GHG_edible.pdf', height=5, width=10)
-plot_grid(g1, g2, nrow=1, labels=c('A', "B"))
+print(
+  cowplot::plot_grid(g1, g2, nrow=1, labels=c('A', "B"))
+)
 dev.off()

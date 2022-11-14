@@ -1,12 +1,14 @@
 ---
-title: "**Supplementary Figures**"
+title: '**Supplementary Figures**'
 header-includes:
 - \usepackage{pdflscape}
 - \newcommand{\blandscape}{\begin{landscape}}
 - \newcommand{\elandscape}{\end{landscape}}
 output:
-  pdf_document:
-  latex_engine: xelatex
+  pdf_document: null
+  latex_engine: pdflatex
+  html_document:
+    df_print: paged
 ---
 
 # Navigating sustainability and health trade-offs in global seafood systems
@@ -46,7 +48,7 @@ knitr::include_graphics("fig/final/Figure_SX_GHG_edible.pdf"); i = i + 1
 knitr::include_graphics("fig/final/FigureS3.pdf"); i = i + 1
 ```
 
-**Fig. S`r i`. Carbon emissions per nutrient target for all seafood products in the carbon emissions database** Points are the mean kg CO2-eq per nutrient target for each seafood species, where a nutrient target was the recommended intake (adults 18-65 years old) contained in a 100 g edible portion for 7 nutrients (calcium, iron, selenium, zinc, omega-3 fatty acids, vitamin A). Points are coloured by the number of nutrient targets in a 100 g edible portion. Animal-source foods (beef, chicken, lamb, pork) are included for comparison using CO2 values from (Clune et al., 2017) and nutrient values from (Widdowson, n.d.).
+**Fig. S`r i`. Carbon emissions per nutrient target for all seafood products in the carbon emissions database** Points are the mean kg CO2-eq per nutrient target for each seafood species, where a nutrient target was the recommended intake (adults 18-65 years old) contained in a 100 g edible portion for six nutrients (calcium, iron, selenium, zinc, omega-3 fatty acids, vitamin A). Points are coloured by the number of nutrient targets in a 100 g edible portion, and species with solid black outline are wild-caught (coloured outline are farmed). Animal-source foods (beef, chicken, lamb, pork) are included for comparison using CO2 values from (Clune et al., 2017) and nutrient values from (Widdowson, n.d.).
 
 \newpage
 
@@ -89,4 +91,4 @@ knitr::include_graphics("fig/final/FigureSX_GFGscore.pdf"); i = i + 1
 knitr::include_graphics("fig/final/FigureSX_stock_status.pdf"); i = i + 1
 ```
 
-**Fig. S`r i`. Pressure and state thresholds for wild fisheries stocks relevant to UK seafood production from 1990-2019.** Bars indicate the proportion of stocks that are underfished (green), overfished (red), or data deficient (unknown), according to estimates of fishing mortality relative to F_MSY (A, F\_MSY\_) or stock biomass relative to biomass limit (B, B\_lim\_). Data from CEFAS (Lynam et al. 2021).
+**Fig. S`r i`. Pressure and state thresholds for wild fisheries stocks relevant to UK seafood production from 1990-2019.** Bars indicate the proportion of stocks that are underfished (green), overfished (red), or data deficient (unknown), according to estimates of A) fishing mortality relative to F~MSY~ and B) stock biomass relative to biomass limit (B~lim~). Data from CEFAS (Lynam et al. 2021).
