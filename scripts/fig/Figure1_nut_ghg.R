@@ -5,12 +5,6 @@ set.seed(42)
 
 load('data/nutrient_ghg_species.rds')
 
-## include edible portion estimates
-# all<-all %>% mutate(edible_fraction = edible_fraction / 100,
-#                     mid = mid / edible_fraction,
-#                     low = low / edible_fraction,
-#                     max = max / edible_fraction)
-
 ## setup fish groups of interest
 cats<-data.frame(isscaap = unique(all$group))
 cats$group<-c('Whitefish', 'Tuna', 'Pelagic (large)', 'Bivalve', 'Pelagic (small)', 'Freshwater fish', 'Salmonidae', NA,
@@ -19,7 +13,6 @@ cats$group<-c('Whitefish', 'Tuna', 'Pelagic (large)', 'Bivalve', 'Pelagic (small
 
 all$group2<-cats$group[match(all$group, cats$isscaap)]
 
-all %>% filter(group2 =='Salmonidae' & nut_score > 200) %>% distinct(common_name) 
 
 ## estimate mean and range of C02 and nutrients by groups
 wild_f<-all %>% group_by(farmed_wild, tax) %>% 
@@ -80,16 +73,6 @@ g_inset<-ggplot(wild_f, aes(x = mid, y =mean, fill=farmed_wild)) +
                  plot.margin = unit(c(5.5, 5.5,5.5,1), 'points')) +
       labs(x = expression(paste(kg~CO[2],'-',eq)), y = '') 
 
-  
-## sup figures showing names and nutrient scores
-# g1<-ggplot(all, aes(mid, portion_adq, col=farmed_wild)) + 
-#     # geom_text(aes(label=common_name))
-#     geom_point(size=0) +
-#     geom_label(aes(label=common_name), alpha=0.5,size=2.5) +
-#     labs(x = 'CO2 emission equivalent per kg of seafood', y = 'Portion of seafood\nfor 40% nutrient adequacy, g') +
-#     th + theme(legend.position = c(0.8, 0.8), legend.title = element_blank()) +
-#     guides(point = 'legend', text='none') +
-#     scale_colour_manual(values = colcol2)
 
 g2<-ggplot(all, aes(mid, nut_score, fill=farmed_wild)) +
   # geom_text(aes(label=common_name))
@@ -105,13 +88,16 @@ g2<-ggplot(all, aes(mid, nut_score, fill=farmed_wild)) +
 source('scripts/fig/Figure3_CO2_RDA.R')
 
 pdf(file = 'fig/final/Figure1_nutrient_ghg.pdf', height=4, width=14)
-# bot<-plot_grid(gmain, g_inset, nrow=2, rel_widths=c(1, 1), labels=c('B', 'C'))
 print(
-  plot_grid(g0, g_inset, guk, nrow=1, labels=c('A','B', 'C'), rel_widths=c(1,1,1.2))
+  plot_grid(g0, g_inset, gmain, nrow=1, labels=c('A','B', 'C'), rel_widths=c(1,1,1.2))
 )
 dev.off()
 
 pdf(file = 'fig/final/FigureS1_nutrient_ghg.pdf', height=5, width=8)
 print(g2)
+dev.off()
+
+pdf(file = 'fig/final/FigureS3.pdf', height=12, width=8)
+print(gl)
 dev.off()
 
