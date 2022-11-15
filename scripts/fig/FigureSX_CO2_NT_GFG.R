@@ -87,13 +87,9 @@ nut_rad$price_key_kg<-c(16.34, 8.03, 8.54, 6.45, 9.64, 5.76, 5.08, 10.42, 24.56,
 nutCO$price_key_kg<-nut_rad$price_key_kg[match(nutCO$common_name, nut_rad$common_name)]
 
 g1<-ggplot(nutCO, aes(nt_co2, price_key_kg, col=farmed_wild)) + 
-        # geom_pointrange(size=0.2, aes(ymin = lower, ymax = upper)) + 
-        # geom_errorbarh(size=0.2, aes(xmin = nt_co2_low, xmax = nt_co2_hi)) + 
         geom_point(size=3) + 
-        # geom_label_repel(aes(label = common_name), size=2.5, force=2,show.legend = FALSE) +
-        geom_text_repel(aes(label = common_name), col='black',segment.color='grey',max.overlaps=0, box.padding = 1.75, size=2.5,show.legend = FALSE) +
+        geom_text_repel(aes(label = common_name), col='black',segment.color='grey',max.overlaps=Inf, box.padding = 2, size=2.5,show.legend = FALSE) +
         th +
-        # scale_y_continuous(breaks=seq(0, 16, by = 2)) +
         scale_color_manual(values = colcol2) +
         labs(y = 'GBP per kg', x  = expression(paste(kg~CO[2],'-',eq~per~nutrient~target))) +
           theme(legend.position = c(0.8, 0.8), 

@@ -48,7 +48,7 @@ knitr::include_graphics("fig/final/Figure_SX_GHG_edible.pdf"); i = i + 1
 knitr::include_graphics("fig/final/FigureS3.pdf"); i = i + 1
 ```
 
-**Fig. S`r i`. Carbon emissions per nutrient target for all seafood products in the carbon emissions database** Points are the mean kg CO2-eq per nutrient target for each seafood species, where a nutrient target was the recommended intake (adults 18-65 years old) contained in a 100 g edible portion for six nutrients (calcium, iron, selenium, zinc, omega-3 fatty acids, vitamin A). Points are coloured by the number of nutrient targets in a 100 g edible portion, and species with solid black outline are wild-caught (coloured outline are farmed). Animal-source foods (beef, chicken, lamb, pork) are included for comparison using CO2 values from (Clune et al., 2017) and nutrient values from (Widdowson, n.d.).
+**Fig. S`r i`. Carbon emissions per nutrient target for all seafood products in the carbon emissions database** Points are the mean kg CO2-eq per nutrient target for each seafood species, where a nutrient target was the recommended intake (adults 18-65 years old) contained in a 100 g edible portion for six nutrients (calcium, iron, selenium, zinc, omega-3 fatty acids, vitamin A). Points are coloured by the number of nutrient targets in a 100 g edible portion, and species with solid black outline are wild-caught (coloured outline are farmed).
 
 \newpage
 

@@ -20,8 +20,8 @@ all<-read.csv('data/UK_GHG_nutrient_catch.csv')
 
 ## top 5 species
 source('scripts/fig/Figure2_ghg_UK.R')
-# read.csv('data/UK_GHG_nutrient_catch.csv') %>% 
-  nut %>% 
+# read.csv('data/UK_GHG_nutrient_catch.csv') %>%
+  nut %>%
   filter(species %in% c('Mackerel', 'Cod', "Salmon", 'Tuna, skipjack', 'Haddock')) %>% 
   # group_by(farmed_wild) %>% 
     ungroup() %>% 

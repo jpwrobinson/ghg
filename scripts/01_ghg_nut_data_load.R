@@ -1,11 +1,12 @@
-pacman::p_load(tidyverse, skimr, janitor, cowplot, funk, install=FALSE)
+pacman::p_load(tidyverse, skimr, janitor, cowplot, funk, readxl, install=FALSE)
 theme_set(theme_sleek())
 source('scripts/rda_reader.R')
 #### GHG data
 
 
 #### Nutrient data
-nut<-read.csv('data/nut/Species_Nutrient_Predictions.csv') %>%
+nut<-read.csv('data/nut/Species_Nutrient_Predictions_updateSep8.csv') %>%
+      mutate(species = str_replace_all(species, '_', '\\ ')) %>% 
       left_join(read.csv('data/nut/all_traits_active.csv') %>% clean_names()) %>% 
 			select(species, family, ends_with('mu')) %>%
 			rename(scientific_name = species) %>%
