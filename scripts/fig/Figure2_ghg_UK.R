@@ -44,10 +44,24 @@ nutS<-nutS %>% group_by(species, class, source, tot, mid) %>% summarise(catch = 
 
 nutS$species<-factor(nutS$species, levels=levels(fct_reorder(nut$species, nut$tot)[!duplicated(fct_reorder(nut$species, nut$tot))]))
 
-## read apparent consumption
+## read apparent consumption, but fix imports
+load('data/uk_seafood.rds')
+load(file = 'data/uk_imports.rds')
+ef<-read.csv('data/UK_GHG_nutrient_catch.csv') %>% 
+  group_by(species) %>% summarise(edible_fraction = mean(edible_fraction))
+
+# assume fillet + other cuts are 100% edible (accounts for tuna + cod imports that are processed)
+imp<-imp %>% filter(species %in% nutS$species) %>% 
+  left_join(ef %>% select(species, edible_fraction)) %>% 
+  mutate(w_edible = ifelse(!presentation %in% c('Fillet','Other cuts'), w*edible_fraction/100, w)) %>% 
+  group_by(species) %>% 
+  summarise(w = sum(w), w_edible = sum(w_edible))
+
 ac<-read.csv( file = 'data/UK_GHG_nutrient_catch.csv') %>% 
   filter(species %in% nutS$species) %>% 
-  mutate(apparent_consumption = apparent_consumption * edible_fraction/100) %>%
+  left_join(imp %>% select(species, w, w_edible)) %>%
+  mutate(apparent_consumption = apparent_consumption - w + w_edible) %>%
+  # mutate(apparent_consumption = apparent_consumption * edible_fraction/100) %>%
   distinct(species, apparent_consumption)
 
 nutS$apparent_consumption<-ac$apparent_consumption[match(nutS$species, ac$species)]

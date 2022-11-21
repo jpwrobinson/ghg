@@ -1,5 +1,6 @@
 pacman::p_load(tidyverse, readxl, janitor)
 theme_set(theme_bw())
+load('data/nutrient_ghg_species.rds')
 
 land<-read_excel('data/uk/UK_landings_2015_2019.xlsx')  %>% clean_names()  %>% 
 		rename_with(~ str_replace_all(.x, 'x', ''), starts_with('x'))
@@ -30,6 +31,13 @@ save(land, land_tot, file = 'data/uk_landings.rds')
 ## now imports
 ## need to check how CF should be used
 imp<-read_excel('data/uk/UK_seafood_imports_2019.xlsx')  %>% clean_names()  %>% 
+    mutate(species = case_when(
+    str_detect(species, 'ussel') ~ 'Sea mussels',
+    str_detect(species, 'eam') ~ 'Bream',
+    str_detect(species, 'deep-water rose') ~ 'Shrimp, miscellaneous',
+    str_detect(species, 'Shrimp, coldwater') ~ 'Shrimp, miscellaneous',
+    str_detect(species, 'Crangon spp') ~ 'Shrimp, miscellaneous',
+    TRUE ~ species)) %>% 
 			group_by(species, species_group, presentation)  %>% 
 			summarise(w = sum(kg)/1e3, value_gbp = sum(value))  %>% 
 			group_by(species)  %>% 
@@ -58,6 +66,11 @@ pdf(file = 'fig/uk/UK_imported_weight_by_species.pdf', height=10, width=5)
 g1
 dev.off()
 
+##  summarise
+imp_post<-imp_post %>% 
+  group_by(species)  %>% 
+  summarise(w = sum(w)) %>% 
+  mutate(farmed_wild = 'Imported')
 
 save(imp, file = 'data/uk_imports.rds')
 
@@ -119,18 +132,6 @@ land_19<-read_excel('data/uk/UK_landings_2015_2019.xlsx')  %>% clean_names()  %>
 				group_by(species)  %>% 
 				summarise(catch = sum(catch)) %>% 
 				mutate(farmed_wild = 'Wild')
-
-## change import names
-imp_post<-imp_post %>% mutate(species = case_when(
-  str_detect(species, 'ussel') ~ 'Sea mussels',
-  str_detect(species, 'eam') ~ 'Bream',
-  str_detect(species, 'deep-water rose') ~ 'Shrimp, miscellaneous',
-  str_detect(species, 'Shrimp, coldwater') ~ 'Shrimp, miscellaneous',
-  str_detect(species, 'Crangon spp') ~ 'Shrimp, miscellaneous',
-  TRUE ~ species)) %>% 
-  group_by(species)  %>% 
-  summarise(w = sum(w)) %>% 
-  mutate(farmed_wild = 'Imported')
 
 
 ## join imports and landings and aquaculture

@@ -1,5 +1,24 @@
+library(janitor)
+library(tidyverse)
 
+## mackerel
+read.csv('data/UK_GHG_nutrient_catch_bysector.csv') %>% 
+  filter(species == 'Mackerel')
 
+ex<-readxl::read_excel('data/uk/uk_export.xlsx') %>% clean_names() %>% 
+  pivot_longer(-c(species, indicator), names_to = 'year', values_to='value') %>% 
+  mutate(year = as.numeric(str_replace_all(year, 'x', ''))) %>% 
+  filter(indicator == 'live_weight_tonnes' & year == 2019) %>% 
+  group_by(species, indicator) %>% 
+  summarise(value = mean(value)) %>% 
+  filter(species == 'Mackerel')
+
+# Landings = 138,928 t
+# Imported = 20,159
+# Export = 68,058
+# 
+# UK available = 91,029
+# Edible portion (61%) of available = 55,527
 
 
 
