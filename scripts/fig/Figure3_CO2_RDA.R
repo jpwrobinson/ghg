@@ -6,7 +6,7 @@ source('scripts/fig/00_plotting.R')
 load('data/nutrient_ghg_species.rds')
 all<-all %>% rowwise() %>% 
       mutate(edible_fraction = edible_fraction / 100,
-             n_targets = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda) > 25),  ## estimate nutrition targets (25% RDA) for each species)
+             n_targets = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda) > 15),  ## estimate nutrition targets (25% RDA) for each species)
              nt_co2 = mid / edible_fraction / n_targets / 10) %>% ## estimate the CO2 equivalent per RDA target
       ungroup() %>% droplevels() %>% 
       mutate(common_name = factor(common_name, levels = levels(fct_reorder(common_name, nt_co2))))
@@ -62,7 +62,7 @@ dev.off()
 nut<-nut %>% 
   rowwise() %>%
   mutate(edible_fraction = edible_fraction / 100,
-         n_targets = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda,  vita_rda, vitd_rda, vitb12_rda, folate_rda) > 25),  ## estimate nutrition targets (25% RDA) for each species)
+         n_targets = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda,  vita_rda, vitd_rda, vitb12_rda, folate_rda) > 15),  ## estimate nutrition targets (25% RDA) for each species)
          nt_co2 = mid / edible_fraction / n_targets / 10, ## estimate the CO2 equivalent per RDA target
          common_name = factor(common_name, levels = levels(fct_reorder(common_name, nt_co2))))
 
@@ -80,7 +80,7 @@ food<-read.csv('data/ghg_nutrient_other_foods.csv')
 food$median <- food$median - 0.59 - 0.05 - 0.09
 
 food<- food  %>%  rowwise() %>% 
-  mutate(n_targets = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda) > 25),  ## estimate nutrition targets (25% RDA) for each species)
+  mutate(n_targets = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda) > 15),  ## estimate nutrition targets (25% RDA) for each species)
          nt_co2 = median / n_targets / 10 ) %>% ## estimate the median CO2 equivalent per RDA target (correct kg to 100g)
   ungroup() %>% droplevels() %>% 
   filter(product %in% c('Chicken', 'Pork', 'Beef', 'Lamb')) ## take ASMs only
@@ -123,8 +123,8 @@ guk<-ggplot(fig_dat_uk, aes(product, nt_co2, fill = n_targets)) +
   scale_y_continuous(expand=c(0.03,0)) +
   labs(x = '', y = expression(paste(kg~CO[2],'-',eq~per~nutrient~target)), fill='# nutrient targets (NT)') +
   # scale_shape_manual(values = c(21, 19)) +
-  scale_fill_distiller(limits=c(1, 5),breaks=c(1,2,3,4,5), palette='RdYlGn',direction=1) +
-  scale_color_distiller(limits=c(1, 5),breaks=c(1,2,3,4,5), palette='RdYlGn',direction=1) +
+  scale_fill_distiller(limits=c(1, 6),breaks=c(1,2,3,4,5,6), palette='RdYlGn',direction=1) +
+  scale_color_distiller(limits=c(1, 6),breaks=c(1,2,3,4,5,6), palette='RdYlGn',direction=1) +
   guides(color='none') +
   th +
   theme(legend.position = c(0.8, 0.4), axis.text.y = element_text(size=11),

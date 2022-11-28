@@ -60,8 +60,7 @@ imp<-imp %>% filter(species %in% nutS$species) %>%
 ac<-read.csv( file = 'data/UK_GHG_nutrient_catch.csv') %>% 
   filter(species %in% nutS$species) %>% 
   left_join(imp %>% select(species, w, w_edible)) %>%
-  mutate(apparent_consumption = apparent_consumption - w + w_edible) %>%
-  # mutate(apparent_consumption = apparent_consumption * edible_fraction/100) %>%
+  mutate(apparent_consumption = (apparent_consumption - w)*edible_fraction/100 + w_edible) %>%
   distinct(species, apparent_consumption)
 
 nutS$apparent_consumption<-ac$apparent_consumption[match(nutS$species, ac$species)]

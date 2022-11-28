@@ -13,7 +13,7 @@ output:
 
 # Navigating sustainability and health trade-offs in global seafood systems
 
-Authors: James PW Robinson, Angus Garrett, Juan Carlos Paredes Esclapez, Eva Maire, Robert WR Parker, Christina C Hicks, Nicholas AJ Graham
+Authors: James PW Robinson, Angus Garrett, Juan Carlos Paredes Esclapez, Eva Maire, Robert WR Parker, Nicholas AJ Graham
 
 
 \newpage

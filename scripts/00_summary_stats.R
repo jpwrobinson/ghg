@@ -48,7 +48,7 @@ nut<-read.csv('data/UK_GHG_nutrient_catch.csv') %>%
 nut %>% ungroup() %>% slice_min(nt_co2, n = 5) %>% data.frame()
 
 food<-read.csv('data/ghg_nutrient_other_foods.csv') %>%  rowwise() %>% 
-  mutate(n_targets = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda) > 25),  ## estimate nutrition targets (25% RDA) for each species)
+  mutate(n_targets = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda) > 15),  ## estimate nutrition targets (25% RDA) for each species)
          nt_co2 = median / n_targets / 10 ) %>% ## estimate the median CO2 equivalent per RDA target (correct kg to 100g)
   ungroup() %>% droplevels() %>% 
   filter(product %in% c('Chicken', 'Pork', 'Beef', 'Lamb')) ## take ASMs only
@@ -65,17 +65,21 @@ food %>% data.frame()
 # 13/100*40
 # RNI = 7 mug per day (Gibsen & Sidnell, 2014)
 
-3.4 / 7 * 100
-4.4 / 7 * 100
-# 49 - 63% of RNI
+3.4 / 7 * 100 # mackerel
+4.04 / 7 * 100 # herring
+# 49 - 58% of RNI
 
 
 ## beef = 0.5
-(0.5/100*400) / 7 * 100
+(0.5/100*40) / 7 * 100
 
 ## lamb = 0.8
-(0.8/100*400) / 7 * 100
+(0.8/100*40) / 7 * 100
+
+## pork = 0.4
+(0.4/100*40) / 7 * 100
 
 ## chicken = 0.1
-(0.1/100*400) / 7 * 100
+(0.1/100*40) / 7 * 100
+
 
