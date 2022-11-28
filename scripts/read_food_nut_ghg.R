@@ -16,7 +16,7 @@ colnames(food)<-str_replace_all(colnames(food), '0', 'n')
 ## filter foods of interest (from master excel)
 focs<-c('12-937', ## eggs whole raw
         '18-488', ## Chicken, meat, average, raw
-        '18-267', ## Pork, mince, raw
+        '18-606', ## Pork, mince, raw
         '18-064', ## Beef, sirloin steak, raw, lean
         '18-481', ## Lamb, mince, raw
         '14-319', ## Apples, eating, raw, flesh and skin
