@@ -6,7 +6,7 @@ source('scripts/fig/00_plotting.R')
 load('data/nutrient_ghg_species.rds')
 all<-all %>% rowwise() %>% 
       mutate(edible_fraction = edible_fraction / 100,
-             n_targets = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda) > 15),  ## estimate nutrition targets (25% RDA) for each species)
+             n_targets = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda) > 15),  ## estimate nutrition targets (15% RDA) for each species)
              nt_co2 = mid / edible_fraction / n_targets / 10) %>% ## estimate the CO2 equivalent per RDA target
       ungroup() %>% droplevels() %>% 
       mutate(common_name = factor(common_name, levels = levels(fct_reorder(common_name, nt_co2))))
@@ -62,14 +62,15 @@ dev.off()
 nut<-nut %>% 
   rowwise() %>%
   mutate(edible_fraction = edible_fraction / 100,
-         n_targets = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda,  vita_rda, vitd_rda, vitb12_rda, folate_rda) > 15),  ## estimate nutrition targets (25% RDA) for each species)
+         n_targets = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda,  vita_rda) > 15),
+         n_targets2 = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda,  vita_rda, vitd_rda, vitb12_rda, folate_rda, iodine_rda) > 15),  ## estimate nutrition targets (15% RDA) for each species)
          nt_co2 = mid / edible_fraction / n_targets / 10, ## estimate the CO2 equivalent per RDA target
          common_name = factor(common_name, levels = levels(fct_reorder(common_name, nt_co2))))
 
 nut$group2<-cats$group[match(nut$group, cats$isscaap)]
 ## estimate mean nt_co2 by group
 groups_uk<-nut %>% group_by(species) %>% 
-  summarise(nt_co2 = mean(nt_co2), n_targets = mean(n_targets)) %>% 
+  summarise(nt_co2 = mean(nt_co2), n_targets = mean(n_targets2)) %>% 
   mutate(product = species) %>% 
   filter(!is.na(species))
 
@@ -80,8 +81,8 @@ food<-read.csv('data/ghg_nutrient_other_foods.csv')
 food$median <- food$median - 0.59 - 0.05 - 0.09
 
 food<- food  %>%  rowwise() %>% 
-  mutate(n_targets = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda,  vita_rda) > 15),  ## estimate nutrition targets (25% RDA) for each species)
-         n_targets2 = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda,  vita_rda, vitd_rda, vitb12_rda, folate_rda) > 15),
+  mutate(n_targets = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda,  vita_rda) > 15),  ## estimate nutrition targets (15% RDA) for each species)
+         n_targets2 = sum(c(ca_rda, fe_rda, se_rda, zn_rda, om_rda,  vita_rda, vitd_rda, vitb12_rda, folate_rda, iodine_rda) > 15),
          nt_co2 = median / n_targets / 10 ) %>% ## estimate the median CO2 equivalent per RDA target (correct kg to 100g)
   ungroup() %>% droplevels() %>% 
   filter(product %in% c('Chicken', 'Pork', 'Beef', 'Lamb')) ## take ASMs only
@@ -93,7 +94,8 @@ fig_dat<-rbind(groups %>% select(product, nt_co2, n_targets),
   mutate(product = factor(product, levels = levels(fct_reorder(product, nt_co2))))
 
 fig_dat_uk<-rbind(groups_uk %>% select(product, nt_co2, n_targets),
-               food %>% mutate(ntargets = n_targets2) %>%  select(product, nt_co2, n_targets2)) %>% 
+               food %>% mutate(n_targets = n_targets2) %>%  
+                 select(product, nt_co2, n_targets)) %>% 
   filter(n_targets > 0) %>% 
   mutate(product = factor(product, levels = levels(fct_reorder(product, nt_co2))))
 

@@ -48,7 +48,7 @@ knitr::include_graphics("fig/final/Figure_SX_GHG_edible.pdf"); i = i + 1
 knitr::include_graphics("fig/final/FigureS3.pdf"); i = i + 1
 ```
 
-**Fig. S`r i`. Carbon emissions per nutrient target for all seafood products in the carbon emissions database** Points are the mean kg CO2-eq per nutrient target for each seafood species, where a nutrient target was the recommended intake (adults 18-65 years old) contained in a 100 g edible portion for six nutrients (calcium, iron, selenium, zinc, omega-3 fatty acids, vitamin A). Points are coloured by the number of nutrient targets in a 100 g edible portion, and species with solid black outline are wild-caught (coloured outline are farmed).
+**Fig. S`r i`. Carbon emissions per nutrient target for all seafood products in the carbon emissions database** Points are the mean kg CO2-eq per nutrient target for each seafood species, where a nutrient target was the recommended intake (adults 18-65 years old) contained in a 100 g edible portion for five nutrients (calcium, iron, selenium, zinc, omega-3 fatty acids). Points are coloured by the number of nutrient targets in a 100 g edible portion, and species with solid black outline are wild-caught (coloured outline are farmed).
 
 \newpage
 
@@ -63,7 +63,7 @@ knitr::include_graphics("fig/final/FigureS2_UK_seafood.pdf"); i = i + 1
 knitr::include_graphics("fig/final/Figure3.pdf"); i = i + 1
 ```
 
-**Figure S`r i`. Carbon emissions per nutrient target for UK seafood products, for nine essential dietary nutrients.** Points are kg CO2-eq per nutrient target (averaged across species), coloured by the number of nutrient targets in a 100 g edible portion. Targets were recommended intakes for adults (18-65 years old) of nine nutrients (calcium, iron, selenium, zinc, omega-3 fatty acids, vitamins A, D, B12, folate). Animal-source foods (beef, chicken, lamb, pork) are included for comparison using CO2 values from (Clune et al., 2017) and nutrient values from (Widdowson, n.d.).
+**Figure S`r i`. Carbon emissions per nutrient target for UK seafood products for ten essential dietary nutrients.** Points are kg CO2-eq per nutrient target (averaged across species), coloured by the number of nutrient targets in a 100 g edible portion. A nutrient target was 15% of the recommended intakes for adults (18-65 years old) of ten nutrients (calcium, iodine, iron, selenium, zinc, omega-3 fatty acids, vitamins A, D, B12, folate). Animal-source foods (beef, chicken, lamb, pork) are included for comparison using CO2 values from (Clune et al., 2017) and nutrient values from (Widdowson, n.d.).
 
 \newpage
 ```{r, out.height="80%", echo=F,fig.align='center', warning=FALSE, message=FALSE}
@@ -83,7 +83,7 @@ knitr::include_graphics("fig/final/FigureSX_UK_fournut_density.pdf"); i = i + 1
 ```{r, out.height="80%", echo=F,fig.align='center', warning=FALSE, message=FALSE}
 knitr::include_graphics("fig/final/FigureSX_GFGscore.pdf"); i = i + 1
 ```
-**Fig. S`r i`. Sustainability and price of UK seafood products.** A) Carbon emissions per nutrient target by sustainability score, where points are the mean sustainability score of each product against the mean kg CO2-eq per nutrient target. B) is the range in sustainability scores by seafood product and C) is the price per kg (Seafish 2021) against kg CO2-eq per nutrient target. Sustainability scores were rescaled such that 0 = low sustainability and 1 = high sustainability, and kg CO2-eq per nutrient target was estimated from recommended intakes of nine nutrients (calcium, iron, selenium, zinc, omega-3 fatty acids, vitamins A, B12, D and folate) from a 100 g edible portion.
+**Fig. S`r i`. Sustainability and price of UK seafood products.** A) Carbon emissions per nutrient target by sustainability score, where points are the mean sustainability score of each product against the mean kg CO2-eq per nutrient target. B) is the range in sustainability scores by seafood product and C) is the price per kg (Seafish 2021) against kg CO2-eq per nutrient target. Sustainability scores were rescaled such that 0 = low sustainability and 1 = high sustainability, and kg CO2-eq per nutrient target was estimated based on meeting 15% of adult recommended intakes for ten nutrients (calcium, iodine, iron, selenium, zinc, omega-3 fatty acids, vitamins A, B12, D and folate) from a 100 g edible portion.
 
 \newpage
 
